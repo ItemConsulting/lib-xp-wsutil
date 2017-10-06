@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: On</title>
+    <title>JSDoc: Class: Emit</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: On</h1>
+    <h1 class="page-title">Class: Emit</h1>
 
     
 
@@ -28,8 +28,8 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="wsUtil.html">wsUtil</a><a href="wsUtil.SocketEmitter.html">.SocketEmitter</a>.</span>On<span class="signature">(id)</span><span class="type-signature"> &rarr; {<a href="wsUtil.SocketEmitter.On.html#OnFunction">OnFunction</a>}</span></h2>
+        <h2><span class="attribs"><span class="type-signature">(private) </span></span>
+            <span class="ancestors"><a href="wsUtil.html">wsUtil</a><a href="wsUtil.SocketEmitter.html">.SocketEmitter</a>~</span>Emit<span class="signature">(id)</span><span class="type-signature"> &rarr; {<a href="wsUtil.SocketEmitter-Emit.html#EmitFunction">EmitFunction</a>}</span></h2>
         
     
 </header>
@@ -42,7 +42,7 @@
     
 
     
-    <h4 class="name" id="On"><span class="type-signature"></span>new On<span class="signature">(id)</span><span class="type-signature"> &rarr; {<a href="wsUtil.SocketEmitter.On.html#OnFunction">OnFunction</a>}</span></h4>
+    <h4 class="name" id="Emit"><span class="type-signature">(private) </span>new Emit<span class="signature">(id)</span><span class="type-signature"> &rarr; {<a href="wsUtil.SocketEmitter-Emit.html#EmitFunction">EmitFunction</a>}</span></h4>
     
 
     
@@ -50,7 +50,7 @@
 
 
 <div class="description">
-    <p>The emit event handlers acts on emit events from the clients</p>
+    <p>Emit events with content to specific socket connection</p>
 </div>
 
 
@@ -102,7 +102,7 @@
 
             
 
-            <td class="description last"><p>The id of the connection</p></td>
+            <td class="description last"><p>The id of the socket connection</p></td>
         </tr>
 
     
@@ -173,7 +173,7 @@
 
         
 <div class="param-desc">
-    <p>Binds a handler to an emit event</p>
+    <p>Takes an event and a message object and sends to the socket connection</p>
 </div>
 
 
@@ -184,7 +184,7 @@
     </dt>
     <dd>
         
-<span class="param-type"><a href="wsUtil.SocketEmitter.On.html#OnFunction">OnFunction</a></span>
+<span class="param-type"><a href="wsUtil.SocketEmitter-Emit.html#EmitFunction">EmitFunction</a></span>
 
 
     </dd>
@@ -224,7 +224,7 @@
     
 
     
-    <h4 class="name" id="OnFunction"><span class="type-signature"></span>OnFunction<span class="signature">(event, handler)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="EmitFunction"><span class="type-signature"></span>EmitFunction<span class="signature">(event, message)</span><span class="type-signature"></span></h4>
     
 
     
@@ -232,8 +232,8 @@
 
 
 <div class="description">
-    <p>Returned function from the On class instance. This function takes an event and a handler. The handler is being called when a client emits the event
-with or without parameters</p>
+    <p>Returned function from the Emit class created by a user that has connected. This function takes an event and a message object/string and sends it to the
+user that created the instance</p>
 </div>
 
 
@@ -285,20 +285,23 @@ with or without parameters</p>
 
             
 
-            <td class="description last"><p>The name of the emitted event from the client</p></td>
+            <td class="description last"><p>The name of the emitted event</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>handler</code></td>
+                <td class="name"><code>message</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type">string</span>
+|
+
+<span class="param-type">object</span>
 
 
             
@@ -308,7 +311,7 @@ with or without parameters</p>
 
             
 
-            <td class="description last"><p>The emitted event handler</p></td>
+            <td class="description last"><p>The message being sent</p></td>
         </tr>
 
     
@@ -349,7 +352,7 @@ with or without parameters</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line634">line 634</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line670">line 670</a>
     </li></ul></dd>
     
 
@@ -378,21 +381,10 @@ with or without parameters</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>socketEmitter.connect(function(socket) {
- // example of handler without parameters
- socket.on('What is the meaning of life, the universe and everything?', function() {
-     socket.emit('answer', calculateTheMeaningOfLifeTheUniverseAndEverything());
- });
- // example of handler with parameters
- socket.on('isPrime?', function(number) {
-     function isPrime(num, iter) {
-       if (!iter) iter = Math.floor(Math.sqrt(num));
-       if (iter > 1) return isPrime(num, iter-1) ? num % iter !== 0 : false;
-        return true
-      }
-      socket.emit('isPrime!', isPrime(number));
- });
-})</code></pre>
+    <pre class="prettyprint"><code>// emitting any events
+socketEmitter.connect(function(socket) {
+ socket.emit('Hello is there anyone in there?', { just: 'nod if you can hear me' });
+});</code></pre>
 
 
 
@@ -410,13 +402,13 @@ with or without parameters</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter.Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter.On.html">On</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 05 2017 13:22:48 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 09:15:00 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

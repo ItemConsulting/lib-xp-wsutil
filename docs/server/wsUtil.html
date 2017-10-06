@@ -305,7 +305,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line391">line 391</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line400">line 400</a>
     </li></ul></dd>
     
 
@@ -518,7 +518,7 @@ or log an error if not</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line424">line 424</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line433">line 433</a>
     </li></ul></dd>
     
 
@@ -699,7 +699,7 @@ or log an error if not</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line460">line 460</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line469">line 469</a>
     </li></ul></dd>
     
 
@@ -741,7 +741,7 @@ or log an error if not</p>
 
 
 <div class="description">
-    <p>Expand the client library with new functionalities. NOTE: The expansion object have direct access to the client library's inner variables</p>
+    <p>Expand the client library with new functionalities. NOTE: The expansion object have direct access to the client library's inner variables and functions</p>
 </div>
 
 
@@ -860,7 +860,7 @@ or log an error if not</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line370">line 370</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line379">line 379</a>
     </li></ul></dd>
     
 
@@ -1011,7 +1011,7 @@ cws.hello();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line344">line 344</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line353">line 353</a>
     </li></ul></dd>
     
 
@@ -1178,7 +1178,7 @@ extensionLib.extension(); // Activate extension</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line407">line 407</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line416">line 416</a>
     </li></ul></dd>
     
 
@@ -1234,7 +1234,7 @@ extensionLib.extension(); // Activate extension</code></pre>
     
 
     
-    <h4 class="name" id=".openWebsockets"><span class="type-signature">(static) </span>openWebsockets<span class="signature">(exp)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".openWebsockets"><span class="type-signature">(static) </span>openWebsockets<span class="signature">(exp, host<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -1266,7 +1266,11 @@ extensionLib.extension(); // Activate extension</code></pre>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1291,10 +1295,61 @@ extensionLib.extension(); // Activate extension</code></pre>
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>The exports object from the Enonic module that is assigned to handle websocket events</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    portal.serviceUrl({ service: 'websocket'})
+                
+                </td>
+            
+
+            <td class="description last"><p>The host for the service that serves the web sockets</p></td>
         </tr>
 
     
@@ -1338,7 +1393,7 @@ extensionLib.extension(); // Activate extension</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line507">line 507</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line517">line 517</a>
     </li></ul></dd>
     
 
@@ -1499,7 +1554,7 @@ extensionLib.extension(); // Activate extension</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line445">line 445</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line454">line 454</a>
     </li></ul></dd>
     
 
@@ -1663,7 +1718,7 @@ extensionLib.extension(); // Activate extension</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line492">line 492</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line501">line 501</a>
     </li></ul></dd>
     
 
@@ -1697,7 +1752,7 @@ extensionLib.extension(); // Activate extension</code></pre>
     
 
     
-    <h4 class="name" id=".sendSocketResponse"><span class="type-signature">(static) </span>sendSocketResponse<span class="signature">(req)</span><span class="type-signature"> &rarr; {SocketResponse}</span></h4>
+    <h4 class="name" id=".sendSocketResponse"><span class="type-signature">(static) </span>sendSocketResponse<span class="signature">(req, host<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {SocketResponse}</span></h4>
     
 
     
@@ -1729,7 +1784,11 @@ extensionLib.extension(); // Activate extension</code></pre>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1754,10 +1813,61 @@ extensionLib.extension(); // Activate extension</code></pre>
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>The request object passed to the server</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    portal.serviceUrl({ service: 'websocket'})
+                
+                </td>
+            
+
+            <td class="description last"><p>The url to the service that serves the web sockets</p></td>
         </tr>
 
     
@@ -1801,7 +1911,7 @@ extensionLib.extension(); // Activate extension</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line561">line 561</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line572">line 572</a>
     </li></ul></dd>
     
 
@@ -2174,7 +2284,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line575">line 575</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line586">line 586</a>
     </li></ul></dd>
     
 
@@ -2312,7 +2422,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line590">line 590</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line601">line 601</a>
     </li></ul></dd>
     
 
@@ -2450,7 +2560,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line600">line 600</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line611">line 611</a>
     </li></ul></dd>
     
 
@@ -2663,7 +2773,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line713">line 713</a>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line724">line 724</a>
     </li></ul></dd>
     
 
@@ -2693,13 +2803,13 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul><h3>Interfaces</h3><ul><li><a href="wsUtil.SocketEmitter-Emit.html#EmitInterface">EmitInterface</a></li><li><a href="wsUtil.SocketEmitter-On.html#OnInterface">OnInterface</a></li><li><a href="wsUtil.SocketEmitter.html#SocketEmitterInterface">SocketEmitterInterface</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 09:15:00 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 13:19:42 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

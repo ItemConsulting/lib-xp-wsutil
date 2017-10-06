@@ -279,13 +279,16 @@ function SocketEmitter() {
      * @class
      * @description Emit events with content to specific socket connection
      * @param {string} id The id of the socket connection
-     * @returns {EmitFunction} Takes an event and a message object and sends to the socket connection
+     * @returns {EmitInterface} Takes an event and a message object and sends to the socket connection
      * @since 0.0.1
      * @inner
-     * @memberOf! wsUtil.SocketEmitter
+     * @memberOf wsUtil.SocketEmitter
      * @private
      */
     function Emit(id) {
+        /**
+         *  @interface EmitInterface
+         */
         return function (event, object) {
             var obj = { event: event, object: object};
             send(id, obj);
@@ -297,7 +300,7 @@ function SocketEmitter() {
      * @memberOf wsUtil.SocketEmitter
      * @description The emit event handlers acts on emit events from the clients
      * @param {string} id The id of the connection
-     * @returns {OnFunction} Binds a handler to an emit event
+     * @returns {OnInterface} Binds a handler to an emit event
      * @since 0.0.1
      * @inner
      * @private
@@ -306,6 +309,9 @@ function SocketEmitter() {
         if (!_handlers.hasOwnProperty(id)) {
             _handlers[id] = {};
         }
+        /**
+         * @interface OnInterface
+         */
         return function(event, handler) {
             _handlers[id][event] = handler;
         }
@@ -338,6 +344,9 @@ function SocketEmitter() {
         }
     }
 
+    /**
+     * @interface SocketEmitterInterface
+     */
     return {
         connect: connect,
         broadcast: broadcast
@@ -377,7 +386,7 @@ function extend(exportObject) {
 }
 
 /**
- * @description Expand the client library with new functionalities. NOTE: The expansion object have direct access to the client library's inner variables
+ * @description Expand the client library with new functionalities. NOTE: The expansion object have direct access to the client library's inner variables and functions
  * @memberOf wsUtil
  * @param name {string | object} Name of the new client function or an object with key=name value=function
  * @param func {function} The function for the new client interface.
@@ -530,11 +539,12 @@ function send(id, message) {
  * @memberOf wsUtil
  * @description Opens the websocket connection and delegate events to handlers
  * @param {object} exp The exports object from the Enonic module that is assigned to handle websocket events
+ * @param {string} [host=portal.serviceUrl({ service: 'websocket'})] The host for the service that serves the web sockets
  * @since 0.0.1
  */
-function openWebsockets(exp) {
+function openWebsockets(exp, host) {
     exp.get = function(req) {
-        return sendSocketResponse(req);
+        return sendSocketResponse(req, host);
     };
     exp.webSocketEvent = function (event) {
         if (eventHandlers[event.type]) {
@@ -583,12 +593,13 @@ function returnScript(host) {
  *  return ws.sendSocketResponse(req);
  *  }
  * @param {object} req The request object passed to the server
+ * @param {string} [host=portal.serviceUrl({ service: 'websocket'})] - The url to the service that serves the web sockets
  * @returns {SocketResponse} The response object
  * @since 0.0.1
  */
-function sendSocketResponse(req) {
+function sendSocketResponse(req, host) {
     if (!req.webSocket) {
-       return returnScript();
+       return returnScript(host);
     }
     else return responseObject;
 }
@@ -696,7 +707,7 @@ function setSocketRequestResponse(response) {
  */
 
 /**
- * @typedef {function} EmitFunction
+ * @typedef {function} EmitInterface
  * @alias EmitFunction
  * @memberOf wsUtil.SocketEmitter~Emit
  * @description Returned function from the Emit class created by a user that has connected. This function takes an event and a message object/string and sends it to the
@@ -712,7 +723,7 @@ function setSocketRequestResponse(response) {
  */
 
 /**
- * @typedef {function} OnFunction
+ * @typedef {function} OnInterface
  * @alias OnFunction
  * @memberOf wsUtil.SocketEmitter~On
  * @description Returned function from the On class instance. This function takes an event and a handler. The handler is being called when a client emits the event
@@ -739,7 +750,8 @@ function setSocketRequestResponse(response) {
  */
 
 /**
- *@typedef {object} wsUtil.SocketResponse
+ * @typedef {object} SocketResponse
+ * @memberOf wsUtil
  * @description The response object sent from the server
  * @property {object} webSocket Main response object
  * @property {object} webSocket.data Additional data object
@@ -754,13 +766,13 @@ function setSocketRequestResponse(response) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul><h3>Interfaces</h3><ul><li><a href="wsUtil.SocketEmitter-Emit.html#EmitInterface">EmitInterface</a></li><li><a href="wsUtil.SocketEmitter-On.html#OnInterface">OnInterface</a></li><li><a href="wsUtil.SocketEmitter.html#SocketEmitterInterface">SocketEmitterInterface</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 09:15:00 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 13:19:42 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

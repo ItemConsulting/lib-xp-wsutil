@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: virtual.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: virtual.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** @namespace EnonicXP */
+
+/**
+ *
+ * @class Ws
+ * @memberOf EnonicXP
+ * @classdesc The client EnonicXP web socket utility framework. The constructor will
+ * try to guess the protocol and host for the connection if the optional host parameter is not provided
+ * @since 0.0.1
+ * @author Per Arne Drevland
+ * @param [host] {string} The web socket hostname
+ * @example
+ * var cws = new EnonicXP.Ws();
+ * @return {ClientWS} The new ClientWS instance
+ */
+
+/**
+ * @name setHost
+ * @function
+ * @public
+ * @memberOf ClientWS
+ * @param host {string} The url to the host to connect to
+ * @param [autoConnect] {boolean} If this flag is set the connection will be opened after this function has been called
+ * @description Sets the hostname for the socket connection
+ * @example
+ * cws.setHost('wss://example.com');
+ *
+ */
+
+/**
+ * @name send
+ * @function
+ * @public
+ * @memberOf ClientWS
+ * @param message {string|object} The message to send to the server.
+ * The function tries to stringify the message from JSON and sends the string message if it fails
+ */
+
+/**
+ * @name setEventHandler
+ * @function
+ * @public
+ * @description Sets a web socket event handler. Note that the 'message' handler takes the event.message string and tries to JSON parse it before it calls the handler
+ * @param event {'open'|'close'|'message'|'error'} The web socket event to set handler on
+ * @param handler {function} The handler for the provided event
+ * @throws Will throw an exception if unknown event or if handler is not a function
+ * @memberOf ClientWS
+ */
+
+/**
+ * @name connect
+ * @function
+ * @public
+ * @description Creates a new WebSocket object and sets the handlers for the web socket events
+ * @memberOf ClientWS
+ */
+
+/**
+ * @name setEventHandlers
+ * @function
+ * @public
+ * @description This function takes an object and sets the web socket event handlers for each key=event value=handler
+ * @param handlerObject {object} The handler object
+ * @throws Will throw an error if supplied object is not valid
+ * @see {@link setEventHandler}
+ * @memberOf ClientWS
+ */
+
+/**
+ * @name setDefaultHandler
+ * @function
+ * @public
+ * @description Set the default handler for all events. If an event don't have a handler, the default handler will be called
+ * @param defaultHandler {function}
+ * @throws Invalid handler exception
+ * @memberOf ClientWS
+ */
+
+/**
+ * @name addHandlers
+ * @function
+ * @public
+ * @description Add additional handlers for the web socket events. Note that the 'message' event takes the whole event object and not only the event.message as opposed to the [setEventHandler]{@link setEventHandler}
+ * @param event {string} The web socket event
+ * @param handler {function} The web socket event handler
+ * @memberOf ClientWS
+ */
+
+/**
+ * @name Io
+ * @class
+ * @public
+ * @description Create a new Io instance to work with the server side SocketEmitter
+ * @return {IoInterface}
+ */
+
+/**
+ * @name isConnected
+ * @property {boolean}
+ * @public
+ * @description Boolean value set to true by the internal WebSocket.onopen listener, and set to false again by the internal WebSocket.onclose listener
+ * @memberOf ClientWS
+ */
+
+/**
+ * @interface ClientWS
+ * @description The interface for your web socket connection
+ */
+
+/**
+ * @name on
+ * @function
+ * @public
+ * @description Listens for provided server side emitted events
+ * @param event {string} The name of the server side emitted event
+ * @param handler {function} The handler for the server side emitted event
+ * @throws Invalid handler exception
+ * @memberOf IoInterface
+ */
+
+/**
+ * @name emit
+ * @function
+ * @public
+ * @description Emits an event to the server with provided message
+ * @param event {string} The name of the event to emit
+ * @param message {string | object} The message to send
+ * @memberOf IoInterface
+ */
+
+
+/**
+ * @interface IoInterface
+ * @description The interface for the emitted events communications. This will automatically connect to the web socket server if no connection
+ *
+ */</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EnonicXP.Ws.html">Ws</a></li><li><a href="Io.html">Io</a></li></ul><h3>Namespaces</h3><ul><li><a href="EnonicXP.html">EnonicXP</a></li></ul><h3>Interfaces</h3><ul><li><a href="ClientWS.html">ClientWS</a></li><li><a href="IoInterface.html">IoInterface</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 11:39:05 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

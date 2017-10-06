@@ -44,91 +44,24 @@
 
     <section>
         <article><h1>Enonic XP websocket extension library</h1><p>This library extends the Enonic XP websocket library with additional features to
-make socket integration easier to handle on the server side. This is developed to work seamlessly with the client ws extension application.</p>
-<h2>Usage</h2><h3>Basic features</h3><pre class="prettyprint source lang-javascript"><code>//load library
-var ws = require('/lib/xp/wsUtil');
+make socket integration easier to handle on the server side. The library includes both client side lib and server side lib</p>
+<h2>Usage</h2><p>Create a service for the server side handling of your websockets.
+Default is <code>services/websocket/websocket.js</code></p>
+<p>In your <code>websocket.js</code> file</p>
+<pre class="prettyprint source lang-javascript"><code>var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
 
-exports.get = function(req) {
-    // Send socket connection to client
-    return ws.sendSocketResponse(req);  
-}; 
-// Bind the websocket event handler to the ws object
-ws.openWebsockets(exports);</code></pre><p>That's it. Now your socket connection is live and ready.</p>
-<p>There are two ways to listen for the four different websocket events.</p>
-<pre class="prettyprint source lang-javascript"><code>// Set main handlers
+ws.openWebsockets(exports);</code></pre><p>Or for <code>services/sockethandler/sockethandler.js</code></p>
+<pre class="prettyprint source lang-javascript"><code>var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
+var portal = require('/lib/xp/portal');
 
-// set individual event handlers
-ws.setEventHandler('open',      openHandler);
-ws.setEventHandler('close',     closeHandler);
-ws.setEventHandler('message',   messageHandler);
-ws.setEventHandler('error',     errorHandler);
-
-// set them all at once
-ws.setEventHandlers({
-    open:       openHandler,
-    close:      closeHandler,
-    message:    messageHandler,
-    error:      errorHandler
-});
-
-// Set additional handlers (for logging and none immediate actions or extra features)
-
-ws.addHandlers('open',    additionalHandler);
-ws.addHandlers('close',   additionalHandler);
-ws.addHandlers('message', additionalHandler);
-ws.addHandlers('error',   additionalHandler);
-
-// Add as many handlers as you want</code></pre><p>Group your users</p>
-<pre class="prettyprint source lang-javascript"><code>function openHandler(event) {
-    var autoremove = true; // Remove client from group when close event
-    ws.createGroup('global', autoremove); // Idempotent function
-    ws.addUserToGroup(event.session.id, 'global');
-}
-
-function closeHandler(event) {
-    // since autoremove is set, we don't care about removing manually
-    // but we might want to keep track in some objects
-    delete serverUsers[event.session.id];
-    var message = {
-        event: 'user_exit',
-        id: event.session.id
-    };
-    ws.sendToGroup('global', message); // message will be JSON.stringified
-}
-
-function messageHandler(msg) { // For event.type === message it is only the message that is passed to the handler
-    var message = {         // The event message will try to be parsed as JSON
-        event: msg.event,   
-        message: msg.message,
-        username: msg.username,
-        timestamp: Date.now()
-    };
-    ws.sendToGroup(msg.room, message);
-}</code></pre><p>Send individual messages to clients</p>
-<pre class="prettyprint source lang-javascript"><code>var randomIndex = Math.floor(Math.random() * ws.getGroupUsers('global').length);
-var id = ws.getGroupUsers('global')[randomIndex];
-var message = { hello: 'world'};
-ws.send(id, message); // Will be stringified</code></pre><p>This is the basic features for the web socket library.
-Some notes</p>
-<ul>
-<li>The sendSocketResponseObject is the same object from the Enonic XP <a href="http://xp.readthedocs.io/en/stable/developer/ssjs/websockets.html">example</a></li>
-<li>Since messages from the socket is always string, the library will always try to convert it to JSON</li>
-<li>Sending messages will check for type and stringify it if needed</li>
-</ul>
-<h3>Additional features</h3><p>Create a new SocketEmitter to make the websocket implementation act like a pub/sub provider</p>
-<p>Functionalities here are shamelessly inspired by <a href="socket.io">socket.io</a> nodeJS library, with limitations</p>
-<pre class="prettyprint source lang-javascript"><code>// how to use
-var io = new ws.SocketEmitter();
-
-io.connect(function(socket) {
-    io.broadcast(&quot;new-connection&quot;, {id: socket.id});
-    socket.emit(&quot;hi&quot;, {msg: &quot;hello from server&quot;});
-    socket.on('ping', function(message) {
-        // do something with message or
-        socket.emit('pong', message); // send the message back to client
-        socket.sendTo(message.recipient, message.content); // send message between clients
-    });
-})</code></pre></article>
+ws.openWebsockets(exports, portal.serviceUrl({ service: 'sockethandler' }));</code></pre><h2>Contents</h2><p><a href="server/index.html">Server API</a></p>
+<p><a href="client/index.html">Client API</a></p>
+<p><a href="tutorial.html">Tutorials</a></p>
+<p><a href="extensions.html">Creating extensions</a></p>
+<h2>How it works</h2><p>Create a script tag on your document for your service</p>
+<p>The initial request will not be a websocket request and will receive the client side library</p>
+<p>When the client side web socket handler creates a new EnonicXP.Ws instance it will send a websocket request
+to the server, and start the websocket communication.</p></article>
     </section>
 
 
@@ -139,13 +72,14 @@ io.connect(function(socket) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Emit.html">Emit</a></li><li><a href="On.html">On</a></li><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>API</h3><ul><li><a href="server/index.html">Server</a></li><li><a href="client/index.html">Client</a></li></ul>
+    <h3><a href="tutorial.html">Tutorial</a></h3><h3><a href="extensions.html">Creating extensions</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 27 2017 14:42:47 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 09:15:00 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
