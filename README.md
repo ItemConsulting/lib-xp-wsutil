@@ -39,4 +39,8 @@ repositories {
 
 This project is under the GPL v3. For more information please read [LICENSE.txt](LICENSE.txt)
 
+## Author ##
+
+**Per Arne Drevland** *Consultant* [Item Consulting AS](www.item.no)
+
 
