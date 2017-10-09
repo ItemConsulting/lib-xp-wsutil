@@ -892,7 +892,7 @@ or log an error if not</p>
     <pre class="prettyprint"><code>// service/websocket/websocket.js
 var ws = require('path/to/wsUtil');
 
-ws.expandClient('hello', function() { send('Hello'); // use the inner send function });
+ws.expandClient('hello', function() { send('Hello'); /* use the inner send function */ });
 
 ws.openWebsockets(exports);
 
