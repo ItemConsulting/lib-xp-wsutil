@@ -1,4 +1,24 @@
 
+//**************************************************************************//
+//*                                                                        *//
+//*                          License                                       *//
+//*                                                                        *//
+//* Copyright (C) 2017  Per Arne Drevland                                  *//
+//*                                                                        *//
+//* This program is free software: you can redistribute it and/or modify   *//
+//* it under the terms of the GNU General Public License as published by   *//
+//* the Free Software Foundation, either version 3 of the License, or      *//
+//* (at your option) any later version.                                    *//
+//*                                                                        *//
+//* This program is distributed in the hope that it will be useful,        *//
+//* but WITHOUT ANY WARRANTY; without even the implied warranty of         *//
+//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *//
+//* GNU General Public License for more details.                           *//
+//*                                                                        *//
+//* You should have received a copy of the GNU General Public License      *//
+//* along with this program.  If not, see <https://www.gnu.org/licenses/>. *//
+//*                                                                        *//
+//**************************************************************************//
 
 
 
@@ -7,6 +27,11 @@
 //*************************************************//
 
 var websocket = require('/lib/xp/websocket');
+var ioLib = require('/lib/xp/io');
+var portal = require('/lib/xp/portal');
+var vm = this;
+
+var clientExpansions = {};
 
 var responseObject = {
     webSocket: {
@@ -48,6 +73,8 @@ var eventHandlers = {
  * @class wsUtil
  * @classdesc Server side websocket utility extension library for Enonic XP
  * @requires /lib/xp/websocket
+ * @requires /lib/xp/io
+ * @requires /lib/xp/portal
  * @author Per Arne Drevland
  * @version 0.0.1
  * @example
@@ -68,6 +95,9 @@ exports.setSocketRequestResponse    = setSocketRequestResponse;
 exports.SocketEmitter               = SocketEmitter;
 exports.removeUserFromGroup         = removeUserFromGroup;
 exports.sendToGroup                 = sendToGroup;
+exports.returnScript                = returnScript;
+exports.extend                      = extend;
+exports.expandClient                = expandClient;
 
 
 //*************************************************//
@@ -92,8 +122,8 @@ function sendToGroup(name, message) {
 
 
 /**
- * @name wsUtil.SocketEmitter
  * @class wsUtil.SocketEmitter
+ * @memberOf wsUtil
  * @classdesc Create a new SocketEmitter instance to handle individual socket connections and emit events and listen
  * to events created by the client.
  * @returns {SocketEmitterInterface} Interface for handling incoming sockets
@@ -142,19 +172,28 @@ function SocketEmitter() {
 
 
     /**
-     * @property {EmitterUsers} _users Users that has a socket connection
      * @memberOf wsUtil.SocketEmitter
-     * @type {EmitterUsers}
+     * @property {EmitterUsers} _users Users that has a socket connection
+     * @private
+     * @inner
      */
     var _users = {};
 
     /**
-     * @property {EmitterHandlers} _handlers Handlers for all users and events
      * @memberOf wsUtil.SocketEmitter
-     * @type {EmitterHandlers}
+     * @property {EmitterHandlers} _handlers Handlers for all users and events
+     * @private
+     * @inner
      */
     var _handlers = {};
-    var cb;
+
+    /**
+     * @memberOf wsUtil.SocketEmitter
+     * @property {ConnectionCallback} _cb The callback function to call when a user connects
+     * @private
+     * @inner
+     */
+    var _cb;
 
     //
     // When a new user connects, do the following
@@ -166,7 +205,7 @@ function SocketEmitter() {
     addHandlers("open", function (event) {
         var user = { id: event.session.id, on: new On(event.session.id), emit: new Emit(event.session.id), sendTo: sendTo};
         _users[event.session.id] = user;
-        cb(user);
+        _cb(user);
     });
 
     //
@@ -229,15 +268,19 @@ function SocketEmitter() {
     }
 
     /**
-     * @class Emit
-     * @memberOf wsUtil.SocketEmitter
-     * @alias Emit
+     * @class
      * @description Emit events with content to specific socket connection
      * @param {string} id The id of the socket connection
-     * @returns {EmitFunction} Takes an event and a message object and sends to the socket connection
+     * @returns {EmitInterface} Takes an event and a message object and sends to the socket connection
      * @since 0.0.1
+     * @inner
+     * @memberOf wsUtil.SocketEmitter
+     * @private
      */
     function Emit(id) {
+        /**
+         *  @interface EmitInterface
+         */
         return function (event, object) {
             var obj = { event: event, object: object};
             send(id, obj);
@@ -245,18 +288,22 @@ function SocketEmitter() {
     }
 
     /**
-     * @class On
+     * @class
      * @memberOf wsUtil.SocketEmitter
-     * @alias On
      * @description The emit event handlers acts on emit events from the clients
      * @param {string} id The id of the connection
-     * @returns {Function} Binds a handler to an emit event
+     * @returns {OnInterface} Binds a handler to an emit event
      * @since 0.0.1
+     * @inner
+     * @private
      * */
     function On(id) {
         if (!_handlers.hasOwnProperty(id)) {
             _handlers[id] = {};
         }
+        /**
+         * @interface OnInterface
+         */
         return function(event, handler) {
             _handlers[id][event] = handler;
         }
@@ -269,7 +316,7 @@ function SocketEmitter() {
      * @memberOf wsUtil.SocketEmitter
      * */
     function connect(callback) {
-        cb = callback;
+        _cb = callback;
     }
 
     /**
@@ -289,9 +336,76 @@ function SocketEmitter() {
         }
     }
 
+    /**
+     * @interface SocketEmitterInterface
+     */
     return {
         connect: connect,
         broadcast: broadcast
+    }
+}
+
+/**
+ * @memberOf wsUtil
+ * @description Extends the library functionalities to create reusable extensions
+ * @param exportObject {object} The object that extends the library
+ * @see [Creating extensions]{@link http://localhost:63343/socket/docs/extensions.html}
+ * @example
+ * // lib/extension.js
+ * var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
+ *
+ * var extebsionObject = { extension: extension };
+ * ws.extend(extensionObject);
+ *
+ * function extension() {
+ *   ws.addHandler('open', function(event) { log.info('Extension says hi!'); });
+ * }
+ * exports.extension = ws;
+ *
+ *
+ * // service/extensionService/extensionService.js
+ *
+ * var extensionLib = require('extension').extension
+ *
+ * extensionLib.openWebsockets(exports);
+ * extensionLib.extension(); // Activate extension
+ */
+function extend(exportObject) {
+    for (var name in exportObject) {
+        if (exportObject.hasOwnProperty(name)) exports[name] = exportObject[name]
+    }
+    return exports;
+}
+
+/**
+ * @description Expand the client library with new functionalities. NOTE: The expansion object have direct access to the client library's inner variables and functions
+ * @memberOf wsUtil
+ * @param name {string | object} Name of the new client function or an object with key=name value=function
+ * @param func {function} The function for the new client interface.
+ * @example
+ * // service/websocket/websocket.js
+ * var ws = require('path/to/wsUtil);
+ *
+ * ws.expandClient('hello', function() { send('Hello'); // use the inner send function });
+ *
+ * ws.openWebsockets(exports);
+ *
+ * // socket.js
+ *
+ * var cws = new EnonicXP.Ws();
+ *
+ * cws.hello();
+ */
+function expandClient(name, func) {
+    if (typeof name === 'string') {
+        clientExpansions[name] = func;
+    }
+    else if (typeof name === 'object' && !func) {
+        for (var n in name) {
+            if (name.hasOwnProperty(n)) {
+                clientExpansions[n] = name[n];
+            }
+        }
     }
 }
 
@@ -417,9 +531,13 @@ function send(id, message) {
  * @memberOf wsUtil
  * @description Opens the websocket connection and delegate events to handlers
  * @param {object} exp The exports object from the Enonic module that is assigned to handle websocket events
+ * @param {string} [host=portal.serviceUrl({ service: 'websocket'})] The host for the service that serves the web sockets
  * @since 0.0.1
  */
-function openWebsockets(exp) {
+function openWebsockets(exp, host) {
+    exp.get = function(req) {
+        return sendSocketResponse(req, host);
+    };
     exp.webSocketEvent = function (event) {
         if (eventHandlers[event.type]) {
             if (event.type === 'message') {
@@ -440,6 +558,21 @@ function openWebsockets(exp) {
     }
 }
 
+
+
+function returnScript(host) {
+    host = host || portal.serviceUrl({ service: 'websocket'});
+    var file = ioLib.readText(ioLib.getResource(resolve('clientws.js')).getStream());
+    file = file.replace('&HOST&', host).replace('&CLIENTEXPANSIONS&', JSON.stringify(clientExpansions, function(key, val) {
+        return (typeof val === 'function') ? '' + val : val;
+    }).replace(/"/g, "").replace(/\\n/g, "").replace(/\\/g, '"'));
+
+    return {
+        body: file,
+        contentType: 'application/javascript'
+    }
+}
+
 /**
  * @memberOf wsUtil
  * @description Send the socket response for a socket request
@@ -452,12 +585,13 @@ function openWebsockets(exp) {
  *  return ws.sendSocketResponse(req);
  *  }
  * @param {object} req The request object passed to the server
+ * @param {string} [host=portal.serviceUrl({ service: 'websocket'})] - The url to the service that serves the web sockets
  * @returns {SocketResponse} The response object
  * @since 0.0.1
  */
-function sendSocketResponse(req) {
+function sendSocketResponse(req, host) {
     if (!req.webSocket) {
-        return { status: 404 }
+       return returnScript(host);
     }
     else return responseObject;
 }
@@ -510,8 +644,8 @@ function setSocketRequestResponse(response) {
  * @memberOf wsUtil.SocketEmitter
  * @alias EmitterUsers
  * @property {string} id The session id of the user
- * @property {On} on The client emitted event handler interface
- * @property {Emit} emit The server side emit message functionality,
+ * @property on {wsUtil.SocketEmitter~On} The client emitted event handler interface
+ * @property {wsUtil.SocketEmitter~Emit} emit The server side emit message functionality,
  * @property {function} sendTo The server side send message to specific user functionality
  */
 
@@ -565,9 +699,9 @@ function setSocketRequestResponse(response) {
  */
 
 /**
- * @typedef {function} EmitFunction
+ * @typedef {function} EmitInterface
  * @alias EmitFunction
- * @memberOf Emit
+ * @memberOf wsUtil.SocketEmitter~Emit
  * @description Returned function from the Emit class created by a user that has connected. This function takes an event and a message object/string and sends it to the
  * user that created the instance
  * @param {string} event The name of the emitted event
@@ -581,9 +715,9 @@ function setSocketRequestResponse(response) {
  */
 
 /**
- * @typedef {function} OnFunction
- * @alias Onfunction
- * @memberOf wsUtil.SocketEmitter.On
+ * @typedef {function} OnInterface
+ * @alias OnFunction
+ * @memberOf wsUtil.SocketEmitter~On
  * @description Returned function from the On class instance. This function takes an event and a handler. The handler is being called when a client emits the event
  * with or without parameters
  * @param {string} event The name of the emitted event from the client
@@ -608,7 +742,8 @@ function setSocketRequestResponse(response) {
  */
 
 /**
- *@typedef {object} wsUtil.SocketResponse
+ * @typedef {object} SocketResponse
+ * @memberOf wsUtil
  * @description The response object sent from the server
  * @property {object} webSocket Main response object
  * @property {object} webSocket.data Additional data object

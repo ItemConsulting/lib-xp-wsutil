@@ -1,0 +1,11 @@
+Licenses under this project
+
+    Enonic XP
+    Copyright (C) 2017 Enonic AS.
+    Licensed under the GPL v3
+
+
+Dependencies
+    lib-io
+    lib-portal
+    lib-websocket

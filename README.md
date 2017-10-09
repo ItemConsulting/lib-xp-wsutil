@@ -1,50 +1,42 @@
+# Enonic XP web socket utility library #
+
+## Documentation ##
+
+Go [here](https://itemconsulting.github.io/wsutil-server/) for documentation
+
+## Version ##
+
+### 0.0.1 ###
+ * Initital release
+
+Compatibility Enonic XP 6.4.0
+
+## Dependencies ##
+
+```
+# build.gradle
+
+dependencies {
+    include "com.enonic.xp:lib-portal:${xpVersion}"
+    include "com.enonic.xp:lib-io:${xpVersion}"
+    include "com.enonic.xp:lib-websocket:${xpVersion}"
+    include "no.item.wsUtil:wsUtil:0.0.1"
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven {
+        url 'http://repo.enonic.com/public'
+    }
+   maven {
+        url  "https://dl.bintray.com/pdrevland/wsUtil"
+   }
+}
+```
+
+## License ##
+
+This project is under the GPL v3. For more information please read [LICENSE.txt](LICENSE.txt)
 
 
-# Enonic XP websocket extension library #
-
-This library extends the Enonic XP websocket library with additional features to
-make socket integration easier to handle on the server side. The library includes both client side lib and server side lib
-
-
-## Usage ##
-
-Create a service for the server side handling of your websockets.
-Default is `services/websocket/websocket.js`
-
-In your `websocket.js` file
-
-```javascript
-var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
-
-ws.openWebsockets(exports);
-
-``` 
-Or for `services/sockethandler/sockethandler.js`
-
-```javascript
-var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
-var portal = require('/lib/xp/portal');
-
-ws.openWebsockets(exports, portal.serviceUrl({ service: 'sockethandler' }));
-
-``` 
-
-
-## Contents ##
-
-[Server API](server.html)
-
-[Client API](client.html)
-
-[Tutorials](tutorial.html)
-
-[Creating extensions](extensions.html)
-
-## How it works ##
-
-Create a script tag on your document for your service
-
-The initial request will not be a websocket request and will receive the client side library
-
-When the client side web socket handler creates a new EnonicXP.Ws instance it will send a websocket request
-to the server, and start the websocket communication.
