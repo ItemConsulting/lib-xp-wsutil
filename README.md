@@ -37,7 +37,7 @@ repositories {
 
 ## License ##
 
-This project is under the GPL v3. For more information please read [LICENSE.txt](LICENSE.txt)
+This project is under the Apache 2.0 license. For more information please read [LICENSE.txt](LICENSE.txt)
 
 ## Author ##
 
