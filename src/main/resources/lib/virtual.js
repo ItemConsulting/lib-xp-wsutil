@@ -19,19 +19,19 @@
 //*                                                                          *//
 //****************************************************************************//
 
-/** @namespace EnonicXP */
+/** @namespace ExpWS */
 
 /**
  *
- * @class Ws
- * @memberOf EnonicXP
+ * @class WS
+ * @memberOf ExpWS
  * @classdesc The client EnonicXP web socket utility framework. The constructor will
  * try to guess the protocol and host for the connection if the optional host parameter is not provided
  * @since 0.0.1
  * @author Per Arne Drevland
  * @param [host] {string} The web socket hostname
  * @example
- * var cws = new EnonicXP.Ws();
+ * var cws = new ExpWS();
  * @return {ClientWS} The new ClientWS instance
  */
 

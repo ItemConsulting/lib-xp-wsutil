@@ -84,7 +84,7 @@ var eventHandlers = {
  * @requires /lib/xp/io
  * @requires /lib/xp/portal
  * @author Per Arne Drevland
- * @version 0.0.1
+ * @version 1.0.0
  * @example
  * var ws = require('/lib/xp/wsUtil');
  * @hideconstructor
@@ -118,7 +118,7 @@ exports.expandClient                = expandClient;
  * @description extends the sendToGroup function from EnonicXP to stringify objects
  * @param {string} name Name of the group
  * @param {object|string} message Message to send to the group
- * @since 0.0.1
+ * @since 1.0.0
  * @example
  * // send to space 'global'
  * ws.sendToGroup('global', { hello: 'everyone in global' });
@@ -135,7 +135,7 @@ function sendToGroup(name, message) {
  * @classdesc Create a new SocketEmitter instance to handle individual socket connections and emit events and listen
  * to events created by the client.
  * @returns {SocketEmitterInterface} Interface for handling incoming sockets
- * @since 0.0.1
+ * @since 1.0.0
  * @example
  * // Simple chat example
  *
@@ -265,7 +265,7 @@ function SocketEmitter() {
      * @param {string} id The id of the socket recipient
      * @param {string} event The name of the event to emit
      * @param {object|string} message The content of the event
-     * @since 0.0.1
+     * @since 1.0.0
      * @example
      * // Send message to a connected user
      * socketEmitter.sendTo('someId', 'someEvent', someMessage);
@@ -280,7 +280,7 @@ function SocketEmitter() {
      * @description Emit events with content to specific socket connection
      * @param {string} id The id of the socket connection
      * @returns {EmitFunction} Takes an event and a message object and sends to the socket connection
-     * @since 0.0.1
+     * @since 1.0.0
      * @inner
      * @memberOf! wsUtil.SocketEmitter
      * @private
@@ -298,7 +298,7 @@ function SocketEmitter() {
      * @description The emit event handlers acts on emit events from the clients
      * @param {string} id The id of the connection
      * @returns {OnFunction} Binds a handler to an emit event
-     * @since 0.0.1
+     * @since 1.0.0
      * @inner
      * @private
      * */
@@ -326,7 +326,7 @@ function SocketEmitter() {
      * @param {string} event The name of the event
      * @param {object|string} object The message of the emit event
      * @memberOf wsUtil.SocketEmitter
-     * @since 0.0.1
+     * @since 1.0.0
      * */
     function broadcast(event, object) {
         var msg = {event: event, object: object};
@@ -414,7 +414,7 @@ function expandClient(name, func) {
  * @description Add additional socket event handlers. This is the secondary handlers for the event and they are being pushed to the additional event handlers array
  * @param {string} event The name of the socket event
  * @param {function} handler The handler to bind to the event
- * @since 0.0.1
+ * @since 1.0.0
  * */
 function addHandlers(event, handler) {
     if (additionalEventHandlers[event]) {
@@ -430,7 +430,7 @@ function addHandlers(event, handler) {
  * @description Get all connected users from a group
  * @param {string} group Name of the group
  * @returns {?string[]} The array of users or undefined if group doesn't exist
- * @since 0.0.1
+ * @since 1.0.0
  */
 function getGroupUsers(group) {
     if (groups[group]) {
@@ -446,7 +446,7 @@ function getGroupUsers(group) {
  * @param {string} id The id of the user
  * @param {string} group The name of the group
  * @param {boolean} [autoCreate] The flag to create the group if it doesn't exist
- * @since 0.0.1
+ * @since 1.0.0
  *
  */
 function addUserToGroup(id, group, autoCreate) {
@@ -468,7 +468,7 @@ function addUserToGroup(id, group, autoCreate) {
  * @description Removes a user from a group of given name, if the group is empty, it removes the group
  * @param {string} name Name of the group
  * @param {string} id The id of the user
- * @since 0.0.1
+ * @since 1.0.0
  */
 function removeUserFromGroup(name, id) {
     groups[name].users.splice(groups[name].users.indexOf(id),1);
@@ -483,7 +483,7 @@ function removeUserFromGroup(name, id) {
  * @description Creates a group with given name. If the autoRemove flag is set, if removes a user from the group when user closes connection
  * @param {string} name The name of the group
  * @param {boolean} [autoRemove] Removes the user from the group on close connection
- * @since 0.0.1
+ * @since 1.0.0
  */
 function createGroup(name, autoRemove) {
     if (!groups.hasOwnProperty(name)) {
@@ -515,7 +515,7 @@ function createGroup(name, autoRemove) {
  * @description Sends a message to given client, if the message is of type object it will be stringified
  * @param {string} id The id of the user
  * @param {string|object} message The message to send
- * @since 0.0.1
+ * @since 1.0.0
  */
 function send(id, message) {
     if (typeof message === 'object') {
@@ -530,7 +530,7 @@ function send(id, message) {
  * @memberOf wsUtil
  * @description Opens the websocket connection and delegate events to handlers
  * @param {object} exp The exports object from the Enonic module that is assigned to handle websocket events
- * @since 0.0.1
+ * @since 1.0.0
  */
 function openWebsockets(exp) {
     exp.get = function(req) {
@@ -584,7 +584,7 @@ function returnScript(host) {
  *  }
  * @param {object} req The request object passed to the server
  * @returns {SocketResponse} The response object
- * @since 0.0.1
+ * @since 1.0.0
  */
 function sendSocketResponse(req) {
     if (!req.webSocket) {
@@ -598,7 +598,7 @@ function sendSocketResponse(req) {
  * @description Sets a handler for given socket event
  * @param {'open'|'close'|'message'|'error'} event The name of the event
  * @param {function} handler The event handler
- * @since 0.0.1
+ * @since 1.0.0
  */
 function setEventHandler(event, handler) {
     if (eventHandlers.hasOwnProperty(event)) {
@@ -613,7 +613,7 @@ function setEventHandler(event, handler) {
  * @memberOf wsUtil
  * @description Set all socket event handlers
  * @param {object} handlers
- * @since 0.0.1
+ * @since 1.0.0
  */
 function setEventHandlers(handlers) {
     eventHandlers = handlers;
@@ -623,7 +623,7 @@ function setEventHandlers(handlers) {
  * @memberOf wsUtil
  * @description set custom socket response object. Default object is taken from {@link http://docs.enonic.com/en/stable/developer/ssjs/websockets.html Enonic doc}
  * @param {SocketResponse} response The socket response object
- * @since 0.0.1
+ * @since 1.0.0
  */
 function setSocketRequestResponse(response) {
     responseObject = response;

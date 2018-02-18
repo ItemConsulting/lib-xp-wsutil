@@ -1,84 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Tutorial</title>
+## Tutorial ##
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
+In this tutorial we will create a simple chat application with EnonicXP and the websocket utility library.
+For this tutorial we will have our base vanilla starter project at `/path/to/chatExample`
 
-<body>
+We will be using a page component, a service component and a static JS file.
 
-<div id="main">
+.../resources
+* /assets
+    * socket.js
+* /services
+    * /websocket
+        * websocket.js
+* /site
+    * /pages
+        * /chat
+            * chat.js
+            * chat.html
+            
+            
+### Set up ###
+Lets start easy, open the chat.js file
 
-    <h1 class="page-title">Home</h1>
-
-    
-
-
-
-    
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-    <section>
-        <article><h2>Tutorial</h2><p>In this tutorial we will create a simple chat application with EnonicXP and the websocket utility library.
-For this tutorial we will have our base vanilla starter project at <code>/path/to/chatExample</code></p>
-<p>We will be using a page component, a service component and a static JS file.</p>
-<ul>resources/<li>
-<ul style="list-style: none">
-<li>assets/<ul style="list-style: none">
-<li>socket.js</li>
-</ul>
-</li>
-<li>services/<ul style="list-style: none">
-<li>websocket/<ul style="list-style: none">
-<li>websocket.js</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>site/<ul style="list-style: none">
-<li>pages/<ul style="list-style: none">
-<li>chat/<ul style="list-style: none">
-<li>chat.js</li>
-<li>chat.html</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul></li></ul>
-            <style>
-                ul {
-                    list-style: none;
-                    padding-left: 1%;
-                }
-            </style>
-<h3>Set up</h3><p>Lets start easy, open the chat.js file</p>
-<pre class="prettyprint source lang-javascript"><code>var thymeleaf = require('/lib/xp/thymeleaf'); // Import the thymeleaf library
+```javascript
+var thymeleaf = require('/lib/xp/thymeleaf'); // Import the thymeleaf library
 var portal = require('/lib/xp/portal');       // Import the portal library
 
 // Handle the GET request
@@ -86,7 +30,7 @@ exports.get = function(req) {
 
     // Specify the view file to use
     var view = resolve('chat.html');
-
+    
     var model ={ 
         client: portal.assetUrl({ path: 'socket.js'}), // Create a reference to our client side websocket script
         lib: portal.serviceUrl({service: 'websocket'}) // Create a reference to our server side websocket script
@@ -100,56 +44,111 @@ exports.get = function(req) {
     return {
         body: body
     }
-};</code></pre><p>Now we will open our chat.html</p>
-<pre class="prettyprint source lang-html"><code>&lt;!DOCTYPE html>
-&lt;html>
-&lt;head>
-    &lt;title>Hello Sockets&lt;/title>
-&lt;/head>
-&lt;body data-portal-component-type=&quot;page&quot;>
+};
+```           
+Now we will open our chat.html
 
-    &lt;!-- We need to import our lib reference first -->
-    &lt;script data-th-src=&quot;${lib}&quot;>&lt;/script>
-    &lt;script data-th-src=&quot;${client}&quot;>&lt;/script>
-&lt;/body>
-&lt;/html></code></pre><p>Lets set up our server side implementation in our websocket service</p>
-<pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil'); // Import our websocket utility library
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello Sockets</title>
+</head>
+<body data-portal-component-type="page">
 
-ws.openWebsockets(exports);      // Make the server ready for socket connections</code></pre><p>Now initiate the client source script in our socket.js file</p>
-<pre class="prettyprint source lang-javascript"><code>var cws = new ExpWS();
-cws.connect();</code></pre><p>Add the dependencies to the <code>build.gradle</code> file</p>
-<pre class="prettyprint source"><code>include &quot;com.enonic.xp:lib-io:${xpVersion}&quot;
-include &quot;com.enonic.xp:lib-websocket:${xpVersion}&quot;
-include &quot;no.item.wsUtil:wsUtil:1.0.0&quot;</code></pre><p>Now we are ready to deploy</p>
-<p>Add your application in content studio and preview your application</p>
-<p>In your inspector console there will, hopefully, be a websocket event object being printed</p>
-<p><img src="res/hello%20socket01.png" alt="hello-socket"></p>
-<p>And also in our server console</p>
-<p><img src="res/hello-socket02.png" alt="hello-socket02"></p>
-<p>If the client event is of type open, then we have an active socket connection</p>
-<p>The reason this is being printed to console is because of the default handlers for both client and server prints all events to console.</p>
-<p>Now both sides are set up to have socket communication with each other</p>
-<h3>The logic and the parts</h3><p>We are done with our controller but we need some elements for our view.</p>
-<pre class="prettyprint source lang-html"><code>&lt;div id=&quot;global&quot;>&lt;/div>
-&lt;div id=&quot;private&quot;>&lt;/div>
-&lt;div id=&quot;rooms&quot;>&lt;/div></code></pre><p><strong>global</strong> Here we will place our global elements which will be our main chat channel where everybody lands when they connect</p>
-<p><strong>private</strong> Will be our container for person to person chat</p>
-<p><strong>rooms</strong> This will be our place for this tutorial´s assignment. You have to create the logic and the parts for this container</p>
-<h4>Global</h4><p>Lets have some input fields for our global container</p>
-<pre class="prettyprint source lang-html"><code>&lt;textarea name=&quot;textArea&quot; id=&quot;chat&quot; cols=&quot;30&quot; rows=&quot;10&quot; readonly>&lt;/textarea>
-&lt;select name=&quot;users&quot; id=&quot;usernames&quot; size=&quot;10&quot; style=&quot;width: 10%&quot;>&lt;/select>
-&lt;input type=&quot;text&quot; id=&quot;text-input&quot;></code></pre><p>The text area tag will be our chat message screen, thats why it is readonly.<br>
+    <!-- We need to import our lib reference first -->
+    <script data-th-src="${lib}"></script>
+    <script data-th-src="${client}"></script>
+</body>
+</html>
+```     
+
+Lets set up our server side implementation in our websocket service
+
+```javascript
+var ws = require('/lib/wsUtil'); // Import our websocket utility library
+
+ws.openWebsockets(exports);      // Make the server ready for socket connections
+```
+
+Now initiate the client source script in our socket.js file
+
+```javascript
+var cws = new EnonicXP.Ws();
+cws.connect();
+```
+
+Add the dependencies to the `build.gradle` file
+
+```
+include "com.enonic.xp:lib-io:${xpVersion}"
+include "com.enonic.xp:lib-websocket:${xpVersion}"
+include "no.item.wsUtil:wsUtil:0.0.1"
+```
+
+Now we are ready to deploy
+
+Add your application in content studio and preview your application
+
+In your inspector console there will, hopefully, be a websocket event object being printed
+
+![hello-socket](docs/res/hello%20socket01.png)
+
+And also in our server console
+
+![hello-socket02](docs/res/hello-socket02.png)
+
+If the client event is of type open, then we have an active socket connection
+
+The reason this is being printed to console is because of the default handlers for both client and server prints all events to console.
+
+Now both sides are set up to have socket communication with each other
+
+### The logic and the parts ###
+
+We are done with our controller but we need some elements for our view.
+```html
+<div id="global"></div>
+<div id="private"></div>
+<div id="rooms"></div>
+```
+
+**global** Here we will place our global elements which will be our main chat channel where everybody lands when they connect
+
+**private** Will be our container for person to person chat
+
+**rooms** This will be our place for this tutorial´s assignment. You have to create the logic and the parts for this container
+
+#### Global ####
+
+Lets have some input fields for our global container
+
+```html
+<textarea name="textArea" id="chat" cols="30" rows="10" readonly></textarea>
+<select name="users" id="usernames" size="10" style="width: 10%"></select>
+<input type="text" id="text-input">
+```
+
+The text area tag will be our chat message screen, thats why it is readonly.<br>
 The select tag will be our user list.<br>
-The input tag will be our chat input field</p>
-<p>Ok so we have our basic chat elements, but we also need something to register a username. Lets add them before we apply our logic</p>
-<pre class="prettyprint source lang-html"><code>&lt;textarea name=&quot;textArea&quot; id=&quot;chat&quot; cols=&quot;30&quot; rows=&quot;10&quot; readonly>&lt;/textarea>
-&lt;select name=&quot;users&quot; id=&quot;usernames&quot; size=&quot;10&quot; style=&quot;width: 10%&quot;>&lt;/select>
-&lt;input type=&quot;text&quot; id=&quot;text-input&quot;>
-&lt;input type=&quot;text&quot; id=&quot;username&quot;>
-&lt;button id=&quot;ubutton&quot;>Register&lt;/button></code></pre><p>Right now let apply some client side logic. For this project we will use the socket emitter expansion</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+The input tag will be our chat input field
 
-var cws = new ExpWS();
+Ok so we have our basic chat elements, but we also need something to register a username. Lets add them before we apply our logic
+
+```html
+<textarea name="textArea" id="chat" cols="30" rows="10" readonly></textarea>
+<select name="users" id="usernames" size="10" style="width: 10%"></select>
+<input type="text" id="text-input">
+<input type="text" id="username">
+<button id="ubutton">Register</button>
+```
+
+Right now let apply some client side logic. For this project we will use the socket emitter expansion
+
+```javascript
+// socket.js
+
+var cws = new EnonicXP.Ws();
 // ws.connect(); We don't need this because our Io instance handles this
 var io = new cws.Io();
 
@@ -169,31 +168,42 @@ function init() {
   usernames       = document.getElementById('usernames');
   usernameInput   = document.getElementById('username');
   ubutton         = document.getElementById('ubutton');
-}</code></pre><p>Ok so we don't want any anonymous users listening on the chat without being a part of the chat</p>
-<p>Lets hide the chat until the user register his username</p>
-<pre class="prettyprint source lang-javascript"><code>function init() {
+}
+```
+
+Ok so we don't want any anonymous users listening on the chat without being a part of the chat
+
+Lets hide the chat until the user register his username
+
+```javascript
+function init() {
   textArea        = document.getElementById('chat');
   textInput       = document.getElementById('text-input');
   usernames       = document.getElementById('usernames');
   usernameInput   = document.getElementById('username');
   ubutton         = document.getElementById('ubutton');
-
+  
   usernames.style.visibility  = 'hidden';
   textArea.style.visibility   = 'hidden';
   textInput.style.visibility  = 'hidden';
-}</code></pre><p>Ok so our global chat elements are in place and referenced. Now we will add the register username functionality</p>
-<p>We need to do this when user click the register button</p>
-<pre class="prettyprint source lang-javascript"><code>function init() {
+}
+```
+Ok so our global chat elements are in place and referenced. Now we will add the register username functionality
+
+We need to do this when user click the register button
+
+```javascript
+function init() {
   textArea        = document.getElementById('chat');
   textInput       = document.getElementById('text-input');
   usernames       = document.getElementById('usernames');
   usernameInput   = document.getElementById('username');
   ubutton         = document.getElementById('ubutton');
-
+  
   usernames.style.visibility  = 'hidden';
   textArea.style.visibility   = 'hidden';
   textInput.style.visibility  = 'hidden';
-
+  
   ubutton.onclick = function() {
     // lets check if it is a valid username
     if (usernameInput.value !== '') {
@@ -222,8 +232,14 @@ function init() {
         alert('Please enter a valid username');
     }
   }
-}</code></pre><p>Alright, now we will do some server side stuff</p>
-<pre class="prettyprint source lang-javascript"><code>// /service/websocket/websocket.js
+}
+
+```
+
+Alright, now we will do some server side stuff
+
+```javascript
+// /service/websocket/websocket.js
 
 var ws = require('/lib/wsUtil'); // Import our websocket utility library
 
@@ -251,8 +267,14 @@ function connectionCallback(socket) {
                 socket.emit('username-response', 'taken'); // Tell the client to chose again
             }
         });
-}</code></pre><p>Ok so now our server will check for availability and register new users if not taken, but the server also emits an 'user-enter' event when the registration is ok. We need to handle this on the client side</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+}
+
+```
+
+Ok so now our server will check for availability and register new users if not taken, but the server also emits an 'user-enter' event when the registration is ok. We need to handle this on the client side
+
+```javascript
+// socket.js
 
 io.on('user-enter', function (user) {
     textArea.innerHTML += '\nServer--> ' + user + ' has joined the chat'; // Add the message from server
@@ -266,10 +288,18 @@ function createNewUser(user) {
         newUser.setAttribute('value', user);
         newUser.appendChild(document.createTextNode(user));
         usernames.appendChild(newUser);
-}</code></pre><p>Now redeploy and check out our application</p>
-<p>Looks pretty nice with our nice username and stuff. But it is not a chat yet.</p>
-<p>The next step is to add a on key down handler for our input field and send some chat messages about</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+}
+
+```
+
+Now redeploy and check out our application
+
+Looks pretty nice with our nice username and stuff. But it is not a chat yet.
+
+The next step is to add a on key down handler for our input field and send some chat messages about
+
+```javascript
+// socket.js
 
 function init() {
     textArea        = document.getElementById('chat');
@@ -277,11 +307,11 @@ function init() {
     usernames       = document.getElementById('usernames');
     usernameInput   = document.getElementById('username');
     ubutton         = document.getElementById('ubutton');
-
+      
     usernames.style.visibility  = 'hidden';
     textArea.style.visibility   = 'hidden';
     textInput.style.visibility  = 'hidden';
-
+  
     ubutton.onclick = onButtonClick; // We can make this nicer
     textInput.onkeydown = onInputDown;    
 }
@@ -290,7 +320,7 @@ function onInputDown(event) {
     // Check if enter is pressed in input field 
   if (event.keyCode === 13 && username) {
       event.preventDefault();
-
+      
       // Send a public message if there is anything to send. Add the username and content to the message
       if (textInput.value !== '') io.emit('public-message', {username: username, content: textInput.value});
       textInput.value = ''; // reset the input field
@@ -324,42 +354,62 @@ function onButtonClick() {
     else {
         alert('Please enter a valid username');
     }
-}</code></pre><p>So now we have added another emit event ('public-message'). Now we need to implement the server side handling of the event</p>
-<pre class="prettyprint source lang-javascript"><code>// service/websocket/websocket.js
-function connectionCallback(socket) {
+}
+```
 
+So now we have added another emit event ('public-message'). Now we need to implement the server side handling of the event
+
+```javascript
+// service/websocket/websocket.js
+function connectionCallback(socket) {
+    
  //...
     socket.on('public-message', function(message) {
         socketEmitter.broadcast('public-message', message); // Broadcast public messages
     });
-}</code></pre><p>Take note of the broadcast function of the socketEmitter, and not from socket.</p>
-<p>Now we must implement the server side emitted 'public-message' event on the client side</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+}
+```
+
+Take note of the broadcast function of the socketEmitter, and not from socket.
+
+Now we must implement the server side emitted 'public-message' event on the client side
+
+```javascript
+// socket.js
 
 io.on('public-message', function (message) {
     textArea.innerHTML += '\n' + message.username + ': ' + message.content; // Add the message to our chat
     textArea.scrollTop = textArea.scrollHeight; // Scroll if needed
-});</code></pre><p>Redeploy now and voila, a chat application.</p>
-<p>Try to open more browser tabs and add more users</p>
-<p>Now there is a problem here.</p>
-<p>The first user can see all users, but the second can't see the first, the third can't see the first or second. We need to fix this</p>
-<p>We need the server to send the user list on register</p>
-<pre class="prettyprint source lang-javascript"><code>
+});
+```
+
+Redeploy now and voila, a chat application.
+
+Try to open more browser tabs and add more users
+
+Now there is a problem here.
+
+The first user can see all users, but the second can't see the first, the third can't see the first or second. We need to fix this
+
+We need the server to send the user list on register
+
+```javascript
+
 // services/websocket/websocket.js
 
 function connectionCallback(socket) {
 
     socket.on('username-registration', function(username) { // Register username
         if (!users[username]) {              // if not taken
-
+           
             // We will add this
-            var motd = &quot;Welcome to our chat!&quot;;
+            var motd = "Welcome to our chat!";
             socket.emit('motd', {motd: motd, users: users}); // Send message of the day
             // ---------------
-
+            
              users[username] = socket.id;       // Register the new user
              socket.emit('username', 'ok');     // Tell the client that username is ok
-
+            
             socketEmitter.broadcast('user-enter', username); // Tell all clients that a new user has entered the chat
         }
         else {                              // if taken
@@ -367,20 +417,31 @@ function connectionCallback(socket) {
         }
     });
 
-}</code></pre><p>Add the 'motd' event to our client</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+}
+```
+
+Add the 'motd' event to our client
+
+```javascript
+// socket.js
 
 io.on('motd', function (motd) {
     textArea.innerHTML = motd.motd; // Clear chat window
     for (var user in motd.users) {
         if (motd.users.hasOwnProperty(user)) createNewUser(user); // remember we created this earlier
     }
-});</code></pre><p>Now everything seems to be in order, but when we close down the browser tabs, the users are still there.</p>
-<p>Now the client does not actively emit a disconnect event, but the extension emits it internally for easier handling</p>
-<pre class="prettyprint source lang-javascript"><code>// services/websocket/websocket.js
+});
+```
+
+Now everything seems to be in order, but when we close down the browser tabs, the users are still there.
+
+Now the client does not actively emit a disconnect event, but the extension emits it internally for easier handling
+
+```javascript
+// services/websocket/websocket.js
 function connectionCallback(socket) {
     //...
-
+    
     socket.on('disconnect', function() {         // Clean up stuff when user leaves
         for (var username in users) {               // Find the correct user id
             if (users.hasOwnProperty(username) && users[username] === socket.id) {
@@ -389,22 +450,38 @@ function connectionCallback(socket) {
             }
         }
     });
+  
+}
+```
 
-}</code></pre><pre class="prettyprint source lang-javascript"><code>// socket.js
+```javascript
+// socket.js
 
 io.on('user-leave', function (user) {
     textArea.innerHTML += '\nServer--> ' + user + ' has left the chat'; // Update chat with server message
     usernames.removeChild(document.getElementById(user));
+    
+});
+```
 
-});</code></pre><p>Redeploy and everything seems to be in order</p>
-<p>Now it is time to implement private chat messaging</p>
-<p>The first thing we need to put in place are the parts for our view. It will be quite similar to our global container</p>
-<pre class="prettyprint source lang-html"><code>&lt;div id=&quot;private&quot;>
-    &lt;textarea name=&quot;privateChat&quot; id=&quot;pChat&quot; cols=&quot;30&quot; rows=&quot;10&quot; contenteditable=&quot;false&quot;>&lt;/textarea>
-    &lt;select name=&quot;pUsernames&quot; id=&quot;pNames&quot; size=&quot;10&quot; style=&quot;width: 10%&quot;>&lt;/select>
-    &lt;input type=&quot;text&quot; id=&quot;pInput&quot;/>
-&lt;/div></code></pre><p>We also need to add the variable declarations and initial set up</p>
-<pre class="prettyprint source lang-javascript"><code>var cws = new ExpWS();
+Redeploy and everything seems to be in order
+
+Now it is time to implement private chat messaging
+
+The first thing we need to put in place are the parts for our view. It will be quite similar to our global container
+
+```html
+<div id="private">
+    <textarea name="privateChat" id="pChat" cols="30" rows="10" contenteditable="false"></textarea>
+    <select name="pUsernames" id="pNames" size="10" style="width: 10%"></select>
+    <input type="text" id="pInput"/>
+</div>
+```
+
+We also need to add the variable declarations and initial set up
+
+```javascript
+var cws = new EnonicXP.Ws();
 // cws.connect(); We don't need this because our Io instance handles this
 var io = new cws.Io();
 
@@ -432,7 +509,7 @@ function init() {
     usernames       = document.getElementById('usernames');
     usernameInput   = document.getElementById('username');
     ubutton         = document.getElementById('ubutton');
-
+    
     pChat           = document.getElementById('pChat');
     pNames          = document.getElementById('pNames');
     pInput          = document.getElementById('pInput');
@@ -440,18 +517,24 @@ function init() {
     usernames.style.visibility  = 'hidden';
     textArea.style.visibility   = 'hidden';
     textInput.style.visibility  = 'hidden';
-
+    
     pChat.style.visibility      = 'hidden';
     pNames.style.visibility     = 'hidden';
     pInput.style.visibility     = 'hidden';
 
     ubutton.onclick = onButtonClick; // We can make this nicer
     textInput.onkeydown = onInputDown;
-
+    
     privateChat = {}; // Initiate the log
-}</code></pre><p>Ok so now we need a way to initialize the private chat.<br>
-We will do so by double clicking the user in the global chat user list, and for that we need to add a handler for double clicking a user and some helper function for instantiating the parts</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+}
+
+```
+
+Ok so now we need a way to initialize the private chat.<br>
+We will do so by double clicking the user in the global chat user list, and for that we need to add a handler for double clicking a user and some helper function for instantiating the parts
+
+```javascript
+// socket.js
 
 // remember our createNewUser function
 
@@ -464,14 +547,14 @@ function createNewUser(user) {
         createPrivateChat(user); // Create a new chat session
         setContextUser(user);   // Set the user as the one you are now talking to
     };
-
+    
     newUser.appendChild(document.createTextNode(user));
     usernames.appendChild(newUser);
 }
 
 function createPrivateChat(user) {
   showPrivate(); // Display the private chat interface
-
+  
   // So if the conversation log don't exist for the user we have to create it
   if (!privateChat.hasOwnProperty(user)) {  
       privateChat[user] = 'Chating with ' +user; // Initial message
@@ -485,7 +568,7 @@ function createPrivateChat(user) {
   }
   // if this is the first private chate, we'll initiate the context user
   if (!contextUser) setContextUser(user);
-
+ 
 }
 
 function setContextUser(user) {
@@ -500,9 +583,15 @@ function showPrivate() {
         pNames.style.visibility = 'visible';
         pInput.style.visibility = 'visible';
     }
-}</code></pre><p>Ok so our interface now works. We have our parts and it behaves nicely. Now we need to create the socket communication. </p>
-<p>Like our global chat we would want to send private messages when the enter key is pressed in the private chat input field. Lets add the handler</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+}
+``` 
+
+Ok so our interface now works. We have our parts and it behaves nicely. Now we need to create the socket communication. 
+
+Like our global chat we would want to send private messages when the enter key is pressed in the private chat input field. Lets add the handler
+
+```javascript
+// socket.js
 
 function init() {
     //...
@@ -519,8 +608,12 @@ function onPrivateInput(event) {
         pChat.innerHTML = privateChat[contextUser];                             // Update the private chat window
         pInput.value = '';                                                      // Reset the input field
     }
-}</code></pre><p>Update the server side</p>
-<pre class="prettyprint source lang-javascript"><code>// services/websocket/websocket.js
+}
+```
+Update the server side
+
+```javascript
+// services/websocket/websocket.js
 
 
 function connectionCallback(socket) {
@@ -528,8 +621,13 @@ function connectionCallback(socket) {
     socket.on('private-message', function(message) {
         socket.sendTo(users[message.to], 'private-message' ,message); // Send private message with a simple user lookup
     });
-}</code></pre><p>We now need to implement the client handler for 'private-message' emitted event</p>
-<pre class="prettyprint source lang-javascript"><code>// socket.js
+}
+```
+
+We now need to implement the client handler for 'private-message' emitted event
+
+```javascript
+// socket.js
 io.on('private-message', function (message) {
     showPrivate(); // Let the user now a private session has started if it is not visible yet
     createPrivateChat(message.username); // Create the private chat if it doesn't exist yet
@@ -537,10 +635,16 @@ io.on('private-message', function (message) {
     if (contextUser === message.username) {
         pChat.innerHTML = privateChat[message.username]; // Update the private chat window if the context user is the same as the message user
     }
-});</code></pre><p>And thats it. Our chat is now finished!</p>
-<p>Now it is your turn to implement chat room functionalities. Good luck</p>
-<p>Here is our complete code</p>
-<pre class="prettyprint source lang-javascript"><code>// site/pages/chat/chat.js
+});
+```
+And thats it. Our chat is now finished!
+
+Now it is your turn to implement chat room functionalities. Good luck
+
+Here is our complete code
+
+```javascript
+// site/pages/chat/chat.js
 var thymeleaf = require('/lib/xp/thymeleaf'); // Import the thymeleaf library
 var portal = require('/lib/xp/portal');       // Import the portal library
 
@@ -563,31 +667,39 @@ exports.get = function(req) {
     return {
         body: body
     }
-};</code></pre><pre class="prettyprint source lang-html"><code>&lt;!DOCTYPE html>
-&lt;html>
-&lt;head>
-    &lt;title>Hello Sockets&lt;/title>
-&lt;/head>
-&lt;body data-portal-component-type=&quot;page&quot;>
+};
+```
 
-&lt;div id=&quot;global&quot;>
-    &lt;textarea name=&quot;textArea&quot; id=&quot;chat&quot; cols=&quot;30&quot; rows=&quot;10&quot; readonly=&quot;readonly&quot;>&lt;/textarea>
-    &lt;select name=&quot;users&quot; id=&quot;usernames&quot; size=&quot;10&quot; style=&quot;width: 10%&quot;>&lt;/select>
-    &lt;input type=&quot;text&quot; id=&quot;text-input&quot;/>
-    &lt;input type=&quot;text&quot; id=&quot;username&quot;/>
-    &lt;button id=&quot;ubutton&quot;>Register&lt;/button>
-&lt;/div>
-&lt;div id=&quot;private&quot;>
-    &lt;textarea name=&quot;privateChat&quot; id=&quot;pChat&quot; cols=&quot;30&quot; rows=&quot;10&quot; contenteditable=&quot;false&quot;>&lt;/textarea>
-    &lt;select name=&quot;pUsernames&quot; id=&quot;pNames&quot; size=&quot;10&quot; style=&quot;width: 10%&quot;>&lt;/select>
-    &lt;input type=&quot;text&quot; id=&quot;pInput&quot;/>
-&lt;/div>
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello Sockets</title>
+</head>
+<body data-portal-component-type="page">
 
-&lt;!-- We need to import our lib reference first -->
-&lt;script data-th-src=&quot;${lib}&quot;>&lt;/script>
-&lt;script data-th-src=&quot;${client}&quot;>&lt;/script>
-&lt;/body>
-&lt;/html></code></pre><pre class="prettyprint source lang-javascript"><code>// services/websocket/websocket.js
+<div id="global">
+    <textarea name="textArea" id="chat" cols="30" rows="10" readonly="readonly"></textarea>
+    <select name="users" id="usernames" size="10" style="width: 10%"></select>
+    <input type="text" id="text-input"/>
+    <input type="text" id="username"/>
+    <button id="ubutton">Register</button>
+</div>
+<div id="private">
+    <textarea name="privateChat" id="pChat" cols="30" rows="10" contenteditable="false"></textarea>
+    <select name="pUsernames" id="pNames" size="10" style="width: 10%"></select>
+    <input type="text" id="pInput"/>
+</div>
+
+<!-- We need to import our lib reference first -->
+<script data-th-src="${lib}"></script>
+<script data-th-src="${client}"></script>
+</body>
+</html>
+```
+
+```javascript
+// services/websocket/websocket.js
 var ws = require('/lib/wsUtil'); // Import our websocket utility library
 
 ws.openWebsockets(exports);      // Make the server ready for socket connections
@@ -608,7 +720,7 @@ function connectionCallback(socket) {
         if (!users[username]) {              // if not taken
 
             // We will add this
-            var motd = &quot;Welcome to our chat!&quot;;
+            var motd = "Welcome to our chat!";
             socket.emit('motd', {motd: motd, users: users}); // Send message of the day
             // ---------------
 
@@ -635,8 +747,13 @@ function connectionCallback(socket) {
             }
         }
     });
-}</code></pre><pre class="prettyprint source lang-javascript"><code>//socket.js
-var cws = new ExpWS();
+}
+
+```
+
+```javascript
+//socket.js
+var cws = new EnonicXP.Ws();
 // cws.connect(); We don't need this because our Io instance handles this
 var io = new cws.Io();
 
@@ -813,28 +930,7 @@ function showPrivate() {
         pNames.style.visibility = 'visible';
         pInput.style.visibility = 'visible';
     }
-}</code></pre></article>
-    </section>
+}
 
 
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>API</h3><ul><li><a href="server/index.html">Server</a></li><li><a href="client/index.html">Client</a></li></ul>
-    <h3><a href="tutorial.html">Tutorial</a></h3><h3><a href="extensions.html">Creating extensions</a></h3>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 05 2017 11:00:55 GMT+0200 (CEST)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
-</body>
-</html>
+```

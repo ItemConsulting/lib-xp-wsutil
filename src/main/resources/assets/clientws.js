@@ -20,11 +20,11 @@
 //****************************************************************************//
 
 (function (w) {
-    if (!w.hasOwnProperty("Enonic")) {
-        w.EnonicXP = {};
+    if (!w.hasOwnProperty("ExpWS")) {
+        w.ExpWS = {};
     }
 
-    w.EnonicXP.Ws = clientWebSocket;
+    w.ExpWS = clientWebSocket;
 
     // noinspection UnterminatedStatementJS
     function clientWebSocket(hst) {

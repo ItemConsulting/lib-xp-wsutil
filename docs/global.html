@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <title>JSDoc: Global</title>
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
@@ -19,222 +19,102 @@
 
     <h1 class="page-title">Global</h1>
 
-    
 
+    <section>
 
+        <header>
 
+            <h2></h2>
 
-<section>
 
-<header>
-    
-        <h2></h2>
-        
-    
-</header>
+        </header>
 
-<article>
-    <div class="container-overview">
-    
-        
+        <article>
+            <div class="container-overview">
 
-        
 
+                <dl class="details">
 
-<dl class="details">
 
-    
+                </dl>
 
-    
 
-    
+            </div>
 
-    
 
-    
+            <h3 class="subsection-title">Methods</h3>
 
-    
 
-    
+            <h4 class="name" id="expand"><span class="type-signature"></span>expand<span class="signature">(exportObject)</span><span
+                    class="type-signature"></span></h4>
 
-    
 
-    
+            <div class="description">
+                <p>Expands the library functionalities to create reusable expansions</p>
+            </div>
 
-    
 
-    
+            <h5>Parameters:</h5>
 
-    
 
-    
+            <table class="params">
+                <thead>
+                <tr>
 
-    
+                    <th>Name</th>
 
-    
 
-    
-</dl>
+                    <th>Type</th>
 
 
-        
-    
-    </div>
+                    <th class="last">Description</th>
+                </tr>
+                </thead>
 
-    
+                <tbody>
 
-    
 
-    
+                <tr>
 
-    
+                    <td class="name"><code>exportObject</code></td>
 
-    
 
-    
+                    <td class="type">
 
-    
 
-    
-        <h3 class="subsection-title">Methods</h3>
+                        <span class="param-type">object</span>
 
-        
-            
 
-    
+                    </td>
 
-    
-    <h4 class="name" id="expand"><span class="type-signature"></span>expand<span class="signature">(exportObject)</span><span class="type-signature"></span></h4>
-    
 
-    
+                    <td class="description last"><p>The object that extends the library</p></td>
+                </tr>
 
 
+                </tbody>
+            </table>
 
-<div class="description">
-    <p>Expands the library functionalities to create reusable expansions</p>
-</div>
 
+            <dl class="details">
 
 
+                <dt class="tag-source">Source:</dt>
+                <dd class="tag-source">
+                    <ul class="dummy">
+                        <li>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line338">line 338</a>
+                        </li>
+                    </ul>
+                </dd>
 
 
+            </dl>
 
 
+            <h5>Example</h5>
 
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>exportObject</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The object that extends the library</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line338">line 338</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// lib/expansion.js
+            <pre class="prettyprint"><code>// lib/expansion.js
 var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
 
 var expansionObject = { expansion: expansion };
@@ -252,170 +132,99 @@ expansionLib.openWebsockets(exports);
 expansionLib.expansion(); // Activate expansion</code></pre>
 
 
+            <h4 class="name" id="expandClient"><span class="type-signature"></span>expandClient<span class="signature">(name, func)</span><span
+                    class="type-signature"></span></h4>
 
-        
-            
 
-    
+            <div class="description">
+                <p>Expand the client library with new functionalities. NOTE: The expansion object have direct access to
+                    the client library's inner variables</p>
+            </div>
 
-    
-    <h4 class="name" id="expandClient"><span class="type-signature"></span>expandClient<span class="signature">(name, func)</span><span class="type-signature"></span></h4>
-    
 
-    
+            <h5>Parameters:</h5>
 
 
+            <table class="params">
+                <thead>
+                <tr>
 
-<div class="description">
-    <p>Expand the client library with new functionalities. NOTE: The expansion object have direct access to the client library's inner variables</p>
-</div>
+                    <th>Name</th>
 
 
+                    <th>Type</th>
 
 
+                    <th class="last">Description</th>
+                </tr>
+                </thead>
 
+                <tbody>
 
 
+                <tr>
 
+                    <td class="name"><code>name</code></td>
 
-    <h5>Parameters:</h5>
-    
 
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
+                    <td class="type">
 
-        <th>Type</th>
 
-        
+                        <span class="param-type">string</span>
+                        |
 
-        
+                        <span class="param-type">object</span>
 
-        <th class="last">Description</th>
-    </tr>
-    </thead>
 
-    <tbody>
-    
+                    </td>
 
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
 
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-|
+                    <td class="description last"><p>Name of the new client function or an object with key=name
+                        value=function</p></td>
+                </tr>
 
-<span class="param-type">object</span>
 
+                <tr>
 
-            
-            </td>
+                    <td class="name"><code>func</code></td>
 
-            
 
-            
+                    <td class="type">
 
-            <td class="description last"><p>Name of the new client function or an object with key=name value=function</p></td>
-        </tr>
 
-    
+                        <span class="param-type">function</span>
 
-        <tr>
-            
-                <td class="name"><code>func</code></td>
-            
 
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
+                    </td>
 
 
-            
-            </td>
+                    <td class="description last"><p>The function for the new client interface.</p></td>
+                </tr>
 
-            
 
-            
+                </tbody>
+            </table>
 
-            <td class="description last"><p>The function for the new client interface.</p></td>
-        </tr>
 
-    
-    </tbody>
-</table>
+            <dl class="details">
 
 
+                <dt class="tag-source">Source:</dt>
+                <dd class="tag-source">
+                    <ul class="dummy">
+                        <li>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line364">line 364</a>
+                        </li>
+                    </ul>
+                </dd>
 
 
+            </dl>
 
 
-<dl class="details">
+            <h5>Example</h5>
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line364">line 364</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// service/websocket/websocket.js
+            <pre class="prettyprint"><code>// service/websocket/websocket.js
 var ws = require('path/to/wsUtil);
 
 ws.expandClient('hello', function() { send('Hello'); // use the inner send function });
@@ -429,33 +238,37 @@ var cws = new EnonicXP.Ws();
 cws.hello();</code></pre>
 
 
+        </article>
 
-        
-    
-
-    
-
-    
-</article>
-
-</section>
-
-
+    </section>
 
 
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul><h3>Global</h3><ul><li><a href="global.html#expand">expand</a></li><li><a href="global.html#expandClient">expandClient</a></li></ul>
+    <h2><a href="index.html">Home</a></h2>
+    <h3>Classes</h3>
+    <ul>
+        <li><a href="wsUtil.html">wsUtil</a></li>
+        <li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li>
+        <li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li>
+        <li><a href="wsUtil.SocketEmitter-On.html">On</a></li>
+    </ul>
+    <h3>Global</h3>
+    <ul>
+        <li><a href="global.html#expand">expand</a></li>
+        <li><a href="global.html#expandClient">expandClient</a></li>
+    </ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 08:54:07 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 08:54:07
+    GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script src="scripts/linenumber.js"></script>
 </body>
 </html>

@@ -29,7 +29,6 @@
 var websocket = require('/lib/xp/websocket');
 var ioLib = require('/lib/xp/io');
 var portal = require('/lib/xp/portal');
-var vm = this;
 
 var clientExpansions = {};
 
@@ -78,7 +77,7 @@ var eventHandlers = {
  * @author Per Arne Drevland
  * @version 0.0.1
  * @example
- * var ws = require('/lib/xp/wsUtil');
+ * var ws = require('/lib/wsUtil');
  * @hideconstructor
  */
 
@@ -352,7 +351,7 @@ function SocketEmitter() {
  * @see [Creating extensions]{@link http://localhost:63343/socket/docs/extensions.html}
  * @example
  * // lib/extension.js
- * var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
+ * var ws = require('/lib/wsUtil');
  *
  * var extebsionObject = { extension: extension };
  * ws.extend(extensionObject);
@@ -578,7 +577,7 @@ function returnScript(host) {
  * @description Send the socket response for a socket request
  * @example
  * // someSocketService.js
- * ws = require('/lib/xp/wsUtil');
+ * ws = require('/lib/wsUtil');
  * exports.get = ws.sendSocketResponse;
  * // or
  * exports.get = function(req) {

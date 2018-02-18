@@ -32,18 +32,18 @@
             <p>Create a service for the server side handling of your websockets.
                 Default is <code>services/websocket/websocket.js</code></p>
             <p>In your <code>websocket.js</code> file</p>
-            <pre class="prettyprint source lang-javascript"><code>var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
+            <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/xp/wsUtil');
 
 ws.openWebsockets(exports);</code></pre>
             <p>Or for <code>services/sockethandler/sockethandler.js</code></p>
-            <pre class="prettyprint source lang-javascript"><code>var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
+            <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/xp/wsUtil');
 var portal = require('/lib/xp/portal');
 
 ws.openWebsockets(exports, portal.serviceUrl({ service: 'sockethandler' }));</code></pre>
 
             <p>On the client side</p>
             <pre class="prettyprint source lang-javascript">
-                <code>var cws = new EnonicXP.Ws();
+                <code>var cws = new ExpWS();
 cws.connect();</code>
             </pre>
             <h2>Contents</h2>
@@ -53,8 +53,8 @@ cws.connect();</code>
             <p><a href="extensions.html">Creating extensions</a></p>
             <h2>How it works</h2>
             <p>Create a script tag on your document for your service</p>
-            <p>The initial request will not be a websocket request and will receive the client side library</p>
-            <p>When the client side web socket handler creates a new EnonicXP.Ws instance it will send a websocket
+            <p>The initial request will not be a websocket request and the client will receive the client side library</p>
+            <p>When the client side web socket handler creates a new ExpWS instance it will send a websocket
                 request
                 to the server, and start the websocket communication.</p></article>
     </section>

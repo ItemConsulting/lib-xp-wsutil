@@ -1,39 +1,6 @@
-# Enonic XP web socket utility library #
 
-## Documentation ##
 
-Go [here](https://itemconsulting.github.io/wsutil-server/) for documentation
-
-## Version ##
-
-### 1.0.0 ###
- * Initital release
-
-Compatibility Enonic XP 6.4.0
-
-## Dependencies ##
-
-```
-# build.gradle
-
-dependencies {
-    include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-io:${xpVersion}"
-    include "com.enonic.xp:lib-websocket:${xpVersion}"
-    include "no.item.wsUtil:wsUtil:1.0.0"
-}
-
-repositories {
-    mavenLocal()
-    jcenter()
-    maven {
-        url 'http://repo.enonic.com/public'
-    }
-   maven {
-        url  "https://dl.bintray.com/pdrevland/wsUtil"
-   }
-}
-```
+# Enonic XP websocket extension library #
 
 ## Purpose ##
 
@@ -89,12 +56,14 @@ var cws = new ExpWS(); // <-- Request to same route as clientlib.js but with web
 The library will now serve the request as a web socket request and start web socket communication
 
 
-## License ##
+## Contents ##
 
-This project is under the Apache License 2.0. For more information please read [LICENSE.txt](LICENSE.txt)
+[Server API](server.html)
 
-## Author ##
+[Client API](client.html)
 
-**Per Arne Drevland** *Consultant* [Item Consulting AS](www.item.no)
+[Tutorials](tutorial.html)
+
+[Creating extensions](extensions.html)
 
 

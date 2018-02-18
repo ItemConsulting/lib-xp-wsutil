@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <title>Server API</title>
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
@@ -19,32 +19,14 @@
 
     <h1 class="page-title">Server API</h1>
 
-    
 
-
-
-    
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
+    <h3></h3>
 
 
     <section>
-        <article><h3>Basic features</h3><pre class="prettyprint source lang-javascript"><code>//load library
-var ws = require('/path/to/wsUtil');
+        <article><h3>Basic features</h3>
+            <pre class="prettyprint source lang-javascript"><code>//load library
+var ws = require('/lib/xp/wsUtil');
 var portal = require('/lib/xp/portal');
 
 // if you are serving web socket from another service than services/websocket
@@ -52,9 +34,10 @@ var portal = require('/lib/xp/portal');
 var host = portal.serviceUrl({service: 'myWebsocketService'});
 
 // Bind the websocket event handler to the ws object
-ws.openWebsockets(exports, host);</code></pre><p>That's it. Now your socket connection is live and ready.</p>
-<p>There are two ways to listen for the four different websocket events.</p>
-<pre class="prettyprint source lang-javascript"><code>// Set main handlers
+ws.openWebsockets(exports, host);</code></pre>
+            <p>That's it. Now your socket connection is live and ready.</p>
+            <p>There are two ways to listen for the four different websocket events.</p>
+            <pre class="prettyprint source lang-javascript"><code>// Set main handlers
 
 // set individual event handlers
 ws.setEventHandler('open',      openHandler);
@@ -77,8 +60,9 @@ ws.addHandlers('close',   additionalHandler);
 ws.addHandlers('message', additionalHandler);
 ws.addHandlers('error',   additionalHandler);
 
-// Add as many handlers as you want</code></pre><p>Group your users</p>
-<pre class="prettyprint source lang-javascript"><code>function openHandler(event) {
+// Add as many handlers as you want</code></pre>
+            <p>Group your users</p>
+            <pre class="prettyprint source lang-javascript"><code>function openHandler(event) {
     var autoremove = true; // Remove client from group when close event
     ws.createGroup('global', autoremove); // Idempotent function
     ws.addUserToGroup(event.session.id, 'global');
@@ -103,20 +87,26 @@ function messageHandler(msg) { // For event.type === message it is only the mess
         timestamp: Date.now()
     };
     ws.sendToGroup(msg.room, message);
-}</code></pre><p>Send individual messages to clients</p>
-<pre class="prettyprint source lang-javascript"><code>var randomIndex = Math.floor(Math.random() * ws.getGroupUsers('global').length);
+}</code></pre>
+            <p>Send individual messages to clients</p>
+            <pre class="prettyprint source lang-javascript"><code>var randomIndex = Math.floor(Math.random() * ws.getGroupUsers('global').length);
 var id = ws.getGroupUsers('global')[randomIndex];
 var message = { hello: 'world'};
-ws.send(id, message); // Will be stringified</code></pre><p>This is the basic features for the web socket library.
-Some notes</p>
-<ul>
-<li>The sendSocketResponseObject is the same object from the Enonic XP <a href="http://xp.readthedocs.io/en/stable/developer/ssjs/websockets.html">example</a></li>
-<li>Since messages from the socket is always string, the library will always try to convert it to JSON</li>
-<li>Sending messages will check for type and stringify it if needed</li>
-</ul>
-<h3>Additional features</h3><p>Create a new SocketEmitter to make the websocket implementation act like a pub/sub provider</p>
-<p>Functionalities here are shamelessly inspired by <a href="socket.io">socket.io</a> nodeJS library, with limitations</p>
-<pre class="prettyprint source lang-javascript"><code>// how to use
+ws.send(id, message); // Will be stringified</code></pre>
+            <p>This is the basic features for the web socket library.
+                Some notes</p>
+            <ul>
+                <li>The sendSocketResponseObject is the same object from the Enonic XP <a
+                        href="http://xp.readthedocs.io/en/stable/developer/ssjs/websockets.html">example</a></li>
+                <li>Since messages from the socket is always string, the library will always try to convert it to JSON
+                </li>
+                <li>Sending messages will check for type and stringify it if needed</li>
+            </ul>
+            <h3>Additional features</h3>
+            <p>Create a new SocketEmitter to make the websocket implementation act like a pub/sub provider</p>
+            <p>Functionalities here are shamelessly inspired by <a href="socket.io">socket.io</a> nodeJS library, with
+                limitations</p>
+            <pre class="prettyprint source lang-javascript"><code>// how to use
 var io = new ws.SocketEmitter();
 
 io.connect(function(socket) {
@@ -128,31 +118,42 @@ io.connect(function(socket) {
         socket.sendTo(message.recipient, message.content); // send message between clients
     });
 })</code></pre>
-        <h3>
-            Creating Extensions
-        </h3>
-            <p>Check out the <a href="../extensions.html">extensions</a> pages to see how to extend the library for your own purpose</p>
+            <h3>
+                Creating Extensions
+            </h3>
+            <p>Check out the <a href="../extensions.html">extensions</a> pages to see how to extend the library for your
+                own purpose</p>
         </article>
     </section>
-
-
-
-
 
 
 </div>
 
 <nav>
-    <h2><a href="../index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul><h3>Interfaces</h3><ul><li><a href="wsUtil.SocketEmitter-Emit.html#EmitInterface">EmitInterface</a></li><li><a href="wsUtil.SocketEmitter-On.html#OnInterface">OnInterface</a></li><li><a href="wsUtil.SocketEmitter.html#SocketEmitterInterface">SocketEmitterInterface</a></li></ul>
+    <h2><a href="../index.html">Home</a></h2>
+    <h3>Classes</h3>
+    <ul>
+        <li><a href="wsUtil.html">wsUtil</a></li>
+        <li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li>
+        <li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li>
+        <li><a href="wsUtil.SocketEmitter-On.html">On</a></li>
+    </ul>
+    <h3>Interfaces</h3>
+    <ul>
+        <li><a href="wsUtil.SocketEmitter-Emit.html#EmitInterface">EmitInterface</a></li>
+        <li><a href="wsUtil.SocketEmitter-On.html#OnInterface">OnInterface</a></li>
+        <li><a href="wsUtil.SocketEmitter.html#SocketEmitterInterface">SocketEmitterInterface</a></li>
+    </ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 13:19:42 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 13:19:42
+    GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script src="scripts/linenumber.js"></script>
 </body>
 </html>
