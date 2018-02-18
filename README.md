@@ -91,7 +91,8 @@ The library will now serve the request as a web socket request and start web soc
 
 ## License ##
 
-This project is under the Apache License 2.0. For more information please read [LICENSE.txt](LICENSE.txt)
+This project is under the Apache 2.0 license. For more information please read [LICENSE.txt](LICENSE.txt)
+
 
 ## Author ##
 
