@@ -11,6 +11,31 @@ Go [here](https://itemconsulting.github.io/wsutil-server/) for documentation
 
 Compatibility Enonic XP 6.4.0
 
+
+
+## Purpose ##
+
+Make Websockets integration with EnonicXP easy and more dynamic. 
+
+This library extends the Enonic XP websocket library with additional features to
+make socket integration easier to handle on the server side. The library includes both client side and server side libraries
+
+The library's primary purpose is to allow communication with JSON objects, but it also comes with additional features like multiple handlers, 
+expansion, easy group management and a built in event driven add-on. 
+
+## Files included ##
+
+```
+src/
+   |- main/
+          |- resources/
+                      |- assets/
+                      |        |- clientws.js // Client side library
+                      |- lib/
+                            |- virtual.js // Virtual documentation file
+                            |- wsUtils.js // Server side library
+```
+
 ## Dependencies ##
 
 ```
@@ -34,17 +59,6 @@ repositories {
    }
 }
 ```
-
-## Purpose ##
-
-Make Websockets integration with EnonicXP easy and more dynamic. 
-
-This library extends the Enonic XP websocket library with additional features to
-make socket integration easier to handle on the server side. The library includes both client side and server side libraries
-
-The library's primary purpose is to allow communication with JSON objects, but it also comes with additional features like multiple handlers, 
-expansion, easy group management and a built in event driven add-on. 
-
 
 ## Usage ##
 
