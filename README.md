@@ -38,22 +38,18 @@ src/
 
 ## Dependencies ##
 
+Add these dependencies
 ```
-# build.gradle
-
 dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-io:${xpVersion}"
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "no.item.wsUtil:wsUtil:1.0.0"
 }
-
+```
+Add this repository 
+```
 repositories {
-    mavenLocal()
-    jcenter()
-    maven {
-        url 'http://repo.enonic.com/public'
-    }
    maven {
         url  "https://dl.bintray.com/pdrevland/wsUtil"
    }
