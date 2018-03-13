@@ -543,7 +543,7 @@
             <h5>Example</h5>
 
             <pre class="prettyprint"><code>// service/websocket/websocket.js
-var ws = require('path/to/wsUtil');
+var ws = require('/lib/wsUtil');
 
 ws.expandClient('hello', function() { send('Hello'); /* use the inner send function */ });
 
@@ -551,7 +551,7 @@ ws.openWebsockets(exports);
 
 // socket.js
 
-var cws = new EnonicXP.Ws();
+var cws = new ExpWS();
 
 cws.hello();</code></pre>
 
@@ -635,7 +635,7 @@ cws.hello();</code></pre>
             <h5>Example</h5>
 
             <pre class="prettyprint"><code>// lib/extension.js
-var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
+var ws = require('/lib/wsUtil'); // '/lib/wsUtil'
 
 var extebsionObject = { extension: extension };
 ws.extend(extensionObject);
@@ -1219,7 +1219,7 @@ extensionLib.extension(); // Activate extension</code></pre>
             <h5>Example</h5>
 
             <pre class="prettyprint"><code>// someSocketService.js
-ws = require('/lib/xp/wsUtil');
+ws = require('/lib/wsUtil');
 exports.get = ws.sendSocketResponse;
 // or
 exports.get = function(req) {
