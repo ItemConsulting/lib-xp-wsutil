@@ -32,11 +32,11 @@
             <p>Create a service for the server side handling of your websockets.
                 Default is <code>services/websocket/websocket.js</code></p>
             <p>In your <code>websocket.js</code> file</p>
-            <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/xp/wsUtil');
+            <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil');
 
 ws.openWebsockets(exports);</code></pre>
             <p>Or for <code>services/sockethandler/sockethandler.js</code></p>
-            <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/xp/wsUtil');
+            <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil');
 var portal = require('/lib/xp/portal');
 
 ws.openWebsockets(exports, portal.serviceUrl({ service: 'sockethandler' }));</code></pre>
