@@ -26,22 +26,43 @@
     <section>
         <article><h1>Enonic XP websocket utility library</h1>
             <p>This library extends the Enonic XP websocket library with additional features to
-                make socket integration easier to handle on the server side. The library includes both client side lib
+                make socket integration easier to handle for both server and client side. These additional features include
+            <ul>
+                <li>Automatic JSON communication</li>
+                <li>Open websocket communication with 6 lines of code</li>
+                <li>Automatic production mode</li>
+                <li>Main thread handler and additional handlers for background tasks</li>
+                <li>Make library extensions easy</li>
+                <li>Buildt-in library extension with Socket Event Emitter</li>
+                <li>Easier group handling with automatic group creations and user list</li>
+            </ul>
+                The library includes both client side lib
                 and server side lib</p>
             <h2>Usage</h2>
-            <p>Create a service for the server side handling of your websockets.
-                Default is <code>services/websocket/websocket.js</code></p>
-            <p>In your <code>websocket.js</code> file</p>
+            <p>Start your websocket communication in just 6 lines of code</p>
+            <p>This is the server side handler. The library expect the handler to be under <code>services/websocket/websocket.js</code></p>
             <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil');
 
 ws.openWebsockets(exports);</code></pre>
-            <p>Or for <code>services/sockethandler/sockethandler.js</code></p>
+            <p>Or for some custom path  <code>services/sockethandler/sockethandler.js</code></p>
             <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil');
 var portal = require('/lib/xp/portal');
 
 ws.openWebsockets(exports, portal.serviceUrl({ service: 'sockethandler' }));</code></pre>
 
-            <p>On the client side</p>
+            <h3>Client side implementation</h3>
+            <p>You need two files to load from your client
+                <ol>
+                    <li>The client library</li>
+                    <li>The client side implementation</li>
+                </ol>
+                <pre class="prettyprint source lang-html">
+                    <code>&lt;script src="${client.lib}"&gt;&lt;/script&gt;
+&lt;script src="${client.code}"&gt;&lt;/script&gt;
+</code>
+                </pre>
+            </p>
+            <p>The client side javascript implementation only needs to create a new instance of the websocket object and connect. The library will take care of host name and protocol. Remember to be sure that the client library is loaded before creating an instance.</p>
             <pre class="prettyprint source lang-javascript">
                 <code>var cws = new ExpWS();
 cws.connect();</code>
@@ -52,11 +73,8 @@ cws.connect();</code>
             <p><a href="tutorial.html">Tutorials</a></p>
             <p><a href="extensions.html">Creating extensions</a></p>
             <h2>How it works</h2>
-            <p>Create a script tag on your document for your service</p>
-            <p>The initial request will not be a websocket request and the client will receive the client side library</p>
-            <p>When the client side web socket handler creates a new ExpWS instance it will send a websocket
-                request
-                to the server, and start the websocket communication.</p></article>
+            <p>The server side <code>openWebsockets</code> takes the service´s <code>exports</code> object as a parameter.</p>
+            <p>It then sets up the websocket communication for you. It does that by injecting the exports get method with handlers. The first request to the service would be to get the client library, so the method will return the client library. The second request would usually be to open a websocket connection, and so the service will then open the connection</p></article>
     </section>
 
 
