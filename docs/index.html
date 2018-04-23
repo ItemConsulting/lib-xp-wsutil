@@ -28,9 +28,9 @@
             <p>This library extends the Enonic XP websocket library with additional features to
                 make socket integration easier to handle for both server and client side. These additional features include
             <ul>
-                <li>Automatic JSON communication</li>
+                <li>Communication with JSON</li>
                 <li>Open websocket communication with 6 lines of code</li>
-                <li>Automatic production mode</li>
+                <li>Secure context check</li>
                 <li>Main thread handler and additional handlers for background tasks</li>
                 <li>Make library extensions easy</li>
                 <li>Buildt-in library extension with Socket Event Emitter</li>
@@ -44,12 +44,7 @@
             <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil');
 
 ws.openWebsockets(exports);</code></pre>
-            <p>Or for some custom path  <code>services/sockethandler/sockethandler.js</code></p>
-            <pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil');
-var portal = require('/lib/xp/portal');
-
-ws.openWebsockets(exports, portal.serviceUrl({ service: 'sockethandler' }));</code></pre>
-
+            
             <h3>Client side implementation</h3>
             <p>You need two files to load from your client
                 <ol>
@@ -60,8 +55,33 @@ ws.openWebsockets(exports, portal.serviceUrl({ service: 'sockethandler' }));</co
                     <code>&lt;script src="${client.lib}"&gt;&lt;/script&gt;
 &lt;script src="${client.code}"&gt;&lt;/script&gt;
 </code>
+                 </pre>
+                How you want the scripts to get loaded to the client is up to you. Here is an example from a part component that uses page contributions.
+                <pre class="prettyprint source lang-javascript">
+                    <code>var protalLib = require('/lib/xp/portal');
+var thymeleaf = require('/lib/xp/thymeleaf');
+
+exports.get = function(req) {
+    var view = resolve('view.html');
+    var client = {
+        lib: portalLib.serviceUrl({ service: 'websocket' }),
+        code: portalLib.assetUrl({ path: 'clientScript/clientScript.js' });
+    }
+    var model = { content: portalLib.getContent() };
+    var body = thymeleaf.render(view, model);
+    return {
+        body: body,
+        pageContributions: {
+            bodyEnd: [
+                '&lt;script src="' + client.lib + '"&gt;&lt;/script&gt;',
+                '&lt;script src="' + client.code + '"&gt;&lt;/script&gt;'
+            ]
+        }
+    }
+}</code>
                 </pre>
             </p>
+            
             <p>The client side javascript implementation only needs to create a new instance of the websocket object and connect. The library will take care of host name and protocol. Remember to be sure that the client library is loaded before creating an instance.</p>
             <pre class="prettyprint source lang-javascript">
                 <code>var cws = new ExpWS();
