@@ -65,7 +65,7 @@ exports.get = function(req) {
     var view = resolve('view.html');
     var client = {
         lib: portalLib.serviceUrl({ service: 'websocket' }),
-        code: portalLib.assetUrl({ path: 'clientScript/clientScript.js' });
+        code: portalLib.assetUrl({ path: 'clientScript/clientScript.js' })
     }
     var model = { content: portalLib.getContent() };
     var body = thymeleaf.render(view, model);
