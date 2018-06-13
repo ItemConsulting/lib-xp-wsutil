@@ -5,18 +5,22 @@ For this tutorial we will have our base vanilla starter project at `/path/to/cha
 
 We will be using a page component, a service component and a static JS file.
 
-.../resources
-* /assets
-    * socket.js
-* /services
-    * /websocket
-        * websocket.js
-* /site
-    * /pages
-        * /chat
-            * chat.js
-            * chat.html
+
             
+```
+resources/
+    assets/
+        socket.js
+    services/
+        /websocket
+            websocket.js
+    site/
+        pages/
+            chat/
+                chat.js
+                chat.html
+
+```
             
 ### Set up ###
 Lets start easy, open the chat.js file
@@ -74,7 +78,7 @@ ws.openWebsockets(exports);      // Make the server ready for socket connections
 Now initiate the client source script in our socket.js file
 
 ```javascript
-var cws = new EnonicXP.Ws();
+var cws = new ExpWS();
 cws.connect();
 ```
 
@@ -92,11 +96,11 @@ Add your application in content studio and preview your application
 
 In your inspector console there will, hopefully, be a websocket event object being printed
 
-![hello-socket](docs/res/hello%20socket01.png)
+![hello-socket](res/hello%20socket01.png)
 
 And also in our server console
 
-![hello-socket02](docs/res/hello-socket02.png)
+![hello-socket02](res/hello-socket02.png)
 
 If the client event is of type open, then we have an active socket connection
 
@@ -148,7 +152,7 @@ Right now let apply some client side logic. For this project we will use the soc
 ```javascript
 // socket.js
 
-var cws = new EnonicXP.Ws();
+var cws = new ExpWS();
 // ws.connect(); We don't need this because our Io instance handles this
 var io = new cws.Io();
 
@@ -481,7 +485,7 @@ The first thing we need to put in place are the parts for our view. It will be q
 We also need to add the variable declarations and initial set up
 
 ```javascript
-var cws = new EnonicXP.Ws();
+var cws = new ExpWS();
 // cws.connect(); We don't need this because our Io instance handles this
 var io = new cws.Io();
 
@@ -753,7 +757,7 @@ function connectionCallback(socket) {
 
 ```javascript
 //socket.js
-var cws = new EnonicXP.Ws();
+var cws = new ExpWS();
 // cws.connect(); We don't need this because our Io instance handles this
 var io = new cws.Io();
 
@@ -913,7 +917,7 @@ function createPrivateChat(user) {
         };
         pNames.appendChild(p);
     }
-    // if this is the first private chate, we'll initiate the context user
+    // if this is the first private chat, we'll initiate the context user
     if (!contextUser) setContextUser(user);
 
 }

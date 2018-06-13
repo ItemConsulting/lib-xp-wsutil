@@ -75,7 +75,7 @@ var eventHandlers = {
  * @requires /lib/xp/io
  * @requires /lib/xp/portal
  * @author Per Arne Drevland
- * @version 0.0.1
+ * @version 1.1.0
  * @example
  * var ws = require('/lib/wsUtil');
  * @hideconstructor
@@ -97,6 +97,7 @@ exports.sendToGroup                 = sendToGroup;
 exports.returnScript                = returnScript;
 exports.extend                      = extend;
 exports.expandClient                = expandClient;
+exports.getWsEvents                 = wsEvents;
 
 
 //*************************************************//
@@ -348,12 +349,12 @@ function SocketEmitter() {
  * @memberOf wsUtil
  * @description Extends the library functionalities to create reusable extensions
  * @param exportObject {object} The object that extends the library
- * @see [Creating extensions]{@link http://localhost:63343/socket/docs/extensions.html}
+ * @see [Creating extensions]{@link https://itemconsulting.github.io/wsutil-server/extensions.html}
  * @example
  * // lib/extension.js
  * var ws = require('/lib/wsUtil');
  *
- * var extebsionObject = { extension: extension };
+ * var extensionObject = { extension: extension };
  * ws.extend(extensionObject);
  *
  * function extension() {
@@ -383,7 +384,7 @@ function extend(exportObject) {
  * @param func {function} The function for the new client interface.
  * @example
  * // service/websocket/websocket.js
- * var ws = require('path/to/wsUtil);
+ * var ws = require('path/to/wsUtil');
  *
  * ws.expandClient('hello', function() { send('Hello'); // use the inner send function });
  *
@@ -391,7 +392,7 @@ function extend(exportObject) {
  *
  * // socket.js
  *
- * var cws = new EnonicXP.Ws();
+ * var cws = new ExpWs();
  *
  * cws.hello();
  */
@@ -528,6 +529,32 @@ function send(id, message) {
 
 /**
  * @memberOf wsUtil
+ * @desc The function that binds to the exports webSocketEvent method. This function checks the ws event object for type
+ * and calls the appropriate handler. Then it loops over the additional handlers and calls each one of them.
+ * @param {object} event The event sent from the client
+ * @since 1.1.0
+ */
+function wsEvents(event) {
+    if (eventHandlers[event.type]) {
+        if (event.type === 'message') {
+            try {
+                eventHandlers.message(JSON.parse(event.message));
+            } catch(e) {
+                eventHandlers.message(event.message);
+            }
+        }
+        else {
+            eventHandlers[event.type](event);
+        }
+
+    }
+    additionalEventHandlers[event.type].forEach(function(handler) {
+        handler(event);
+    })
+}
+
+/**
+ * @memberOf wsUtil
  * @description Opens the websocket connection and delegate events to handlers
  * @param {object} exp The exports object from the Enonic module that is assigned to handle websocket events
  * @param {string} [host=portal.serviceUrl({ service: 'websocket'})] The host for the service that serves the web sockets
@@ -537,31 +564,14 @@ function openWebsockets(exp, host) {
     exp.get = function(req) {
         return sendSocketResponse(req, host);
     };
-    exp.webSocketEvent = function (event) {
-        if (eventHandlers[event.type]) {
-            if (event.type === 'message') {
-                try {
-                    eventHandlers.message(JSON.parse(event.message));
-                } catch(e) {
-                    eventHandlers.message(event.message);
-                }
-            }
-            else {
-                eventHandlers[event.type](event);
-            }
-
-        }
-        additionalEventHandlers[event.type].forEach(function(handler) {
-            handler(event);
-        })
-    }
+    exp.webSocketEvent = wsEvents;
 }
 
 
 
 function returnScript(host) {
     host = host || portal.serviceUrl({ service: 'websocket'});
-    var file = ioLib.readText(ioLib.getResource(resolve('clientws.js')).getStream());
+    var file = ioLib.readText(ioLib.getResource(resolve('../assets/clientws.js')).getStream());
     file = file.replace('&HOST&', host).replace('&CLIENTEXPANSIONS&', JSON.stringify(clientExpansions, function(key, val) {
         return (typeof val === 'function') ? '' + val : val;
     }).replace(/"/g, "").replace(/\\n/g, "").replace(/\\/g, '"'));

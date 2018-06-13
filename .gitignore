@@ -28,7 +28,7 @@ Temporary Items
 ### Gradle ###
 .gradle
 build/
-
+deploy/
 # Ignore Gradle GUI config
 gradle-app.setting
 

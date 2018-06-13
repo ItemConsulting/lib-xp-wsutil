@@ -41,7 +41,7 @@
                     <dt class="tag-version">Version:</dt>
                     <dd class="tag-version">
                         <ul class="dummy">
-                            <li>1.0.0</li>
+                            <li>1.1.0</li>
                         </ul>
                     </dd>
 
@@ -58,7 +58,7 @@
                     <dd class="tag-source">
                         <ul class="dummy">
                             <li>
-                                <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line51">line 51</a>
+                                <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line70">line 70</a>
                             </li>
                         </ul>
                     </dd>
@@ -79,7 +79,7 @@
 
                 <h5>Example</h5>
 
-                <pre class="prettyprint"><code>var ws = require('/lib/xp/wsUtil');</code></pre>
+                <pre class="prettyprint"><code>var ws = require('/lib/wsUtil');</code></pre>
 
 
             </div>
@@ -183,7 +183,7 @@
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -192,7 +192,7 @@
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line400">line 400</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line420">line 420</a>
                         </li>
                     </ul>
                 </dd>
@@ -320,7 +320,7 @@
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -329,7 +329,7 @@
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line433">line 433</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line453">line 453</a>
                         </li>
                     </ul>
                 </dd>
@@ -432,7 +432,7 @@
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -441,7 +441,7 @@
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line469">line 469</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line489">line 489</a>
                         </li>
                     </ul>
                 </dd>
@@ -531,7 +531,7 @@
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line379">line 379</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line399">line 399</a>
                         </li>
                     </ul>
                 </dd>
@@ -545,13 +545,13 @@
             <pre class="prettyprint"><code>// service/websocket/websocket.js
 var ws = require('path/to/wsUtil');
 
-ws.expandClient('hello', function() { send('Hello'); /* use the inner send function */ });
+ws.expandClient('hello', function() { send('Hello'); // use the inner send function });
 
 ws.openWebsockets(exports);
 
 // socket.js
 
-var cws = new EnonicXP.Ws();
+var cws = new ExpWs();
 
 cws.hello();</code></pre>
 
@@ -614,7 +614,7 @@ cws.hello();</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line353">line 353</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line373">line 373</a>
                         </li>
                     </ul>
                 </dd>
@@ -623,8 +623,8 @@ cws.hello();</code></pre>
                 <dt class="tag-see">See:</dt>
                 <dd class="tag-see">
                     <ul>
-                        <li><p><a href="http://localhost:63343/socket/docs/extensions.html">Creating extensions</a></p>
-                        </li>
+                        <li><p><a href="https://itemconsulting.github.io/wsutil-server/extensions.html">Creating
+                            extensions</a></p></li>
                     </ul>
                 </dd>
 
@@ -635,9 +635,9 @@ cws.hello();</code></pre>
             <h5>Example</h5>
 
             <pre class="prettyprint"><code>// lib/extension.js
-var ws = require('/path/to/wsUtil'); // '/lib/wsUtil'
+var ws = require('/lib/wsUtil');
 
-var extebsionObject = { extension: extension };
+var extensionObject = { extension: extension };
 ws.extend(extensionObject);
 
 function extension() {
@@ -712,7 +712,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -721,7 +721,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line416">line 416</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line436">line 436</a>
                         </li>
                     </ul>
                 </dd>
@@ -860,7 +860,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -869,7 +869,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line517">line 517</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line563">line 563</a>
                         </li>
                     </ul>
                 </dd>
@@ -954,7 +954,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -963,7 +963,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line454">line 454</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line474">line 474</a>
                         </li>
                     </ul>
                 </dd>
@@ -1050,7 +1050,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -1059,7 +1059,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line501">line 501</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line521">line 521</a>
                         </li>
                     </ul>
                 </dd>
@@ -1177,7 +1177,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -1186,7 +1186,7 @@ extensionLib.extension(); // Activate extension</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line572">line 572</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line601">line 601</a>
                         </li>
                     </ul>
                 </dd>
@@ -1219,7 +1219,7 @@ extensionLib.extension(); // Activate extension</code></pre>
             <h5>Example</h5>
 
             <pre class="prettyprint"><code>// someSocketService.js
-ws = require('/lib/xp/wsUtil');
+ws = require('/lib/wsUtil');
 exports.get = ws.sendSocketResponse;
 // or
 exports.get = function(req) {
@@ -1305,7 +1305,7 @@ exports.get = function(req) {
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -1314,7 +1314,7 @@ exports.get = function(req) {
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line98">line 98</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line118">line 118</a>
                         </li>
                     </ul>
                 </dd>
@@ -1413,7 +1413,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -1422,7 +1422,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line586">line 586</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line615">line 615</a>
                         </li>
                     </ul>
                 </dd>
@@ -1488,7 +1488,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -1497,7 +1497,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line601">line 601</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line630">line 630</a>
                         </li>
                     </ul>
                 </dd>
@@ -1564,7 +1564,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
                 <dt class="tag-since">Since:</dt>
                 <dd class="tag-since">
                     <ul class="dummy">
-                        <li>1.0.0</li>
+                        <li>0.0.1</li>
                     </ul>
                 </dd>
 
@@ -1573,7 +1573,85 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line611">line 611</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line640">line 640</a>
+                        </li>
+                    </ul>
+                </dd>
+
+
+            </dl>
+
+
+            <h4 class="name" id=".wsEvents"><span class="type-signature">(static) </span>wsEvents<span
+                    class="signature">(event)</span><span class="type-signature"></span></h4>
+
+
+            <div class="description">
+                <p>The function that binds to the exports webSocketEvent method. This function checks the ws event
+                    object for type
+                    and calls the appropriate handler. Then it loops over the additional handlers and calls each one of
+                    them.</p>
+            </div>
+
+
+            <h5>Parameters:</h5>
+
+
+            <table class="params">
+                <thead>
+                <tr>
+
+                    <th>Name</th>
+
+
+                    <th>Type</th>
+
+
+                    <th class="last">Description</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+
+                <tr>
+
+                    <td class="name"><code>event</code></td>
+
+
+                    <td class="type">
+
+
+                        <span class="param-type">object</span>
+
+
+                    </td>
+
+
+                    <td class="description last"><p>The event sent from the client</p></td>
+                </tr>
+
+
+                </tbody>
+            </table>
+
+
+            <dl class="details">
+
+
+                <dt class="tag-since">Since:</dt>
+                <dd class="tag-since">
+                    <ul class="dummy">
+                        <li>1.1.0</li>
+                    </ul>
+                </dd>
+
+
+                <dt class="tag-source">Source:</dt>
+                <dd class="tag-source">
+                    <ul class="dummy">
+                        <li>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line537">line 537</a>
                         </li>
                     </ul>
                 </dd>
@@ -1712,7 +1790,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
                 <dd class="tag-source">
                     <ul class="dummy">
                         <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line724">line 724</a>
+                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line753">line 753</a>
                         </li>
                     </ul>
                 </dd>
@@ -1729,7 +1807,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
 </div>
 
 <nav>
-    <h2><a href="../index.html">Home</a></h2>    <h3><a href="index.html">Back</a></h3>
+    <h2><a href="index.html">Back</a></h2>
     <h3>Classes</h3>
     <ul>
         <li><a href="wsUtil.html">wsUtil</a></li>
@@ -1748,7 +1826,7 @@ ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 06 2017 13:19:42
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jun 13 2018 12:06:22
     GMT+0200 (CEST)
 </footer>
 

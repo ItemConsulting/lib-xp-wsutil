@@ -1,0 +1,19 @@
+Fikk denne mailen, har du gjort endringene nå, ser det er noe nytt men virker ikke ferdig?
+
+Kort fortalt må du være mye tydeligere:
+
+* Hva betyr “Automatic JSON communication”?
+* Hva betyr “Automatic production mode”?
+
+I usage avsnittet må det være mye mer detaljert, dvs
+
+* Beskrive at du må legge til biblioteket i build.gradle
+* Beskrive at man oppretter filen services/websocket/websocket.js og vise en komplett fil (hvor du skriver f.eks here goes your custom code der eksempelet slutter), ikke bare 2 linjer
+* Legge info om “alternativ løsning” som et tips, eller flytte det under et menypunkt (flere alternativer så tidlig skaper mest forvirring)
+
+Under client side så må du
+* Forklare hvor selve klient-javascriptet befinner seg (assets/whatever) og at den kommer fra din lib
+* Hva er ${client.lib} ?? Her trenger du en bitteliten thymeleaf fil som bruker portalfunksjoner for å referere til din asset
+
+Til slutt: Praktisk bruk av løsningen
+Her må du ha et komplett eksempel som bruker wsUtil til noe fornuftig (både klient og serverside kode vil jeg tro? Evt gjør du dette eksempelet direkte inne sammen med de to punktene over.

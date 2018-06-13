@@ -1,3 +1,5 @@
+
+
 buildscript {
     repositories {
         mavenLocal()
@@ -11,6 +13,10 @@ buildscript {
         classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
     }
 }
+plugins {
+    id "com.jfrog.bintray" version "1.8.1"
+}
+
 apply plugin: 'com.enonic.xp.app'
 
 dependencies {
@@ -18,6 +24,7 @@ dependencies {
     compile "com.enonic.xp:portal-api:${xpVersion}"
     compile "com.enonic.xp:lib-portal:${xpVersion}"
     compile "com.enonic.xp:lib-io:${xpVersion}"
+    compile "com.enonic.xp:lib-websocket:${xpVersion}"
 }
 
 repositories {
@@ -26,4 +33,26 @@ repositories {
     maven {
         url 'http://repo.enonic.com/public'
     }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_PWD')
+    pkg {
+        repo = 'wsUtil'
+        name = 'no.item.wsUtil'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/itemConsulting/wsUtil-server.git'
+        version {
+            name = '1.1.0'
+            desc = 'Added feature getWsEvents'
+            released = new Date()
+            vcsTag = '1.1.0'
+        }
+    }
+    filesSpec {
+           from 'deploy/'
+           into 'no/item/wsUtil/wsUtil/1.1.0'
+        }
+
 }
