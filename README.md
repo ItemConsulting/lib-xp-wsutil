@@ -26,7 +26,7 @@ server side logic and client side logic. This library will try to reduce some of
 Some use-cases for websockets includes
 * Real time chat
 * IoT data flow
-* Establish WebRTC
+* WebRTC p2p signaling
 * Real time server notifications
 * nGram search suggestions
 * .. and so on
@@ -124,15 +124,14 @@ Remember the ``ExpWs`` object will be exposed after the client library has loade
 
 ## Example ##
 
-This is a short example that shows how to use library with simple search suggestions
+This is a short example that shows how to use library as a WebRTC signaling server
 
 ```../views/search.html```
 ```html
 
-    <div>
-        <input type="text" id="search">
-    </div>
-    <div id="results"></div>
+    <video id="local" autoplay></video>
+    <video id="remote" autoplay></video>
+    <div id="users"></div>
     
     <script src="mySite/_/assets/jquery.min.js"></script>
     <script src="mySite/_/services/websocket"></script>
@@ -142,41 +141,54 @@ This is a short example that shows how to use library with simple search suggest
 `../services/websocket/index.js`
 ```javascript
 var ws = require('/lib/wsUtil');
-var contentLib = require('/lib/xp/content');
-var logger = require('lib/logger'); // Lets say there is a logger library
 
-ws.openWebsockets(exports);
+ws.openWebsockets(exports); // Open websocket communication
 
-ws.setEventHandler('message', checkMessage);
-ws.setEventHandler('open', shareId);
+var users = [];
 
-ws.addHandlers('message', logMessage);
+// Handle username registration
+ws.addHandlers('message', function(event) {
+  if (event.data.type === 'regUsername') {
+      if (users.hasOwnProperty(event.data.username)) {
+          ws.send(event.session.id, {type: 'error', err: 'Username taken'});
+      }
+      else {
+          users[event.data.username] = event.session.id;
+          ws.send(event.session.id, {type: 'username', username: event.data.username});
+          userUpdate('enter', event.data.username);
+      }
+  }
+});
+// Send user list
+ws.setEventHandler('open', function(event) {
+  ws.send(event.session.id, {type: 'users', users: users });
+});
 
-function checkMessage(message) {
-    if (message.type === 'nGramSearch') {
-        ws.send(message.id, {type: 'result', result: nGramSearch(message.text) });
-    }
-    else if (message.type === 'search') {
-        // full search here
-    }
-}
+// Relay messages to and from clients
+ws.setEventHandler('message', function(message) {
+  if (message.type !== 'resUsername') {
+      ws.send(users[message.to], message)
+  }
+});
 
-function shareId(event) {
-    ws.send(event.session.id, {type: 'id', id: event.session.id});
-}
+ws.setEventHandler('close', function(event) {
+  var username;
+  for (var k in users) {
+      if (users.hasOwnProperty(k) && users[k] === event.session.id) {
+          username = users[k];
+          delete users[k];
+      }
+  }
+  userUpdate('left', username);
+  
+});
 
-function nGramSearch(text) {
-    return contentLib.query({
-        start: 0,
-        count: 15,
-        query: 'nGram("data.title","' + text + '", "OR")'
-    }).hits.map(function(hit) {
-        return { title: hit.data.title, description: hit.data.description }
-    });
-}
-
-function logMessage(event) {
-  if (event.data.text.length > 4) logger.log(event);
+function userUpdate(type, username) {
+  for (var k in users) {
+      if (users.hasOwnProperty(k) && k !== username) {
+          ws.send(users[k], { type: type, username: username});
+      }
+  }
 }
 
 ```
@@ -184,37 +196,133 @@ function logMessage(event) {
 `../assets/client.js`
 ```javascript
 var cws = new ExpWs();
-var search = $('#search');
-var results = $('#results');
-var id;
+var username;
+var local = $('#local');
+var remote = $('#remote');
+var peerConnection;
 
-cws.connect();
-cws.setEventHandler('message', handleMessage);
+cws.setEventHandler('message', function(message) {
+  switch (message) {
+      case 'username': username = message.username; break;
+      case 'invite': handleInvite(message); break;
+      case 'accept': handleAccept(message); break;
+      case 'sdp': handleSDP(message); break;
+      case 'candidate': handleCandidate(message); break;
+      case 'error': alert(message.err); break;
+      case 'users': handleUsers(message); break;
+      case 'leave': handleUserLeft(message); break;
+      case 'enter': userEnter(messsage.user); break;
+      default: console.log(message);
+  } 
+});
 
-search.keyup(getSuggestions);
-
-function handleMessage(message) {
-    if (message.type === 'result') {
-        results.empty();
-        message.results.forEach(function(hit) {
-          results.append($('em').text(hit.title));
-          results.append($('p').text(hit.description));
-          results.append($('hr'))
-        });
+function handleInvite(message) {
+    if (confirm(message.from + ' wants to start a video chat, Accept?')) {
+        start(message.from);
+        cws.send({ from: username, to: message.from, type: 'accept'});
     }
-    else if (message.type === 'id') id = message.id;
 }
 
-function getSuggestions(e) {
-    if (e.keyCode !== 13) { // not enter
-        if (search.val().length > 2) {
-            cws.send({type: 'nGramSearch', text: search.val(), id: id})
+function handleAccept(message) {
+    if (!peerConnection) start(message.from);
+    else err({ err: 'Video call already in progress'});
+}
+
+function start(from) {
+    peerConnection = new RTCPeerConnection();
+    
+    peerConnection.onicecandidate = function(e) {
+        if (e.candidate) {
+            cws.send({
+                from: username,
+                to: from,
+                type: 'candidate',
+                candidate: e.candidate
+            });
         }
-  }
-  else {
-        cws.send({ type: 'search', text: search.val(), id: id });
-        search.val('');
-  }
+    };
+    
+    peerConnection.onnegotiationneeded = function (ev) { 
+        peerConnection.createOffer(function(desc) {
+            peerConnection.setLocalDescription(desc, function() {
+              cws.send({
+                from: username,
+                to: from,
+                type: 'sdp',
+                sdp: peerConnection.localDescription
+              })
+            }, err)
+        }, err)
+     };
+     
+     peerConnection.onaddstream = function (e) { 
+        remote.src(URL.createObjectURL(event.stream));
+      };
+      
+      navigator.getUserMedia({
+        audio: true,
+        video: {
+            width: 600,
+            height: 400
+        }
+      }, function(stream) {
+          local.src(URL.createObjectURL(stream));
+          peerConnection.addStream(stream);
+      }, err);
+}
+
+function handleSDP(message) {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp), function() {
+        if (peerConnection.remoteDescription.type === 'offer') {
+            peerConnection.createAnswer(function(desc) {
+                peerConnection.setLocalDescription(desc, function() {
+                              cws.send({
+                                from: username,
+                                to: from,
+                                type: 'sdp',
+                                sdp: peerConnection.localDescription
+                              })
+                            }, err)
+            }  ,err)
+        }
+    })
+}
+
+function handleCandidate(message) {
+    peerConnection.addIceCandidate(message.candidate);
+} 
+
+function handleUsers(message) {
+    message.users.forEach(userEnter);
+}
+
+function handleUserLeft(message) {
+    $('#' + message.user).remove();
+}
+function userEnter(user) {
+        var u = $('a');
+        u.text(user);
+        u.href('#');
+        u.id(user);
+        u.click(function() {
+          invite(u);
+        });
+        $('#users').append(u);
+}
+
+
+function invite(user) {
+    cws.send({
+        from: username,
+        to: user,
+        type: 'invite'
+    })
+}
+
+
+
+function err(err) {
+  console.error(err);
 }
 
 ```
