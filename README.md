@@ -136,74 +136,14 @@ For
     <video id="local" autoplay></video>
     <video id="remote" autoplay></video>
     <div id="users"></div>
+    <input type="text" id="uname">
     
     <script src="mySite/_/asset/com.my.app/jquery.min.js"></script>
     <script src="mySite/_/service/com.my.app/websocket"></script>
     <script src="mySite/_/asset/com.my.app/client.js"></script>
 
 ```
-`../services/websocket/index.js`
-```javascript
-var ws = require('/lib/wsUtil');
 
-ws.openWebsockets(exports); // Open websocket communication
-
-var users = {};
-
-// Handle username registration
-ws.addHandlers('message', function(event) {
-    var message = JSON.parse(event.message);
-    if (message.type === 'regUsername') {
-        if (users.hasOwnProperty(message.username)) {
-            //Send an error if username is taken
-            ws.send(event.session.id, {type: 'error', err: 'Username taken'});
-        }
-        else {
-            users[message.username] = event.session.id;
-            ws.send(event.session.id, {type: 'username', username: message.username});
-            // If username is not taken, broadcast the newly entered user
-            userUpdate('enter', message.username);
-        }
-    }
-});
-// When a user enter out site
-ws.setEventHandler('open', function(event) {
-
-    // Add the user to the 'all' group
-    ws.addUserToGroup(event.session.id, 'all', true);
-
-    var arr = [];
-    for (var k in users) {
-        if (users.hasOwnProperty(k)) arr.push(k);
-    }
-    // Send the user list to our new arrival
-    ws.send(event.session.id, { type: 'users', users: arr});
-});
-
-// Relay messages to and from clients
-ws.setEventHandler('message', function(message) {
-    if (message.type !== 'regUsername') {
-        ws.send(users[message.to], message)
-    }
-});
-
-ws.setEventHandler('close', function(event) {
-    var username;
-    for (var k in users) {
-        if (users.hasOwnProperty(k) && users[k] === event.session.id) {
-            username = k;
-            delete users[k];
-        }
-    }
-    userUpdate('leave', username);
-
-});
-
-function userUpdate(type, username) {
-    ws.sendToGroup('all', { type: type, username: username})
-}
-
-```
 
 `../assets/client.js`
 ```javascript
@@ -364,6 +304,69 @@ function err(err) {
 
 // Start a websocket connection
 cws.connect();
+```
+
+`../services/websocket/index.js`
+```javascript
+var ws = require('/lib/wsUtil');
+
+ws.openWebsockets(exports); // Open websocket communication
+
+var users = {};
+
+// Handle username registration
+ws.addHandlers('message', function(event) {
+    var message = JSON.parse(event.message);
+    if (message.type === 'regUsername') {
+        if (users.hasOwnProperty(message.username)) {
+            //Send an error if username is taken
+            ws.send(event.session.id, {type: 'error', err: 'Username taken'});
+        }
+        else {
+            users[message.username] = event.session.id;
+            ws.send(event.session.id, {type: 'username', username: message.username});
+            // If username is not taken, broadcast the newly entered user
+            userUpdate('enter', message.username);
+        }
+    }
+});
+// When a user enter out site
+ws.setEventHandler('open', function(event) {
+
+    // Add the user to the 'all' group
+    ws.addUserToGroup(event.session.id, 'all', true);
+
+    var arr = [];
+    for (var k in users) {
+        if (users.hasOwnProperty(k)) arr.push(k);
+    }
+    // Send the user list to our new arrival
+    ws.send(event.session.id, { type: 'users', users: arr});
+});
+
+// Relay messages to and from clients
+ws.setEventHandler('message', function(message) {
+    if (message.type !== 'regUsername') {
+        ws.send(users[message.to], message)
+    }
+});
+
+ws.setEventHandler('close', function(event) {
+    var username;
+    for (var k in users) {
+        if (users.hasOwnProperty(k) && users[k] === event.session.id) {
+            username = k;
+            delete users[k];
+        }
+    }
+    userUpdate('leave', username);
+
+});
+
+function userUpdate(type, username) {
+    ws.sendToGroup('all', { type: type, username: username})
+}
+
 ```
 
 ## License ##
