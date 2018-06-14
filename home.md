@@ -116,6 +116,7 @@ This is a short example that shows how to use library as a WebRTC signaling serv
 For 
 
 ```../views/search.html```
+
 ```html
 
     <video id="local" autoplay></video>
