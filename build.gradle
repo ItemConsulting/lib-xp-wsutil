@@ -44,15 +44,15 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/itemConsulting/wsUtil-server.git'
         version {
-            name = '1.1.0'
-            desc = 'Added feature getWsEvents'
+            name = "1.1.1"
+            desc = 'Removed bug in AddUserToGroup method'
             released = new Date()
-            vcsTag = '1.1.0'
+            vcsTag = "1.1.1"
         }
     }
     filesSpec {
            from 'deploy/'
-           into 'no/item/wsUtil/wsUtil/1.1.0'
+           into "no/item/wsUtil/wsUtil/1.1.1"
         }
 
 }

@@ -489,7 +489,7 @@ function removeUserFromGroup(name, id) {
 function createGroup(name, autoRemove) {
     if (!groups.hasOwnProperty(name)) {
         groups[name] = {users: []};
-        websocket.addGroup(name);
+        websocket.addToGroup(name);
         if (autoRemove) {
             var found = false;
             additionalEventHandlers.close.forEach(function (t) {
