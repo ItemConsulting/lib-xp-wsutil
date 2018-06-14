@@ -115,7 +115,7 @@ This is a short example that shows how to use library as a WebRTC signaling serv
 
 For 
 
-`../views/search.html`
+`../views/page.html`
 
 ```html
 
