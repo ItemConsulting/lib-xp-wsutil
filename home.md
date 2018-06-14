@@ -5,9 +5,9 @@
 
 ## Contents ##
 
-[Server API](server.html)
+[Server API](server/index.html)
 
-[Client API](client.html)
+[Client API](client/index.html)
 
 [Tutorials](tutorial.html)
 
@@ -115,7 +115,7 @@ This is a short example that shows how to use library as a WebRTC signaling serv
 
 For 
 
-```../views/search.html```
+`../views/search.html`
 
 ```html
 
