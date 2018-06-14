@@ -43,29 +43,290 @@
 
 
     <section>
-        <article><h1>Enonic XP websocket extension library</h1><h2>Purpose</h2><p>Make Websockets integration with EnonicXP easy and more dynamic. </p>
-<p>This library extends the Enonic XP websocket library with additional features to
-make socket integration easier to handle on the server side. The library includes both client side and server side libraries</p>
-<p>The library's primary purpose is to allow communication with JSON objects, but it also comes with additional features like multiple handlers, 
-expansion, easy group management and a built in event driven add-on. </p>
-<h2>Usage</h2><p>Create a handler for both server side and client side to manage web socket communication</p>
+        <article><h1>Enonic XP websocket extension library</h1><h2>Contents</h2><p><a href="server/index.html">Server API</a></p>
+<p><a href="client/index.html">Client API</a></p>
+<p><a href="tutorial.html">Tutorials</a></p>
+<p><a href="extensions.html">Creating extensions</a></p>
+<h2>Purpose</h2><p>Make Websockets integration with EnonicXP easy and more dynamic.</p>
+<p>Websocket can be a powerful tool for real time communication between client and server. But there are some implementation code needed to handle both 
+server side logic and client side logic. This library will try to reduce some of the coded needed to get started.
+Some use-cases for websockets includes</p>
+<ul>
+<li>Real time chat</li>
+<li>IoT data flow</li>
+<li>WebRTC p2p signaling</li>
+<li>Real time server notifications</li>
+<li>nGram search suggestions</li>
+<li>.. and so on</li>
+</ul>
+<p>This library extends the Enonic XP websockets library with additional features to
+make socket integration easier to handle on the server and client side.</p>
+<ul>
+<li>Send any objects, not only string messaging</li>
+<li>Automatic check for secure context</li>
+<li>Main handler and additional handlers for background jobs</li>
+<li>Built-in extension with the SocketEmitter for custom server/client event handling</li>
+<li>Easier group handling with automatic group creation and user list</li>
+<li>Create extension for reusability on both server and client</li>
+</ul>
+<h2>Dependencies</h2><p>Add these dependencies in your <code>build.gradle</code> file</p>
+<pre class="prettyprint source"><code>dependencies {
+    include &quot;com.enonic.xp:lib-portal:${xpVersion}&quot;
+    include &quot;com.enonic.xp:lib-io:${xpVersion}&quot;
+    include &quot;com.enonic.xp:lib-websocket:${xpVersion}&quot;
+    include &quot;no.item.wsUtil:wsUtil:1.1.1&quot;
+}</code></pre><p>Add this repository </p>
+<pre class="prettyprint source"><code>repositories {
+   maven {
+        url  &quot;https://dl.bintray.com/pdrevland/wsUtil&quot;
+   }
+}</code></pre><h2>Usage</h2><p>First of all, add dependencies in <code>build.gradle</code> as described above.</p>
+<p>Websocket communication requires both server and client side implementations. </p>
+<p>Second, create a service in your project to handle your server logic</p>
 <pre class="prettyprint source lang-javascript"><code>//Server side
 var ws = require('/lib/wsUtil');
 
 ws.openWebsockets(exports);
 
-// Your server side logic goes here</code></pre><pre class="prettyprint source lang-javascript"><code>// Client side
-var cws = new ExpWS();
+// Here goes your server websocket logic</code></pre><p>This will bind the handlers for your service to the websocket library and handle the <code>GET</code> and <code>webSocketEvent</code>
+ request. </p>
+<p> The <code>GET</code> request will serve the client side library, and expose the <code>ExpWS</code> object to the client´s global scope </p>
+<p> Next make a reference to your service in your HTML</p>
+<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;mySite/_/services/websockets&quot;>&lt;/script> &lt;!-- This is the GET request serving client side library --></code></pre><p> Next, create a client side script in your assets to handle client side logic.</p>
+<pre class="prettyprint source lang-javascript"><code>// Client side
+var cws = new ExpWS(); // This will create a &quot;webSocketEvent&quot; request on connect
 
 
-// Your client side logic goes here</code></pre><h2>How it works</h2><p>The route to the websocket library goes to some URL and binds the ExpWs object to the <code>window</code> object</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;someURL/clientlib.js&quot;>&lt;/script> &lt;!-- Not a web socket request --></code></pre><p>The handler source is then loaded to the client</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;someURL/clientHandler.js&quot;>&lt;/script></code></pre><p>The handler source create a new ExpWS instance that opens a web socket connection</p>
-<pre class="prettyprint source lang-javascript"><code>var cws = new ExpWS(); // &lt;-- Request to same route as clientlib.js but with web socket enabled</code></pre><p>The library will now serve the request as a web socket request and start web socket communication</p>
-<h2>Contents</h2><p><a href="server.html">Server API</a></p>
-<p><a href="client.html">Client API</a></p>
-<p><a href="tutorial.html">Tutorials</a></p>
-<p><a href="extensions.html">Creating extensions</a></p></article>
+// Your client side logic goes here</code></pre><p>Last of all, add your client script</p>
+<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;mySite/_/services/websockets&quot;>&lt;/script> &lt;!-- This is the GET request serving client side library -->
+&lt;script src=&quot;mySite/_/assets/client.js&quot;>&lt;/script></code></pre><p>Remember the <code>ExpWS</code> object will be exposed after the client library has loaded, so a call to <code>new ExpWS()</code> will cause an error if the script is loaded first.</p>
+<h2>Example</h2><p>This is a short example that shows how to use library as a WebRTC signaling server</p>
+<p>For </p>
+<pre class="prettyprint source lang-/views/search.html```"><code>```html
+
+    &lt;video id=&quot;local&quot; autoplay>&lt;/video>
+    &lt;video id=&quot;remote&quot; autoplay>&lt;/video>
+    &lt;div id=&quot;users&quot;>&lt;/div>
+    &lt;input type=&quot;text&quot; id=&quot;uname&quot;>
+
+    &lt;script src=&quot;mySite/_/asset/com.my.app/jquery.min.js&quot;>&lt;/script>
+    &lt;script src=&quot;mySite/_/service/com.my.app/websocket&quot;>&lt;/script>
+    &lt;script src=&quot;mySite/_/asset/com.my.app/client.js&quot;>&lt;/script></code></pre><p><code>../assets/client.js</code></p>
+<pre class="prettyprint source lang-javascript"><code>var cws = new ExpWS();
+var username;
+var local = $('#local');
+var remote = $('#remote');
+var uname = $('#uname');
+var peerConnection;
+
+// Register your username
+uname.keyup(function(e) {
+    if (e.keyCode === 13) {
+        cws.send({type: 'regUsername', username: uname.val()});
+        uname.val('');
+    }
+    else console.log(e.keyCode);
+});
+
+// Pipe each message to the correct handler
+cws.setEventHandler('message', function(message) {
+    switch (message.type) {
+        case 'username': username = message.username; uname.hide(); break;
+        case 'invite': handleInvite(message); break;
+        case 'accept': handleAccept(message); break;
+        case 'sdp': handleSDP(message); break;
+        case 'candidate': handleCandidate(message); break;
+        case 'error': alert(message.err); break;
+        case 'users': handleUsers(message); break;
+        case 'leave': handleUserLeft(message); break;
+        case 'enter': userEnter(message.username); break;
+        default: console.log(message);
+    }
+});
+
+// If the client get an invite and accepts then prepare to start a video call
+function handleInvite(message) {
+    if (confirm(message.from + ' wants to start a video chat, Accept?')) {
+        start(message.from);
+        // Send the accept to the invitee
+        cws.send({ from: username, to: message.from, type: 'accept'});
+    }
+}
+
+// If the invite is accepted start a video call
+function handleAccept(message) {
+   start(message.from);
+}
+
+// Start the video calling, NB: This way of doing WebRTC will be deprecated
+// The clients will start to negotiate how to connect with each other and send
+// instructions on how to do that
+// Check out MDN´s website on WebRTC for more information
+function start(from) {
+    if (peerConnection) return err({ err: 'Video call already in progress'});
+
+    peerConnection = new RTCPeerConnection();
+
+    peerConnection.onicecandidate = function(e) {
+        if (e.candidate) {
+            cws.send({
+                from: username,
+                to: from,
+                type: 'candidate',
+                candidate: e.candidate
+            });
+        }
+    };
+
+    peerConnection.onnegotiationneeded = function (ev) {
+        peerConnection.createOffer(function(desc) {
+            peerConnection.setLocalDescription(desc, function() {
+                cws.send({
+                    from: username,
+                    to: from,
+                    type: 'sdp',
+                    sdp: peerConnection.localDescription
+                })
+            }, err)
+        }, err)
+    };
+
+    peerConnection.onaddstream = function (e) {
+        remote.attr('src', URL.createObjectURL(event.stream));
+    };
+
+    navigator.getUserMedia({
+        audio: true,
+        video: {
+            width: 600,
+            height: 400
+        }
+    }, function(stream) {
+        local.attr('src',URL.createObjectURL(stream));
+        peerConnection.addStream(stream);
+    }, err);
+}
+
+function handleSDP(message) {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp), function() {
+        if (peerConnection.remoteDescription.type === 'offer') {
+            peerConnection.createAnswer(function(desc) {
+                peerConnection.setLocalDescription(desc, function() {
+                    cws.send({
+                        from: username,
+                        to: message.from,
+                        type: 'sdp',
+                        sdp: peerConnection.localDescription
+                    })
+                }, err)
+            }  ,err)
+        }
+    })
+}
+
+function handleCandidate(message) {
+    peerConnection.addIceCandidate(message.candidate);
+}
+
+function handleUsers(message) {
+    message.users.forEach(userEnter);
+}
+
+function handleUserLeft(message) {
+    $('#' + message.username).remove();
+}
+// Add users to our list
+function userEnter(user) {
+    var u = $('&lt;a>&lt;/a>');
+    u.text(user);
+    u.attr('href','#');
+    u.attr('id',user);
+    u.click(function() {
+        invite(user);
+    });
+    u.append('&lt;br>');
+    $('#users').append(u);
+
+}
+
+// Send an invite
+function invite(user) {
+    if (username) {
+        cws.send({
+            from: username,
+            to: user,
+            type: 'invite'
+        })
+    }
+    else alert('You must register first');
+}
+
+
+
+function err(err) {
+    console.error(err);
+}
+
+// Start a websocket connection
+cws.connect();</code></pre><p><code>../services/websocket/index.js</code></p>
+<pre class="prettyprint source lang-javascript"><code>var ws = require('/lib/wsUtil');
+
+ws.openWebsockets(exports); // Open websocket communication
+
+var users = {};
+
+// Handle username registration
+ws.addHandlers('message', function(event) {
+    var message = JSON.parse(event.message);
+    if (message.type === 'regUsername') {
+        if (users.hasOwnProperty(message.username)) {
+            //Send an error if username is taken
+            ws.send(event.session.id, {type: 'error', err: 'Username taken'});
+        }
+        else {
+            users[message.username] = event.session.id;
+            ws.send(event.session.id, {type: 'username', username: message.username});
+            // If username is not taken, broadcast the newly entered user
+            userUpdate('enter', message.username);
+        }
+    }
+});
+// When a user enter out site
+ws.setEventHandler('open', function(event) {
+
+    // Add the user to the 'all' group
+    ws.addUserToGroup(event.session.id, 'all', true);
+
+    var arr = [];
+    for (var k in users) {
+        if (users.hasOwnProperty(k)) arr.push(k);
+    }
+    // Send the user list to our new arrival
+    ws.send(event.session.id, { type: 'users', users: arr});
+});
+
+// Relay messages to and from clients
+ws.setEventHandler('message', function(message) {
+    if (message.type !== 'regUsername') {
+        ws.send(users[message.to], message)
+    }
+});
+
+ws.setEventHandler('close', function(event) {
+    var username;
+    for (var k in users) {
+        if (users.hasOwnProperty(k) && users[k] === event.session.id) {
+            username = k;
+            delete users[k];
+        }
+    }
+    userUpdate('leave', username);
+
+});
+
+function userUpdate(type, username) {
+    ws.sendToGroup('all', { type: type, username: username})
+}</code></pre></article>
     </section>
 
 
@@ -89,7 +350,7 @@ var cws = new ExpWS();
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jun 13 2018 15:20:08 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jun 14 2018 15:26:18 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
