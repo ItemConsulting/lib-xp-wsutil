@@ -137,9 +137,9 @@ For
     <video id="remote" autoplay></video>
     <div id="users"></div>
     
-    <script src="mySite/_/assets/jquery.min.js"></script>
-    <script src="mySite/_/services/websocket"></script>
-    <script src="mySite/_/assets/client.js"></script>
+    <script src="mySite/_/asset/com.my.app/jquery.min.js"></script>
+    <script src="mySite/_/service/com.my.app/websocket"></script>
+    <script src="mySite/_/asset/com.my.app/client.js"></script>
 
 ```
 `../services/websocket/index.js`
@@ -152,7 +152,6 @@ var users = {};
 
 // Handle username registration
 ws.addHandlers('message', function(event) {
-    log.info(JSON.stringify(event));
     var message = JSON.parse(event.message);
     if (message.type === 'regUsername') {
         if (users.hasOwnProperty(message.username)) {
@@ -340,6 +339,7 @@ function userEnter(user) {
     u.click(function() {
         invite(user);
     });
+    u.append('<br>');
     $('#users').append(u);
     
 }
