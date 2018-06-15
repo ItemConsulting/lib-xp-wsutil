@@ -13,24 +13,42 @@
 
 ## Usage ##
 
-To create an instance of the socket client you need to reference it through a script tag that points to your server side instantiation of wsUtil
+Your client library is served through the websocket service.
+
+One thing to remember is the host parameter in the server `openWebsockets(exports, host)` call, sends the host value to 
+the client library and uses that value to create a `new WebSocket(protocol + host)` instance. The `protocol` 
+parameter is determined by the context of which the page is loaded. So if served behind a secure context
+the `protocol` value will be `wss://` otherwise in develop mode or insecure context `ws://`
+
+To send the client library add a script tag to your page that want to use your websocket service
+```html
+<script src="mySite/_/service/com.my.app/websocket"></script>
+```
+The client library is ready to create the `new WebSocket(ws://mySite/_/service/com.my.app/websocket)` instance
+which will open a websocket connection.
+
+To actually open the connection, you need to implement the code that does the websocket logic, including connect.
+
+Create a javaScript file in your assets folder and add it to your page with the client library
 
 ```html
-<script data-th-src="${path.lib}"></script>
+<script src="mySite/_/asset/com.my.app/clientws.js"></script> 
 ```
 
-You will also need a reference to your client side web socket implementation
-
-```html
-<script data-th-src="${path.client}"></script>
-```
-
-**IMPORTANT** The library must be loaded before the implementation
+The minimal code needed to open a connection
 
 ```javascript
+// assets/clientws.js
+var clientWs = new ExpWs();
+clientWs.connect();
 
-var cws = new ExpWS();
+// More logic here if needed
 ```
 
-The constructor creates the socket connection automatically.
+
+
+**IMPORTANT** The library must be loaded first.
+
+
+
 
