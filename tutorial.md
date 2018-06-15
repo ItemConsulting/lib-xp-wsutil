@@ -87,7 +87,7 @@ Add the dependencies to the `build.gradle` file
 ```
 include "com.enonic.xp:lib-io:${xpVersion}"
 include "com.enonic.xp:lib-websocket:${xpVersion}"
-include "no.item.wsUtil:wsUtil:0.0.1"
+include "no.item.wsUtil:wsUtil:1.1.1"
 ```
 
 Now we are ready to deploy

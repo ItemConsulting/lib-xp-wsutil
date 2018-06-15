@@ -97,7 +97,7 @@ exports.sendToGroup                 = sendToGroup;
 exports.returnScript                = returnScript;
 exports.extend                      = extend;
 exports.expandClient                = expandClient;
-exports.getWsEvents                 = wsEvents;
+exports.getWsEvents                 = getWsEvents;
 
 
 //*************************************************//
@@ -534,7 +534,7 @@ function send(id, message) {
  * @param {object} event The event sent from the client
  * @since 1.1.0
  */
-function wsEvents(event) {
+function getWsEvents(event) {
     if (eventHandlers[event.type]) {
         if (event.type === 'message') {
             try {

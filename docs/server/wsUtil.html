@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <title>JSDoc: Class: wsUtil</title>
 
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
@@ -19,530 +19,877 @@
 
     <h1 class="page-title">Class: wsUtil</h1>
 
+    
 
-    <section>
 
-        <header>
 
-            <h2><span class="attribs"><span class="type-signature"></span></span>wsUtil</h2>
 
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>wsUtil</h2>
+        
             <div class="class-description"><p>Server side websocket utility extension library for Enonic XP</p></div>
+        
+    
+</header>
 
+<article>
+    <div class="container-overview">
+    
+        
 
-        </header>
 
-        <article>
-            <div class="container-overview">
 
 
-                <dl class="details">
 
 
-                    <dt class="tag-version">Version:</dt>
-                    <dd class="tag-version">
-                        <ul class="dummy">
-                            <li>1.1.0</li>
-                        </ul>
-                    </dd>
 
 
-                    <dt class="tag-author">Author:</dt>
-                    <dd class="tag-author">
-                        <ul>
-                            <li>Per Arne Drevland</li>
-                        </ul>
-                    </dd>
 
 
-                    <dt class="tag-source">Source:</dt>
-                    <dd class="tag-source">
-                        <ul class="dummy">
-                            <li>
-                                <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line70">line 70</a>
-                            </li>
-                        </ul>
-                    </dd>
 
 
-                </dl>
 
 
-                <h5>Requires:</h5>
-                <ul>
-                    <li>module:/lib/xp/websocket</li>
 
-                    <li>module:/lib/xp/io</li>
+<dl class="details">
 
-                    <li>module:/lib/xp/portal</li>
-                </ul>
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.1.0</li></ul></dd>
+    
 
+    
 
-                <h5>Example</h5>
+    
 
-                <pre class="prettyprint"><code>var ws = require('/lib/wsUtil');</code></pre>
+    
 
+    
 
-            </div>
+    
 
+    
 
-            <h3 class="subsection-title">Requires</h3>
+    
 
-            <ul>
-                <li>module:/lib/xp/websocket</li>
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Per Arne Drevland</li>
+        </ul>
+    </dd>
+    
 
-                <li>module:/lib/xp/io</li>
+    
 
-                <li>module:/lib/xp/portal</li>
-            </ul>
+    
 
+    
 
-            <h3 class="subsection-title">Classes</h3>
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line70">line 70</a>
+    </li></ul></dd>
+    
 
-            <dl>
-                <dt><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></dt>
-                <dd></dd>
-            </dl>
+    
 
+    
 
-            <h3 class="subsection-title">Methods</h3>
+    
+</dl>
 
 
-            <h4 class="name" id=".addHandlers"><span class="type-signature">(static) </span>addHandlers<span
-                    class="signature">(event, handler)</span><span class="type-signature"></span></h4>
 
+<h5>Requires:</h5>
+<ul>
+    <li>module:/lib/xp/websocket</li>
 
-            <div class="description">
-                <p>Add additional socket event handlers. This is the secondary handlers for the event and they are being
-                    pushed to the additional event handlers array</p>
-            </div>
+    <li>module:/lib/xp/io</li>
 
+    <li>module:/lib/xp/portal</li>
+</ul>
 
-            <h5>Parameters:</h5>
 
 
-            <table class="params">
-                <thead>
-                <tr>
 
-                    <th>Name</th>
 
 
-                    <th>Type</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
 
 
-                <tr>
 
-                    <td class="name"><code>event</code></td>
 
 
-                    <td class="type">
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var ws = require('/lib/wsUtil');</code></pre>
 
-                        <span class="param-type">string</span>
 
 
-                    </td>
+    
+    </div>
 
+    
 
-                    <td class="description last"><p>The name of the socket event</p></td>
-                </tr>
+    
+        <h3 class="subsection-title">Requires</h3>
 
+        <ul>
+            <li>module:/lib/xp/websocket</li>
+        
+            <li>module:/lib/xp/io</li>
+        
+            <li>module:/lib/xp/portal</li>
+        </ul>
+    
 
-                <tr>
+    
+        <h3 class="subsection-title">Classes</h3>
 
-                    <td class="name"><code>handler</code></td>
+        <dl>
+            <dt><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></dt>
+            <dd></dd>
+        </dl>
+    
 
+    
 
-                    <td class="type">
+    
 
+    
 
-                        <span class="param-type">function</span>
+    
 
+    
+        <h3 class="subsection-title">Methods</h3>
 
-                    </td>
+        
+            
 
+    
 
-                    <td class="description last"><p>The handler to bind to the event</p></td>
-                </tr>
+    
+    <h4 class="name" id=".addHandlers"><span class="type-signature">(static) </span>addHandlers<span class="signature">(event, handler)</span><span class="type-signature"></span></h4>
+    
 
+    
 
-                </tbody>
-            </table>
 
 
-            <dl class="details">
+<div class="description">
+    <p>Add additional socket event handlers. This is the secondary handlers for the event and they are being pushed to the additional event handlers array</p>
+</div>
 
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line420">line 420</a>
-                        </li>
-                    </ul>
-                </dd>
 
 
-            </dl>
 
 
-            <h4 class="name" id=".addUserToGroup"><span class="type-signature">(static) </span>addUserToGroup<span
-                    class="signature">(id, group, autoCreate<span class="signature-attributes">opt</span>)</span><span
-                    class="type-signature"></span></h4>
 
+    <h5>Parameters:</h5>
+    
 
-            <div class="description">
-                <p>Adds a user to a group if it exists. Create the group if it doesn't exist and the autoCreate flag is
-                    set
-                    or log an error if not</p>
-            </div>
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
+        <th>Type</th>
 
-            <h5>Parameters:</h5>
+        
 
+        
 
-            <table class="params">
-                <thead>
-                <tr>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-                    <th>Name</th>
+    <tbody>
+    
 
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
 
-                    <th>Type</th>
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
 
-                    <th>Attributes</th>
+            
+            </td>
 
+            
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
+            
 
-                <tbody>
+            <td class="description last"><p>The name of the socket event</p></td>
+        </tr>
 
+    
 
-                <tr>
+        <tr>
+            
+                <td class="name"><code>handler</code></td>
+            
 
-                    <td class="name"><code>id</code></td>
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
 
 
-                    <td class="type">
+            
+            </td>
 
+            
 
-                        <span class="param-type">string</span>
+            
 
+            <td class="description last"><p>The handler to bind to the event</p></td>
+        </tr>
 
-                    </td>
+    
+    </tbody>
+</table>
 
 
-                    <td class="attributes">
 
 
-                    </td>
 
 
-                    <td class="description last"><p>The id of the user</p></td>
-                </tr>
+<dl class="details">
 
+    
 
-                <tr>
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
-                    <td class="name"><code>group</code></td>
+    
 
+    
 
-                    <td class="type">
+    
 
+    
 
-                        <span class="param-type">string</span>
+    
 
+    
 
-                    </td>
+    
 
+    
 
-                    <td class="attributes">
+    
 
+    
 
-                    </td>
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line420">line 420</a>
+    </li></ul></dd>
+    
 
+    
 
-                    <td class="description last"><p>The name of the group</p></td>
-                </tr>
+    
 
+    
+</dl>
 
-                <tr>
 
-                    <td class="name"><code>autoCreate</code></td>
 
 
-                    <td class="type">
 
 
-                        <span class="param-type">boolean</span>
 
 
-                    </td>
 
 
-                    <td class="attributes">
 
-                        &lt;optional><br>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>The flag to create the group if it doesn't exist</p></td>
-                </tr>
 
 
-                </tbody>
-            </table>
 
+        
+            
 
-            <dl class="details">
+    
 
+    
+    <h4 class="name" id=".addUserToGroup"><span class="type-signature">(static) </span>addUserToGroup<span class="signature">(id, group, autoCreate<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
+    
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line453">line 453</a>
-                        </li>
-                    </ul>
-                </dd>
 
+<div class="description">
+    <p>Adds a user to a group if it exists. Create the group if it doesn't exist and the autoCreate flag is set
+or log an error if not</p>
+</div>
 
-            </dl>
 
 
-            <h4 class="name" id=".createGroup"><span class="type-signature">(static) </span>createGroup<span
-                    class="signature">(name, autoRemove<span class="signature-attributes">opt</span>)</span><span
-                    class="type-signature"></span></h4>
 
 
-            <div class="description">
-                <p>Creates a group with given name. If the autoRemove flag is set, if removes a user from the group when
-                    user closes connection</p>
-            </div>
 
 
-            <h5>Parameters:</h5>
 
 
-            <table class="params">
-                <thead>
-                <tr>
+    <h5>Parameters:</h5>
+    
 
-                    <th>Name</th>
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
+        <th>Type</th>
 
-                    <th>Type</th>
+        
+        <th>Attributes</th>
+        
 
+        
 
-                    <th>Attributes</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
+    <tbody>
+    
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
 
-                <tbody>
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
 
-                <tr>
+            
+            </td>
 
-                    <td class="name"><code>name</code></td>
+            
+                <td class="attributes">
+                
 
+                
 
-                    <td class="type">
+                
+                </td>
+            
 
+            
 
-                        <span class="param-type">string</span>
+            <td class="description last"><p>The id of the user</p></td>
+        </tr>
 
+    
 
-                    </td>
+        <tr>
+            
+                <td class="name"><code>group</code></td>
+            
 
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
-                    <td class="attributes">
 
+            
+            </td>
 
-                    </td>
+            
+                <td class="attributes">
+                
 
+                
 
-                    <td class="description last"><p>The name of the group</p></td>
-                </tr>
+                
+                </td>
+            
 
+            
 
-                <tr>
+            <td class="description last"><p>The name of the group</p></td>
+        </tr>
 
-                    <td class="name"><code>autoRemove</code></td>
+    
 
+        <tr>
+            
+                <td class="name"><code>autoCreate</code></td>
+            
 
-                    <td class="type">
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
 
 
-                        <span class="param-type">boolean</span>
+            
+            </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
-                    </td>
+                
 
+                
+                </td>
+            
 
-                    <td class="attributes">
+            
 
-                        &lt;optional><br>
+            <td class="description last"><p>The flag to create the group if it doesn't exist</p></td>
+        </tr>
 
+    
+    </tbody>
+</table>
 
-                    </td>
 
 
-                    <td class="description last"><p>Removes the user from the group on close connection</p></td>
-                </tr>
 
 
-                </tbody>
-            </table>
 
+<dl class="details">
 
-            <dl class="details">
+    
 
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
+    
 
+    
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line489">line 489</a>
-                        </li>
-                    </ul>
-                </dd>
+    
 
+    
 
-            </dl>
+    
 
+    
 
-            <h4 class="name" id=".expandClient"><span class="type-signature">(static) </span>expandClient<span
-                    class="signature">(name, func)</span><span class="type-signature"></span></h4>
+    
 
+    
 
-            <div class="description">
-                <p>Expand the client library with new functionalities. NOTE: The expansion object have direct access to
-                    the client library's inner variables and functions</p>
-            </div>
+    
 
+    
 
-            <h5>Parameters:</h5>
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line453">line 453</a>
+    </li></ul></dd>
+    
 
+    
 
-            <table class="params">
-                <thead>
-                <tr>
+    
 
-                    <th>Name</th>
+    
+</dl>
 
 
-                    <th>Type</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
 
 
-                <tr>
 
-                    <td class="name"><code>name</code></td>
 
 
-                    <td class="type">
 
 
-                        <span class="param-type">string</span>
-                        |
 
-                        <span class="param-type">object</span>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>Name of the new client function or an object with key=name
-                        value=function</p></td>
-                </tr>
 
+        
+            
 
-                <tr>
+    
 
-                    <td class="name"><code>func</code></td>
+    
+    <h4 class="name" id=".createGroup"><span class="type-signature">(static) </span>createGroup<span class="signature">(name, autoRemove<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
 
+    
 
-                    <td class="type">
 
 
-                        <span class="param-type">function</span>
+<div class="description">
+    <p>Creates a group with given name. If the autoRemove flag is set, if removes a user from the group when user closes connection</p>
+</div>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>The function for the new client interface.</p></td>
-                </tr>
 
 
-                </tbody>
-            </table>
 
 
-            <dl class="details">
 
+    <h5>Parameters:</h5>
+    
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line399">line 399</a>
-                        </li>
-                    </ul>
-                </dd>
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
+        <th>Type</th>
 
-            </dl>
+        
+        <th>Attributes</th>
+        
 
+        
 
-            <h5>Example</h5>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-            <pre class="prettyprint"><code>// service/websocket/websocket.js
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The name of the group</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoRemove</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Removes the user from the group on close connection</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line489">line 489</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".expandClient"><span class="type-signature">(static) </span>expandClient<span class="signature">(name, func)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Expand the client library with new functionalities. NOTE: The expansion object have direct access to the client library's inner variables and functions</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the new client function or an object with key=name value=function</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>func</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function for the new client interface.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line399">line 399</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// service/websocket/websocket.js
 var ws = require('path/to/wsUtil');
 
 ws.expandClient('hello', function() { send('Hello'); // use the inner send function });
@@ -556,85 +903,151 @@ var cws = new ExpWs();
 cws.hello();</code></pre>
 
 
-            <h4 class="name" id=".extend"><span class="type-signature">(static) </span>extend<span class="signature">(exportObject)</span><span
-                    class="type-signature"></span></h4>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".extend"><span class="type-signature">(static) </span>extend<span class="signature">(exportObject)</span><span class="type-signature"></span></h4>
+    
+
+    
 
 
-            <div class="description">
-                <p>Extends the library functionalities to create reusable extensions</p>
-            </div>
+
+<div class="description">
+    <p>Extends the library functionalities to create reusable extensions</p>
+</div>
 
 
-            <h5>Parameters:</h5>
 
 
-            <table class="params">
-                <thead>
-                <tr>
-
-                    <th>Name</th>
 
 
-                    <th>Type</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
+    <h5>Parameters:</h5>
+    
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-                <tr>
+        <th>Type</th>
 
-                    <td class="name"><code>exportObject</code></td>
+        
 
+        
 
-                    <td class="type">
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
+    <tbody>
+    
 
-                        <span class="param-type">object</span>
+        <tr>
+            
+                <td class="name"><code>exportObject</code></td>
+            
 
-
-                    </td>
-
-
-                    <td class="description last"><p>The object that extends the library</p></td>
-                </tr>
-
-
-                </tbody>
-            </table>
-
-
-            <dl class="details">
-
-
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line373">line 373</a>
-                        </li>
-                    </ul>
-                </dd>
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
 
 
-                <dt class="tag-see">See:</dt>
-                <dd class="tag-see">
-                    <ul>
-                        <li><p><a href="https://itemconsulting.github.io/wsutil-server/extensions.html">Creating
-                            extensions</a></p></li>
-                    </ul>
-                </dd>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The object that extends the library</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
-            </dl>
 
 
-            <h5>Example</h5>
 
-            <pre class="prettyprint"><code>// lib/extension.js
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line373">line 373</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><p><a href="https://itemconsulting.github.io/wsutil-server/extensions.html">Creating extensions</a></p></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// lib/extension.js
 var ws = require('/lib/wsUtil');
 
 var extensionObject = { extension: extension };
@@ -654,571 +1067,1041 @@ extensionLib.openWebsockets(exports);
 extensionLib.extension(); // Activate extension</code></pre>
 
 
-            <h4 class="name" id=".getGroupUsers"><span class="type-signature">(static) </span>getGroupUsers<span
-                    class="signature">(group)</span><span
-                    class="type-signature"> &rarr; (nullable) {Array.&lt;string>}</span></h4>
 
+        
+            
 
-            <div class="description">
-                <p>Get all connected users from a group</p>
-            </div>
+    
 
+    
+    <h4 class="name" id=".getGroupUsers"><span class="type-signature">(static) </span>getGroupUsers<span class="signature">(group)</span><span class="type-signature"> &rarr; (nullable) {Array.&lt;string>}</span></h4>
+    
 
-            <h5>Parameters:</h5>
+    
 
 
-            <table class="params">
-                <thead>
-                <tr>
 
-                    <th>Name</th>
+<div class="description">
+    <p>Get all connected users from a group</p>
+</div>
 
 
-                    <th>Type</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
 
 
-                <tr>
 
-                    <td class="name"><code>group</code></td>
 
+    <h5>Parameters:</h5>
+    
 
-                    <td class="type">
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
+        <th>Type</th>
 
-                        <span class="param-type">string</span>
+        
 
+        
 
-                    </td>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
+    <tbody>
+    
 
-                    <td class="description last"><p>Name of the group</p></td>
-                </tr>
+        <tr>
+            
+                <td class="name"><code>group</code></td>
+            
 
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
-                </tbody>
-            </table>
 
+            
+            </td>
 
-            <dl class="details">
+            
 
+            
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
+            <td class="description last"><p>Name of the group</p></td>
+        </tr>
 
+    
+    </tbody>
+</table>
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line436">line 436</a>
-                        </li>
-                    </ul>
-                </dd>
 
 
-            </dl>
 
 
-            <h5>Returns:</h5>
 
+<dl class="details">
 
-            <div class="param-desc">
-                <p>The array of users or undefined if group doesn't exist</p>
-            </div>
+    
 
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
-            <dl>
-                <dt>
-                    Type
-                </dt>
-                <dd>
+    
 
-                    <span class="param-type">Array.&lt;string></span>
+    
 
+    
 
-                </dd>
-            </dl>
+    
 
+    
 
-            <h4 class="name" id=".openWebsockets"><span class="type-signature">(static) </span>openWebsockets<span
-                    class="signature">(exp, host<span class="signature-attributes">opt</span>)</span><span
-                    class="type-signature"></span></h4>
+    
 
+    
 
-            <div class="description">
-                <p>Opens the websocket connection and delegate events to handlers</p>
-            </div>
+    
 
+    
 
-            <h5>Parameters:</h5>
+    
 
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line436">line 436</a>
+    </li></ul></dd>
+    
 
-            <table class="params">
-                <thead>
-                <tr>
+    
 
-                    <th>Name</th>
+    
 
+    
+</dl>
 
-                    <th>Type</th>
 
 
-                    <th>Attributes</th>
 
 
-                    <th>Default</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
 
 
-                <tr>
 
-                    <td class="name"><code>exp</code></td>
 
 
-                    <td class="type">
+<h5>Returns:</h5>
 
+        
+<div class="param-desc">
+    <p>The array of users or undefined if group doesn't exist</p>
+</div>
 
-                        <span class="param-type">object</span>
 
 
-                    </td>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;string></span>
 
 
-                    <td class="attributes">
+    </dd>
+</dl>
 
+    
 
-                    </td>
 
 
-                    <td class="default">
 
-                    </td>
 
+        
+            
 
-                    <td class="description last"><p>The exports object from the Enonic module that is assigned to handle
-                        websocket events</p></td>
-                </tr>
+    
 
+    
+    <h4 class="name" id=".getWsEvents"><span class="type-signature">(static) </span>getWsEvents<span class="signature">(event)</span><span class="type-signature"></span></h4>
+    
 
-                <tr>
+    
 
-                    <td class="name"><code>host</code></td>
 
 
-                    <td class="type">
+<div class="description">
+    <p>The function that binds to the exports webSocketEvent method. This function checks the ws event object for type
+and calls the appropriate handler. Then it loops over the additional handlers and calls each one of them.</p>
+</div>
 
 
-                        <span class="param-type">string</span>
 
 
-                    </td>
 
 
-                    <td class="attributes">
 
-                        &lt;optional><br>
 
 
-                    </td>
+    <h5>Parameters:</h5>
+    
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-                    <td class="default">
+        <th>Type</th>
 
-                        portal.serviceUrl({ service: 'websocket'})
+        
 
-                    </td>
+        
 
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-                    <td class="description last"><p>The host for the service that serves the web sockets</p></td>
-                </tr>
+    <tbody>
+    
 
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
 
-                </tbody>
-            </table>
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
 
 
-            <dl class="details">
+            
+            </td>
 
+            
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
+            
 
+            <td class="description last"><p>The event sent from the client</p></td>
+        </tr>
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line563">line 563</a>
-                        </li>
-                    </ul>
-                </dd>
+    
+    </tbody>
+</table>
 
 
-            </dl>
 
 
-            <h4 class="name" id=".removeUserFromGroup"><span
-                    class="type-signature">(static) </span>removeUserFromGroup<span
-                    class="signature">(name, id)</span><span class="type-signature"></span></h4>
 
 
-            <div class="description">
-                <p>Removes a user from a group of given name, if the group is empty, it removes the group</p>
-            </div>
+<dl class="details">
 
+    
 
-            <h5>Parameters:</h5>
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>1.1.0</li></ul></dd>
+    
 
+    
 
-            <table class="params">
-                <thead>
-                <tr>
+    
 
-                    <th>Name</th>
+    
 
+    
 
-                    <th>Type</th>
+    
 
+    
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
+    
 
-                <tbody>
+    
 
+    
 
-                <tr>
+    
 
-                    <td class="name"><code>name</code></td>
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line537">line 537</a>
+    </li></ul></dd>
+    
 
+    
 
-                    <td class="type">
+    
 
+    
+</dl>
 
-                        <span class="param-type">string</span>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>Name of the group</p></td>
-                </tr>
 
 
-                <tr>
 
-                    <td class="name"><code>id</code></td>
 
 
-                    <td class="type">
 
 
-                        <span class="param-type">string</span>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>The id of the user</p></td>
-                </tr>
 
 
-                </tbody>
-            </table>
+        
+            
 
+    
 
-            <dl class="details">
+    
+    <h4 class="name" id=".openWebsockets"><span class="type-signature">(static) </span>openWebsockets<span class="signature">(exp, host<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
 
+    
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line474">line 474</a>
-                        </li>
-                    </ul>
-                </dd>
+<div class="description">
+    <p>Opens the websocket connection and delegate events to handlers</p>
+</div>
 
 
-            </dl>
 
 
-            <h4 class="name" id=".send"><span class="type-signature">(static) </span>send<span class="signature">(id, message)</span><span
-                    class="type-signature"></span></h4>
 
 
-            <div class="description">
-                <p>Sends a message to given client, if the message is of type object it will be stringified</p>
-            </div>
 
 
-            <h5>Parameters:</h5>
 
+    <h5>Parameters:</h5>
+    
 
-            <table class="params">
-                <thead>
-                <tr>
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-                    <th>Name</th>
+        <th>Type</th>
 
+        
+        <th>Attributes</th>
+        
 
-                    <th>Type</th>
+        
+        <th>Default</th>
+        
 
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
+    <tbody>
+    
 
-                <tbody>
+        <tr>
+            
+                <td class="name"><code>exp</code></td>
+            
 
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
 
-                <tr>
 
-                    <td class="name"><code>id</code></td>
+            
+            </td>
 
+            
+                <td class="attributes">
+                
 
-                    <td class="type">
+                
 
+                
+                </td>
+            
 
-                        <span class="param-type">string</span>
+            
+                <td class="default">
+                
+                </td>
+            
 
+            <td class="description last"><p>The exports object from the Enonic module that is assigned to handle websocket events</p></td>
+        </tr>
 
-                    </td>
+    
 
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
 
-                    <td class="description last"><p>The id of the user</p></td>
-                </tr>
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
 
-                <tr>
+            
+            </td>
 
-                    <td class="name"><code>message</code></td>
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
 
-                    <td class="type">
+                
+                </td>
+            
 
+            
+                <td class="default">
+                
+                    portal.serviceUrl({ service: 'websocket'})
+                
+                </td>
+            
 
-                        <span class="param-type">string</span>
-                        |
+            <td class="description last"><p>The host for the service that serves the web sockets</p></td>
+        </tr>
 
-                        <span class="param-type">object</span>
+    
+    </tbody>
+</table>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>The message to send</p></td>
-                </tr>
 
 
-                </tbody>
-            </table>
+<dl class="details">
 
+    
 
-            <dl class="details">
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
+    
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
+    
 
+    
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line521">line 521</a>
-                        </li>
-                    </ul>
-                </dd>
+    
 
+    
 
-            </dl>
+    
 
+    
 
-            <h4 class="name" id=".sendSocketResponse"><span
-                    class="type-signature">(static) </span>sendSocketResponse<span class="signature">(req, host<span
-                    class="signature-attributes">opt</span>)</span><span
-                    class="type-signature"> &rarr; {SocketResponse}</span></h4>
+    
 
+    
 
-            <div class="description">
-                <p>Send the socket response for a socket request</p>
-            </div>
+    
 
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line563">line 563</a>
+    </li></ul></dd>
+    
 
-            <h5>Parameters:</h5>
+    
 
+    
 
-            <table class="params">
-                <thead>
-                <tr>
+    
+</dl>
 
-                    <th>Name</th>
 
 
-                    <th>Type</th>
 
 
-                    <th>Attributes</th>
 
 
-                    <th>Default</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
 
 
-                <tr>
 
-                    <td class="name"><code>req</code></td>
 
 
-                    <td class="type">
 
 
-                        <span class="param-type">object</span>
 
+        
+            
 
-                    </td>
+    
 
+    
+    <h4 class="name" id=".removeUserFromGroup"><span class="type-signature">(static) </span>removeUserFromGroup<span class="signature">(name, id)</span><span class="type-signature"></span></h4>
+    
 
-                    <td class="attributes">
+    
 
 
-                    </td>
 
+<div class="description">
+    <p>Removes a user from a group of given name, if the group is empty, it removes the group</p>
+</div>
 
-                    <td class="default">
 
-                    </td>
 
 
-                    <td class="description last"><p>The request object passed to the server</p></td>
-                </tr>
 
 
-                <tr>
 
-                    <td class="name"><code>host</code></td>
 
 
-                    <td class="type">
+    <h5>Parameters:</h5>
+    
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-                        <span class="param-type">string</span>
+        <th>Type</th>
 
+        
 
-                    </td>
+        
 
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-                    <td class="attributes">
+    <tbody>
+    
 
-                        &lt;optional><br>
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
 
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
-                    </td>
 
+            
+            </td>
 
-                    <td class="default">
+            
 
-                        portal.serviceUrl({ service: 'websocket'})
+            
 
-                    </td>
+            <td class="description last"><p>Name of the group</p></td>
+        </tr>
 
+    
 
-                    <td class="description last"><p>The url to the service that serves the web sockets</p></td>
-                </tr>
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
 
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
-                </tbody>
-            </table>
 
+            
+            </td>
 
-            <dl class="details">
+            
 
+            
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
+            <td class="description last"><p>The id of the user</p></td>
+        </tr>
 
+    
+    </tbody>
+</table>
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line601">line 601</a>
-                        </li>
-                    </ul>
-                </dd>
 
 
-            </dl>
 
 
-            <h5>Returns:</h5>
 
+<dl class="details">
 
-            <div class="param-desc">
-                <p>The response object</p>
-            </div>
+    
 
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
-            <dl>
-                <dt>
-                    Type
-                </dt>
-                <dd>
+    
 
-                    <span class="param-type">SocketResponse</span>
+    
 
+    
 
-                </dd>
-            </dl>
+    
 
+    
 
-            <h5>Example</h5>
+    
 
-            <pre class="prettyprint"><code>// someSocketService.js
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line474">line 474</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".send"><span class="type-signature">(static) </span>send<span class="signature">(id, message)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Sends a message to given client, if the message is of type object it will be stringified</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The id of the user</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The message to send</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line521">line 521</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".sendSocketResponse"><span class="type-signature">(static) </span>sendSocketResponse<span class="signature">(req, host<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {SocketResponse}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Send the socket response for a socket request</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The request object passed to the server</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    portal.serviceUrl({ service: 'websocket'})
+                
+                </td>
+            
+
+            <td class="description last"><p>The url to the service that serves the web sockets</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line601">line 601</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The response object</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">SocketResponse</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// someSocketService.js
 ws = require('/lib/wsUtil');
 exports.get = ws.sendSocketResponse;
 // or
@@ -1227,610 +2110,848 @@ exports.get = function(req) {
  }</code></pre>
 
 
-            <h4 class="name" id=".sendToGroup"><span class="type-signature">(static) </span>sendToGroup<span
-                    class="signature">(name, message)</span><span class="type-signature"></span></h4>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".sendToGroup"><span class="type-signature">(static) </span>sendToGroup<span class="signature">(name, message)</span><span class="type-signature"></span></h4>
+    
+
+    
 
 
-            <div class="description">
-                <p>extends the sendToGroup function from EnonicXP to stringify objects</p>
-            </div>
+
+<div class="description">
+    <p>extends the sendToGroup function from EnonicXP to stringify objects</p>
+</div>
 
 
-            <h5>Parameters:</h5>
 
 
-            <table class="params">
-                <thead>
-                <tr>
-
-                    <th>Name</th>
 
 
-                    <th>Type</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
+    <h5>Parameters:</h5>
+    
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-                <tr>
+        <th>Type</th>
 
-                    <td class="name"><code>name</code></td>
+        
 
+        
 
-                    <td class="type">
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
+    <tbody>
+    
 
-                        <span class="param-type">string</span>
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
 
-
-                    </td>
-
-
-                    <td class="description last"><p>Name of the group</p></td>
-                </tr>
-
-
-                <tr>
-
-                    <td class="name"><code>message</code></td>
-
-
-                    <td class="type">
-
-
-                        <span class="param-type">object</span>
-                        |
-
-                        <span class="param-type">string</span>
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
 
-                    </td>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the group</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+|
+
+<span class="param-type">string</span>
 
 
-                    <td class="description last"><p>Message to send to the group</p></td>
-                </tr>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Message to send to the group</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
-                </tbody>
-            </table>
 
 
-            <dl class="details">
 
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
+<dl class="details">
+
+    
+
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line118">line 118</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line118">line 118</a>
-                        </li>
-                    </ul>
-                </dd>
 
 
-            </dl>
 
 
-            <h5>Example</h5>
 
-            <pre class="prettyprint"><code>// send to space 'global'
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// send to space 'global'
 ws.sendToGroup('global', { hello: 'everyone in global' });</code></pre>
 
 
-            <h4 class="name" id=".setEventHandler"><span class="type-signature">(static) </span>setEventHandler<span
-                    class="signature">(event, handler)</span><span class="type-signature"></span></h4>
 
+        
+            
 
-            <div class="description">
-                <p>Sets a handler for given socket event</p>
-            </div>
+    
 
+    
+    <h4 class="name" id=".setEventHandler"><span class="type-signature">(static) </span>setEventHandler<span class="signature">(event, handler)</span><span class="type-signature"></span></h4>
+    
 
-            <h5>Parameters:</h5>
+    
 
 
-            <table class="params">
-                <thead>
-                <tr>
 
-                    <th>Name</th>
+<div class="description">
+    <p>Sets a handler for given socket event</p>
+</div>
 
 
-                    <th>Type</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
 
 
-                <tr>
 
-                    <td class="name"><code>event</code></td>
 
+    <h5>Parameters:</h5>
+    
 
-                    <td class="type">
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
+        <th>Type</th>
 
-                        <span class="param-type">'open'</span>
-                        |
+        
 
-                        <span class="param-type">'close'</span>
-                        |
+        
 
-                        <span class="param-type">'message'</span>
-                        |
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-                        <span class="param-type">'error'</span>
+    <tbody>
+    
 
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
 
-                    </td>
+            <td class="type">
+            
+                
+<span class="param-type">'open'</span>
+|
 
+<span class="param-type">'close'</span>
+|
 
-                    <td class="description last"><p>The name of the event</p></td>
-                </tr>
+<span class="param-type">'message'</span>
+|
 
+<span class="param-type">'error'</span>
 
-                <tr>
 
-                    <td class="name"><code>handler</code></td>
+            
+            </td>
 
+            
 
-                    <td class="type">
+            
 
+            <td class="description last"><p>The name of the event</p></td>
+        </tr>
 
-                        <span class="param-type">function</span>
+    
 
+        <tr>
+            
+                <td class="name"><code>handler</code></td>
+            
 
-                    </td>
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
 
 
-                    <td class="description last"><p>The event handler</p></td>
-                </tr>
+            
+            </td>
 
+            
 
-                </tbody>
-            </table>
+            
 
+            <td class="description last"><p>The event handler</p></td>
+        </tr>
 
-            <dl class="details">
+    
+    </tbody>
+</table>
 
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line615">line 615</a>
-                        </li>
-                    </ul>
-                </dd>
 
 
-            </dl>
+<dl class="details">
 
+    
 
-            <h4 class="name" id=".setEventHandlers"><span class="type-signature">(static) </span>setEventHandlers<span
-                    class="signature">(handlers)</span><span class="type-signature"></span></h4>
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
+    
 
-            <div class="description">
-                <p>Set all socket event handlers</p>
-            </div>
+    
 
+    
 
-            <h5>Parameters:</h5>
+    
 
+    
 
-            <table class="params">
-                <thead>
-                <tr>
+    
 
-                    <th>Name</th>
+    
 
+    
 
-                    <th>Type</th>
+    
 
+    
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line615">line 615</a>
+    </li></ul></dd>
+    
 
-                <tbody>
+    
 
+    
 
-                <tr>
+    
+</dl>
 
-                    <td class="name"><code>handlers</code></td>
 
 
-                    <td class="type">
 
 
-                        <span class="param-type">object</span>
 
 
-                    </td>
 
 
-                    <td class="description last"></td>
-                </tr>
 
 
-                </tbody>
-            </table>
 
 
-            <dl class="details">
 
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line630">line 630</a>
-                        </li>
-                    </ul>
-                </dd>
 
+        
+            
 
-            </dl>
+    
 
+    
+    <h4 class="name" id=".setEventHandlers"><span class="type-signature">(static) </span>setEventHandlers<span class="signature">(handlers)</span><span class="type-signature"></span></h4>
+    
 
-            <h4 class="name" id=".setSocketRequestResponse"><span class="type-signature">(static) </span>setSocketRequestResponse<span
-                    class="signature">(response)</span><span class="type-signature"></span></h4>
+    
 
 
-            <div class="description">
-                <p>set custom socket response object. Default object is taken from <a
-                        href="http://docs.enonic.com/en/stable/developer/ssjs/websockets.html">Enonic doc</a></p>
-            </div>
 
+<div class="description">
+    <p>Set all socket event handlers</p>
+</div>
 
-            <h5>Parameters:</h5>
 
 
-            <table class="params">
-                <thead>
-                <tr>
 
-                    <th>Name</th>
 
 
-                    <th>Type</th>
 
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
 
-                <tbody>
+    <h5>Parameters:</h5>
+    
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-                <tr>
+        <th>Type</th>
 
-                    <td class="name"><code>response</code></td>
+        
 
+        
 
-                    <td class="type">
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
+    <tbody>
+    
 
-                        <span class="param-type">SocketResponse</span>
+        <tr>
+            
+                <td class="name"><code>handlers</code></td>
+            
 
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
 
-                    </td>
 
+            
+            </td>
 
-                    <td class="description last"><p>The socket response object</p></td>
-                </tr>
+            
 
+            
 
-                </tbody>
-            </table>
+            <td class="description last"></td>
+        </tr>
 
+    
+    </tbody>
+</table>
 
-            <dl class="details">
 
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>0.0.1</li>
-                    </ul>
-                </dd>
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line640">line 640</a>
-                        </li>
-                    </ul>
-                </dd>
 
+<dl class="details">
 
-            </dl>
+    
 
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
-            <h4 class="name" id=".wsEvents"><span class="type-signature">(static) </span>wsEvents<span
-                    class="signature">(event)</span><span class="type-signature"></span></h4>
+    
 
+    
 
-            <div class="description">
-                <p>The function that binds to the exports webSocketEvent method. This function checks the ws event
-                    object for type
-                    and calls the appropriate handler. Then it loops over the additional handlers and calls each one of
-                    them.</p>
-            </div>
+    
 
+    
 
-            <h5>Parameters:</h5>
+    
 
+    
 
-            <table class="params">
-                <thead>
-                <tr>
+    
 
-                    <th>Name</th>
+    
 
+    
 
-                    <th>Type</th>
+    
 
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line630">line 630</a>
+    </li></ul></dd>
+    
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
+    
 
-                <tbody>
+    
 
+    
+</dl>
 
-                <tr>
 
-                    <td class="name"><code>event</code></td>
 
 
-                    <td class="type">
 
 
-                        <span class="param-type">object</span>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>The event sent from the client</p></td>
-                </tr>
 
 
-                </tbody>
-            </table>
 
 
-            <dl class="details">
 
 
-                <dt class="tag-since">Since:</dt>
-                <dd class="tag-since">
-                    <ul class="dummy">
-                        <li>1.1.0</li>
-                    </ul>
-                </dd>
 
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line537">line 537</a>
-                        </li>
-                    </ul>
-                </dd>
+        
+            
 
+    
 
-            </dl>
+    
+    <h4 class="name" id=".setSocketRequestResponse"><span class="type-signature">(static) </span>setSocketRequestResponse<span class="signature">(response)</span><span class="type-signature"></span></h4>
+    
 
+    
 
-            <h3 class="subsection-title">Type Definitions</h3>
 
 
-            <h4 class="name" id=".SocketResponse">SocketResponse</h4>
+<div class="description">
+    <p>set custom socket response object. Default object is taken from <a href="http://docs.enonic.com/en/stable/developer/ssjs/websockets.html">Enonic doc</a></p>
+</div>
 
 
-            <div class="description">
-                <p>The response object sent from the server</p>
-            </div>
 
 
-            <h5>Type:</h5>
-            <ul>
-                <li>
 
-                    <span class="param-type">object</span>
 
 
-                </li>
-            </ul>
 
 
-            <h5 class="subsection-title">Properties:</h5>
+    <h5>Parameters:</h5>
+    
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-            <table class="props">
-                <thead>
-                <tr>
+        <th>Type</th>
 
-                    <th>Name</th>
+        
 
+        
 
-                    <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
+    <tbody>
+    
 
-                    <th class="last">Description</th>
-                </tr>
-                </thead>
+        <tr>
+            
+                <td class="name"><code>response</code></td>
+            
 
-                <tbody>
+            <td class="type">
+            
+                
+<span class="param-type">SocketResponse</span>
 
 
-                <tr>
+            
+            </td>
 
-                    <td class="name"><code>webSocket</code></td>
+            
 
+            
 
-                    <td class="type">
+            <td class="description last"><p>The socket response object</p></td>
+        </tr>
 
+    
+    </tbody>
+</table>
 
-                        <span class="param-type">object</span>
 
 
-                    </td>
 
 
-                    <td class="description last"><p>Main response object</p>
-                        <h6>Properties</h6>
 
-                        <table class="props">
-                            <thead>
-                            <tr>
+<dl class="details">
 
-                                <th>Name</th>
+    
 
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>0.0.1</li></ul></dd>
+    
 
-                                <th>Type</th>
+    
 
+    
 
-                                <th class="last">Description</th>
-                            </tr>
-                            </thead>
+    
 
-                            <tbody>
+    
 
+    
 
-                            <tr>
+    
 
-                                <td class="name"><code>data</code></td>
+    
 
+    
 
-                                <td class="type">
+    
 
+    
 
-                                    <span class="param-type">object</span>
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line640">line 640</a>
+    </li></ul></dd>
+    
 
+    
 
-                                </td>
+    
 
+    
+</dl>
 
-                                <td class="description last"><p>Additional data object</p></td>
-                            </tr>
 
 
-                            <tr>
 
-                                <td class="name"><code>subProtocols</code></td>
 
 
-                                <td class="type">
 
 
-                                    <span class="param-type">Array.&lt;string></span>
 
 
-                                </td>
 
 
-                                <td class="description last"><p>Array of sub protocols to support</p></td>
-                            </tr>
 
 
-                            </tbody>
-                        </table>
 
-                    </td>
-                </tr>
 
 
-                </tbody>
-            </table>
 
+        
+    
 
-            <dl class="details">
+    
+        <h3 class="subsection-title">Type Definitions</h3>
 
+        
+                
+<h4 class="name" id=".SocketResponse">SocketResponse</h4>
 
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                    <ul class="dummy">
-                        <li>
-                            <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line753">line 753</a>
-                        </li>
-                    </ul>
-                </dd>
 
 
-            </dl>
 
+<div class="description">
+    <p>The response object sent from the server</p>
+</div>
 
-        </article>
 
-    </section>
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>webSocket</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Main response object</p>
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Additional data object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>subProtocols</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Array of sub protocols to support</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wsUtil.js.html">wsUtil.js</a>, <a href="wsUtil.js.html#line753">line 753</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
 
 
 </div>
 
 <nav>
-    <h2><a href="index.html">Back</a></h2>
-    <h3>Classes</h3>
-    <ul>
-        <li><a href="wsUtil.html">wsUtil</a></li>
-        <li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li>
-        <li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li>
-        <li><a href="wsUtil.SocketEmitter-On.html">On</a></li>
-    </ul>
-    <h3>Interfaces</h3>
-    <ul>
-        <li><a href="wsUtil.SocketEmitter-Emit.html#EmitInterface">EmitInterface</a></li>
-        <li><a href="wsUtil.SocketEmitter-On.html#OnInterface">OnInterface</a></li>
-        <li><a href="wsUtil.SocketEmitter.html#SocketEmitterInterface">SocketEmitterInterface</a></li>
-    </ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="wsUtil.html">wsUtil</a></li><li><a href="wsUtil.SocketEmitter.html">SocketEmitter</a></li><li><a href="wsUtil.SocketEmitter-Emit.html">Emit</a></li><li><a href="wsUtil.SocketEmitter-On.html">On</a></li></ul><h3>Interfaces</h3><ul><li><a href="wsUtil.SocketEmitter-Emit.html#EmitInterface">EmitInterface</a></li><li><a href="wsUtil.SocketEmitter-On.html#OnInterface">OnInterface</a></li><li><a href="wsUtil.SocketEmitter.html#SocketEmitterInterface">SocketEmitterInterface</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jun 13 2018 12:06:22
-    GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Jun 15 2018 10:44:05 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"></script>
+<script src="scripts/linenumber.js"> </script>
 </body>
 </html>

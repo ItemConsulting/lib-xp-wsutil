@@ -5,7 +5,7 @@
 var ws = require('/lib/wsUtil');
 var portal = require('/lib/xp/portal');
 
-// if you are serving web socket from another service than services/websockets
+// if you are serving web socket from another service than services/websocket
 
 var host = portal.serviceUrl({service: 'myWebsocketService'});
 
@@ -14,6 +14,17 @@ ws.openWebsockets(exports, host);
 ```
 
 That's it. Now your socket connection is live and ready.
+
+Another way of opening your socket connection is to manually bind the `exports` methods
+
+```javascript
+var ws = require('/lib/wsUtil');
+
+exports.get = ws.sendSocketResponse;
+exports.webSocketEvent = ws.getWsEvents;
+
+// Some code
+```
 
 There are two ways to listen for the four different websocket events.
 
@@ -90,6 +101,8 @@ Some notes
  * The sendSocketResponseObject is the same object from the Enonic XP [example](http://xp.readthedocs.io/en/stable/developer/ssjs/websockets.html)
  * Since messages from the socket is always string, the library will always try to convert it to JSON
  * Sending messages will check for type and stringify it if needed
+ * It is assumed that the host for the websocket communication is `portalLib.serviceUrl({ service: 'websocket' })`. If you are 
+ using any other host, it needs to be specified in the `openWebsockets` or `sendSocketResponse` methods
 
 # Additional features #
 
