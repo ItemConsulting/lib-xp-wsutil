@@ -45,11 +45,6 @@
     <section>
         <article><h1>Basic features</h1><pre class="prettyprint source lang-javascript"><code>//load library
 var ws = require('/lib/wsUtil');
-var portal = require('/lib/xp/portal');
-
-// if you are serving web socket from another service than services/websocket
-
-var host = portal.serviceUrl({service: 'myWebsocketService'});
 
 // Bind the websocket event handler to the ws object
 ws.openWebsockets(exports, host);</code></pre><p>That's it. Now your socket connection is live and ready.</p>
