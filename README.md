@@ -6,7 +6,11 @@ Go [here](https://itemconsulting.github.io/wsutil-server/) for documentation
 
 ## Versions ##
 
+### 2.0.0 ###
 
+* Turn of logging by setting `no.item.wsUtils.printLog` to `false` in the config file for the project using this lib.
+* Upgraded to build on XP 7.5.0.
+* Compatibility Enonic XP 7.5.0.
 
 ### 1.1.1 ###
 
