@@ -19,11 +19,11 @@
 
     <h1 class="page-title">Home</h1>
 
-    
 
 
 
-    
+
+
 
 
     <h3> </h3>
@@ -37,7 +37,7 @@
 
 
 
-    
+
 
 
 
@@ -98,7 +98,7 @@ function closeHandler(event) {
 
 function messageHandler(msg) { // For event.type === message it is only the message that is passed to the handler
     var message = {         // The event message will try to be parsed as JSON
-        event: msg.event,   
+        event: msg.event,
         message: msg.message,
         username: msg.username,
         timestamp: Date.now()
@@ -114,7 +114,7 @@ Some notes</p>
 <li>The sendSocketResponseObject is the same object from the Enonic XP <a href="http://xp.readthedocs.io/en/stable/developer/ssjs/websockets.html">example</a></li>
 <li>Since messages from the socket is always string, the library will always try to convert it to JSON</li>
 <li>Sending messages will check for type and stringify it if needed</li>
-<li>It is assumed that the host for the websocket communication is <code>portalLib.serviceUrl({ service: 'websocket' })</code>. If you are 
+<li>It is assumed that the host for the websocket communication is <code>portalLib.serviceUrl({ service: 'websocket' })</code>. If you are
 using any other host, it needs to be specified in the <code>openWebsockets</code> or <code>sendSocketResponse</code> methods</li>
 </ul>
 <h1>Additional features</h1><p>Create a new SocketEmitter to make the websocket implementation act like a pub/sub provider</p>
@@ -133,10 +133,9 @@ io.connect(function(socket) {
 })</code></pre></article>
     </section>
 
-
-
-
-
+<h2>Turn off default logging</h2>
+<p>By default wsUtils server will logg all activity to the default output. Turn this off by setting <code>xp.item.wsUtils.printLog = false</code> in your project
+config which include this library.</p>
 
 </div>
 

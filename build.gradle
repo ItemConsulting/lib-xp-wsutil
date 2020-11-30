@@ -1,58 +1,52 @@
-
-
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-        maven {
-            url 'http://repo.enonic.com/public'
-        }
-    }
-
-    dependencies {
-        classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
-    }
-}
 plugins {
-    id "com.jfrog.bintray" version "1.8.1"
-}
-
-apply plugin: 'com.enonic.xp.app'
-
-dependencies {
-    compile "com.enonic.xp:core-api:${xpVersion}"
-    compile "com.enonic.xp:portal-api:${xpVersion}"
-    compile "com.enonic.xp:lib-portal:${xpVersion}"
-    compile "com.enonic.xp:lib-io:${xpVersion}"
-    compile "com.enonic.xp:lib-websocket:${xpVersion}"
+    id 'java'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.4'
+    id 'com.enonic.xp.base' version '2.0.0'
 }
 
 repositories {
     mavenLocal()
     jcenter()
+    xp.enonicRepo()
     maven {
-        url 'http://repo.enonic.com/public'
+        url  "https://dl.bintray.com/itemconsulting/public"
     }
 }
 
+apply plugin: 'maven'
+
+dependencies {
+    compile "com.enonic.xp:script-api:${xpVersion}"
+    compile "com.enonic.xp:core-api:${xpVersion}"
+    compile "com.enonic.xp:portal-api:${xpVersion}"
+    compile "com.enonic.xp:lib-portal:${xpVersion}"
+    compile "com.enonic.xp:lib-io:${xpVersion}"
+    compile "com.enonic.xp:lib-websocket:${xpVersion}"
+    // add other compile dependencies here
+    // compile "com.foo.mypackage:artifact-name:1.0.0"
+
+    testCompile "com.enonic.xp:testing:${xpVersion}"
+    testCompile 'org.mockito:mockito-core:2.+'
+    testCompile 'junit:junit:4.12'
+}
+
 bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_PWD')
+    user = "$bintrayUser"
+    key = "$bintrayApiKey"
+    publications = ['mavenJava']
+    configurations = ['archives']
     pkg {
-        repo = 'wsUtil'
-        name = 'no.item.wsUtil'
-        licenses = ['Apache-2.0']
+        repo = 'public'
+        name = 'no.item.xp.wsUtil'
+        licenses = ['BSD 3-Clause']
+        userOrg = 'itemconsulting'
         vcsUrl = 'https://github.com/itemConsulting/wsUtil-server.git'
         version {
-            name = "1.1.1"
-            desc = 'Removed bug in AddUserToGroup method'
+            name = "2.0.0"
+            desc = 'Add config to turn off logging'
             released = new Date()
-            vcsTag = "1.1.1"
+            vcsTag = "2.0.0"
         }
     }
-    filesSpec {
-           from 'deploy/'
-           into "no/item/wsUtil/wsUtil/1.1.1"
-        }
-
 }
