@@ -81,7 +81,7 @@ Check the console/server logs to see that your connection is alive
 
 ## License ##
 
-This project is under the Apache 2.0 license. For more information please read [LICENSE.txt](LICENSE.txt)
+This project is under the Apache 2.0 license. For more information please read [LICENSE.txt](LICENSE)
 
 
 ## Author ##

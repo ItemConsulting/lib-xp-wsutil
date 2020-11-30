@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.4'
     id 'com.enonic.xp.base' version '2.0.0'
 }
 
@@ -8,6 +9,9 @@ repositories {
     mavenLocal()
     jcenter()
     xp.enonicRepo()
+    maven {
+        url  "https://dl.bintray.com/itemconsulting/public"
+    }
 }
 
 apply plugin: 'maven'
@@ -25,4 +29,24 @@ dependencies {
     testCompile "com.enonic.xp:testing:${xpVersion}"
     testCompile 'org.mockito:mockito-core:2.+'
     testCompile 'junit:junit:4.12'
+}
+
+bintray {
+    user = "$bintrayUser"
+    key = "$bintrayApiKey"
+    publications = ['mavenJava']
+    configurations = ['archives']
+    pkg {
+        repo = 'public'
+        name = 'no.item.xp.wsUtil'
+        licenses = ['BSD 3-Clause']
+        userOrg = 'itemconsulting'
+        vcsUrl = 'https://github.com/itemConsulting/wsUtil-server.git'
+        version {
+            name = "2.0.0"
+            desc = 'Add config to turn off logging'
+            released = new Date()
+            vcsTag = "2.0.0"
+        }
+    }
 }
