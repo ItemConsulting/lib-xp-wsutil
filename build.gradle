@@ -14,8 +14,6 @@ repositories {
     }
 }
 
-apply plugin: 'maven'
-
 dependencies {
     compile "com.enonic.xp:script-api:${xpVersion}"
     compile "com.enonic.xp:core-api:${xpVersion}"
@@ -47,6 +45,17 @@ bintray {
             desc = 'Add config to turn off logging'
             released = new Date()
             vcsTag = "2.0.0"
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId projectName
+            version version
         }
     }
 }
