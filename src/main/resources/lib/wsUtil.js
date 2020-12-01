@@ -31,7 +31,6 @@ var ioLib = require('/lib/xp/io');
 var portal = require('/lib/xp/portal');
 
 var clientExpansions = {};
-var printLog = (app.config['no.item.wsUtil.printLog'] === 'true' || app.config['no.item.wsUtil.printLog'] === undefined)
 
 var responseObject = {
     webSocket: {
@@ -44,7 +43,7 @@ var responseObject = {
 var groups = {};
 
 function defaultEventHandler(event) {
-    if(printLog) log.info(JSON.stringify(event));
+    log.info(JSON.stringify(event));
 }
 
 var additionalEventHandlers = {
@@ -239,20 +238,16 @@ function SocketEmitter() {
                 try {
                     _handlers[event.session.id][msg.event](msg.object);
                 } catch (e) {
-                    if(printLog) log.info(e);
+                    log.info(e);
                 }
             }
             else {
-                if(printLog) {
-                    log.info("SOCKET-LIB: Unhandled event: " + msg.event);
-                    log.info(JSON.stringify(event));
-                }
-            }
-        } catch (e) {
-            if(printLog) {
-                log.info("SOCKET-LIB: Wrong JSON format for client emit object");
+                log.info("SOCKET-LIB: Unhandled event: " + msg.event);
                 log.info(JSON.stringify(event));
             }
+        } catch (e) {
+            log.info("SOCKET-LIB: Wrong JSON format for client emit object");
+            log.info(JSON.stringify(event));
         }
     });
 

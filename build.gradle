@@ -9,9 +9,6 @@ repositories {
     mavenLocal()
     jcenter()
     xp.enonicRepo()
-    maven {
-        url  "https://dl.bintray.com/itemconsulting/public"
-    }
 }
 
 apply plugin: 'maven'
@@ -43,10 +40,10 @@ bintray {
         userOrg = 'itemconsulting'
         vcsUrl = 'https://github.com/itemConsulting/wsUtil-server.git'
         version {
-            name = "2.0.0"
+            name = "1.1.1"
             desc = 'Add config to turn off logging'
             released = new Date()
-            vcsTag = "2.0.0"
+            vcsTag = "1.1.1"
         }
     }
 }
