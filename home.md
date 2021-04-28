@@ -41,20 +41,21 @@ make socket integration easier to handle on the server and client side.
 ## Dependencies ##
 
 Add these dependencies in your `build.gradle` file
-```
+
+```groovy
 dependencies {
-    include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-io:${xpVersion}"
-    include "com.enonic.xp:lib-websocket:${xpVersion}"
-    include "no.item.wsUtil:wsUtil:1.1.1"
+  include "com.enonic.xp:lib-portal:${xpVersion}"
+  include "com.enonic.xp:lib-io:${xpVersion}"
+  include "com.enonic.xp:lib-websocket:${xpVersion}"
+  include "no.item:lib-xp-wsutil:2.0.0"
 }
 ```
+
 Add this repository 
-```
+
+```groovy
 repositories {
-   maven {
-        url  "https://dl.bintray.com/pdrevland/wsUtil"
-   }
+   maven { url 'https://jitpack.io' }
 }
 ```
 

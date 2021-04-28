@@ -1,6 +1,6 @@
 # Enonic XP web socket utility library #
 
-[![](https://jitpack.io/v/no.item/wsutil-server.svg)](https://jitpack.io/#no.item/wsutil-server)
+[![](https://jitpack.io/v/no.item/lib-xp-wsutil.svg)](https://jitpack.io/#no.item/lib-xp-wsutil)
 
 ## Dependencies
 
@@ -15,13 +15,13 @@ dependencies {
   include "com.enonic.xp:lib-portal:${xpVersion}"
   include "com.enonic.xp:lib-io:${xpVersion}"
   include "com.enonic.xp:lib-websocket:${xpVersion}"
-  include "no.item:wsutil-server:2.0.0"
+  include "no.item:lib-xp-wsutil:2.0.0"
 }
 ```
 
 ## Documentation ##
 
-Go [here](https://itemconsulting.github.io/wsutil-server/) for documentation
+Go [here](https://itemconsulting.github.io/lib-xp-wsutil/) for documentation
 
 ## Versions ##
 
