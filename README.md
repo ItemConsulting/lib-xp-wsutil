@@ -1,5 +1,24 @@
 # Enonic XP web socket utility library #
 
+[![](https://jitpack.io/v/no.item/wsutil-server.svg)](https://jitpack.io/#no.item/wsutil-server)
+
+## Dependencies
+
+Add the repository and dependencies in your *build.gradle* file
+
+```groovy
+repositories {
+  maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+  include "com.enonic.xp:lib-portal:${xpVersion}"
+  include "com.enonic.xp:lib-io:${xpVersion}"
+  include "com.enonic.xp:lib-websocket:${xpVersion}"
+  include "no.item:wsutil-server:2.0.0"
+}
+```
+
 ## Documentation ##
 
 Go [here](https://itemconsulting.github.io/wsutil-server/) for documentation
@@ -37,26 +56,6 @@ src/
                             |- wsUtils.js // Server side library
 ```
 
-## Dependencies ##
-
-Add these dependencies in your `build.gradle` file
-```
-dependencies {
-    include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-io:${xpVersion}"
-    include "com.enonic.xp:lib-websocket:${xpVersion}"
-    include "no.item.wsUtil:wsUtil:1.1.1"
-}
-```
-Add this repository 
-```
-repositories {
-   maven {
-        url  "https://dl.bintray.com/pdrevland/wsUtil"
-   }
-}
-```
-
 ## Hello sockets ##
 
 Here is the shortest example for opening websocket communication in your project
@@ -86,6 +85,6 @@ This project is under the Apache 2.0 license. For more information please read [
 
 ## Author ##
 
-**Per Arne Drevland** *Consultant* [Item Consulting AS](www.item.no)
+**Per Arne Drevland** *Consultant* [Item Consulting AS](https://item.no)
 
 
