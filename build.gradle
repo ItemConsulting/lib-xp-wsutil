@@ -1,36 +1,144 @@
 plugins {
-    id 'java'
-    id 'maven-publish'
-    id 'com.enonic.xp.base' version '2.0.0'
+  id "java-library"
+  id "maven-publish"
+  id "com.enonic.xp.base"
+  id "com.github.node-gradle.node" version "7.1.0"
 }
 
-repositories {
-    mavenLocal()
-    jcenter()
-    xp.enonicRepo()
+// XP 8 requires Java 25 (core-api declares osgi.ee=JavaSE;version=25), so pin the toolchain used to compile.
+// Note this does not free the build from the JDK that runs Gradle itself: the com.enonic.xp.settings plugin in
+// settings.gradle needs a Gradle JVM of 21 or newer, and fails during settings evaluation on anything older.
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(25)
+  }
+  withSourcesJar()
 }
 
 dependencies {
-    compile "com.enonic.xp:script-api:${xpVersion}"
-    compile "com.enonic.xp:core-api:${xpVersion}"
-    compile "com.enonic.xp:portal-api:${xpVersion}"
-    compile "com.enonic.xp:lib-portal:${xpVersion}"
-    compile "com.enonic.xp:lib-io:${xpVersion}"
-    compile "com.enonic.xp:lib-websocket:${xpVersion}"
-
-    testCompile "com.enonic.xp:testing:${xpVersion}"
-    testCompile 'org.mockito:mockito-core:2.+'
-    testCompile 'junit:junit:4.12'
+  // XP libraries the JavaScript sources require at runtime. Declared as implementation so they
+  // land in the published POM, and apps that include this library pick them up transitively.
+  implementation xplibs.io
+  implementation xplibs.portal
+  implementation xplibs.websocket
 }
 
 
+repositories {
+  mavenLocal()
+  mavenCentral()
+  xp.enonicRepo()
+}
+
+node {
+  download = true
+  // Single source of truth for the Node version, shared with .github/workflows and nvm
+  version = file(".nvmrc").text.trim()
+}
+
+processResources {
+  exclude "**/.gitkeep"
+  exclude "**/*.json"
+  exclude "**/*.ts"
+  exclude "**/*.tsx"
+}
+
+tasks.register("npmBuild", NpmTask) {
+  args = [
+    "run",
+    "--silent",
+    "build"
+  ]
+  dependsOn npmInstall
+  environment = [
+    "FORCE_COLOR": "true",
+    "LOG_LEVEL_FROM_GRADLE": gradle.startParameter.logLevel.toString(),
+    "NODE_ENV": isDevBuild() ? "development" : "production"
+  ]
+  inputs.dir "src/main/resources"
+  outputs.dir "build/resources/main"
+  outputs.upToDateWhen { false }
+}
+
+// Accepts -Penv=dev as well as the older -Pdev / -Pdevelopment spellings.
+// The legacy flags have to be read straight off the command line: Gradle exposes tasks as project properties, so
+// project.hasProperty("dev") is always true once the "dev" task below exists, which made every build a dev build.
+boolean isDevBuild() {
+  Map<String, String> cliProperties = gradle.startParameter.projectProperties
+
+  return project.findProperty("env") == "dev" ||
+    cliProperties.containsKey("dev") ||
+    cliProperties.containsKey("development")
+}
+
+tasks.register("dev", Exec) {
+  if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+    commandLine "cmd", "/c", "gradlew.bat", "deploy", "-t"
+  } else {
+    commandLine "./gradlew", "deploy", "-t"
+  }
+}
+
+jar.dependsOn npmBuild
+
+// Both write to build/resources/main. Gradle wipes a task's output directory the first time the task runs,
+// so processResources must never run after npmBuild, or it deletes the compiled JavaScript.
+npmBuild.configure { mustRunAfter processResources }
+
+tasks.register("npmCheck", NpmTask) {
+  dependsOn npmInstall
+  args = [
+    "run",
+    "check"
+  ]
+  environment = [
+    "FORCE_COLOR": "true",
+  ]
+}
+
+check.dependsOn npmCheck
+
+tasks.register("npmTest", NpmTask) {
+  dependsOn npmInstall
+  args = [
+    "run",
+    "test"
+  ]
+  environment = [
+    "FORCE_COLOR": "true",
+  ]
+  inputs.dir "src/test"
+  inputs.dir "src/main/resources"
+  outputs.upToDateWhen { false }
+}
+
+check.dependsOn npmTest
+
+tasks.withType(Copy).configureEach {
+  includeEmptyDirs = false
+}
+
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            groupId group
-            artifactId projectName
-            version version
-        }
+  repositories {
+    maven {
+      name = "itemtestRepository"
+      url = version.endsWith('SNAPSHOT')
+        ? "https://repo.itemtest.no/snapshots"
+        : "https://repo.itemtest.no/releases"
+      credentials(PasswordCredentials)
+      authentication {
+        basic(BasicAuthentication)
+      }
     }
+  }
+  publications {
+    maven(MavenPublication) {
+      from components.java
+      // project.* qualified: inside a MavenPublication closure a bare "version" would
+      // resolve to the publication's own property, not the project's.
+      groupId = project.group
+      artifactId = projectName
+      version = project.version
+    }
+  }
 }

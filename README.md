@@ -1,90 +1,108 @@
-# Enonic XP web socket utility library #
+# Enonic XP Web Socket Utility Library #
 
-[![](https://jitpack.io/v/no.item/lib-xp-wsutil.svg)](https://jitpack.io/#no.item/lib-xp-wsutil)
+![Build badge](https://github.com/ItemConsulting/lib-xp-wsutil/actions/workflows/main.yml/badge.svg)
+![Enonic XP8 badge](https://market.enonic.com/badges/xp8.svg)
+[![](https://repo.itemtest.no/api/badge/latest/releases/no/item/lib-xp-wsutil)](https://repo.itemtest.no/#/releases/no/item/lib-xp-wsutil)
+[![](https://img.shields.io/npm/types/%40item-enonic-types%2Flib-wsutil)](https://www.npmjs.com/package/@item-enonic-types/lib-wsutil)
 
-## Dependencies
+<img src="https://github.com/ItemConsulting/lib-xp-wsutil/raw/main/docs/images/kicon.svg?sanitize=true" width="150">
 
-Add the repository and dependencies in your *build.gradle* file
+> [!NOTE]
+> See also the [Turbo Streams integration with XP](https://github.com/ItemConsulting/lib-xp-turbo), which lets
+> developers use Web Sockets without writing any frontend JS-code.
+
+## Compatibility ##
+
+| Enonic XP | This library |
+| --------- | ------------ |
+| 8.x       | 3.x          |
+| 7.x       | 2.x          |
+| 6.4+      | 1.x          |
+
+## Installation ##
 
 ```groovy
 repositories {
-  maven { url 'https://jitpack.io' }
+  maven { url "https://repo.itemtest.no/releases" }
 }
 
 dependencies {
-  include "com.enonic.xp:lib-portal:${xpVersion}"
-  include "com.enonic.xp:lib-io:${xpVersion}"
-  include "com.enonic.xp:lib-websocket:${xpVersion}"
-  include "no.item:lib-xp-wsutil:2.0.0"
+  include "no.item:lib-xp-wsutil:3.0.0"
 }
 ```
 
-## Documentation ##
+### TypeScript ###
 
-Go [here](https://itemconsulting.github.io/lib-xp-wsutil/) for documentation
+Install the type definitions:
 
-## Versions ##
-
-### 2.0.0 ###
-
-* Turn of logging by setting `no.item.wsUtils.printLog` to `false` in the config file for the project using this lib.
-* Upgraded to build on XP 7.5.0.
-* Compatibility Enonic XP 7.5.0.
-
-### 1.1.1 ###
-
-* Added ```getWsEvents``` method to improve reusability
-
-### 1.0.0 ###
- * Initital release
-
-Compatibility Enonic XP 6.4.0
-
-
-
-
-## Files included ##
-
+```bash
+npm i -D @item-enonic-types/lib-wsutil
 ```
-src/
-   |- main/
-          |- resources/
-                      |- assets/
-                      |        |- clientws.js // Client side library
-                      |- lib/
-                            |- virtual.js // Virtual documentation file
-                            |- wsUtils.js // Server side library
+
+npm package names are lowercase, so map `/lib/wsUtil` to the package explicitly in your *tsconfig.json*:
+
+```diff
+{
+  "compilerOptions": {
+    "paths": {
+      "/lib/xp/*": ["./node_modules/@enonic-types/lib-*"],
++     "/lib/wsUtil": ["./node_modules/@item-enonic-types/lib-wsutil"],
+      "/*": ["./src/main/resources/*"]
+    }
+  }
+}
+```
+
+The client side library is a JavaScript module served from your websocket service, at a URL TypeScript can't
+resolve. Import its types from the package instead:
+
+```typescript
+import type * as ClientWs from "@item-enonic-types/lib-wsutil/dist/assets/clientws";
+
+// The URL of your websocket service, e.g. rendered into the page by a controller using serviceUrl()
+const { WebSocketClient }: typeof ClientWs = await import(websocketServiceUrl);
+const clientWs = new WebSocketClient();
 ```
 
 ## Hello sockets ##
 
-Here is the shortest example for opening websocket communication in your project
+Here is the shortest example for opening websocket communication in your project. Create a service called
+`websocket`:
+
+```typescript
+// src/main/resources/services/websocket/websocket.ts
+import { createWebSocketService } from "/lib/wsUtil";
+
+export const { get, webSocketEvent } = createWebSocketService();
+```
+
+The service serves the client side library as a JavaScript module. Import it from the URL of the service, as
+returned by `serviceUrl({ service: "websocket" })` in your page or part controller:
 
 ```html
-<!-- Add these tags to your html for page part etc.. -->
-<script src="mysite/_/service/com.my.app/websocket"></script>
-<script src="mysite/_/asset/com.my.app/clientws.js"></script>
+<script type="module">
+  import { WebSocketClient } from "/mysite/_/service/com.my.app/websocket";
 
+  const clientWs = new WebSocketClient();
+  clientWs.connect();
+</script>
 ```
-```javascript
-// Create a service called websocket
-var ws = require('/lib/wsUtil');
-ws.openWebsockets(exports);
-```
-```javascript
-// Create an asset called clientws.js
-var clientWs = new ExpWS();
-clientWs.connect();
-```
+
 Check the console/server logs to see that your connection is alive
+
+## Documentation ##
+
+- [Overview](docs/index.md)
+- [Server API](docs/server.md)
+- [Client API](docs/client.md)
+- [Creating extensions](docs/extensions.md)
+- [Tutorial: a chat application](docs/tutorial.md)
+- [Migrating from 2.x to 3.0](docs/migrating-to-3.md)
 
 ## License ##
 
 This project is under the Apache 2.0 license. For more information please read [LICENSE.txt](LICENSE)
 
+## Original author ##
 
-## Author ##
-
-**Per Arne Drevland** *Consultant* [Item Consulting AS](https://item.no)
-
-
+**Per Arne Drevland**

@@ -1,0 +1,64 @@
+{
+  // This file should only include Enonic XP server-side source files.
+  // It should exclude any client-side source files.
+
+  // Read more about tsconfig.json at:
+  // https://www.typescriptlang.org/tsconfig
+
+  // Specifies an array of filenames or patterns to include in the program.
+  // These filenames are resolved relative to the directory containing the
+  // tsconfig.json file.
+  "include": ["**/*.ts"],
+
+  // Specifies an array of filenames or patterns that should be skipped when
+  // resolving include.
+  // Important: exclude only changes which files are included as a result of
+  // the include setting. A file specified by exclude can still become part of
+  // your codebase due to an import statement in your code, a types inclusion,
+  // a /// <reference directive, or being specified in the files list.
+  // It is not a mechanism that prevents a file from being included in the
+  // codebase - it simply changes what the include setting finds.
+  "exclude": [
+    "**/*.d.ts",
+    "assets/**/*.*" // Client-side files, see assets/tsconfig.json
+  ],
+
+  "compilerOptions": {
+    "target": "ES2015",
+    "lib": ["ES5"],
+
+    // Enable all strict type-checking options.
+    "strict": true,
+
+    // Must be set explicitly (TS5011). "prepublishOnly" emits to dist/lib/, and
+    // assets/tsconfig.json to dist/assets/, so dist/ mirrors this folder and
+    // the relative imports of lib/wsUtil/types.ts resolve there as well.
+    "rootDir": ".",
+
+    // A series of entries which re-map imports to lookup locations relative
+    // to the baseUrl if set, or to the tsconfig file itself otherwise.
+    "paths": {
+      "/lib/xp/*": ["../../../node_modules/@enonic-types/lib-*"],
+      "/*": ["./*"]
+    },
+
+    "skipLibCheck": true,
+
+    // By default all visible ”@types” packages are included in your compilation.
+    // Packages in node_modules/@types of any enclosing folder are considered visible.
+    // For example, that means packages within ./node_modules/@types/,
+    // ../node_modules/@types/, ../../node_modules/@types/, and so on.
+    // If types is specified, only packages listed will be included in the global scope.
+    // This feature differs from typeRoots in that it is about specifying only the exact
+    // types you want included, whereas typeRoots supports saying you want particular folders.
+    "types": [
+      // Make the types for the Enonic XP Global objects and functions
+      // available in the global scope.
+      // https://developer.enonic.com/docs/xp/stable/framework/globals
+      // app, exports, log, require, resolve
+      // https://developer.enonic.com/docs/xp/stable/framework/java-bridge
+      // __.newBean, __.toNativeObject, __.nullOrValue
+      "@enonic-types/global"
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "@item-enonic-types/lib-wsutil",
+  "sideEffects": false,
+  "description": "Type definitions for lib-wsutil",
+  "author": "Tom Arild Jakobsen <tajakobsen@gmail.com>",
+  "version": "2.0.0",
+  "license": "Apache-2.0",
+  "types": "dist/lib/wsUtil/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "tsconfig.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItemConsulting/lib-xp-wsutil.git"
+  },
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@changesets/cli": "^3.0.3",
+    "@enonic-types/global": "^8.0.4",
+    "@enonic-types/lib-io": "^8.0.4",
+    "@enonic-types/lib-portal": "^8.0.4",
+    "@enonic-types/lib-websocket": "^8.0.4",
+    "@item-enonic-types/global": "^8.0.0",
+    "@swc/core": "^1.16.2",
+    "@types/node": "^26.0.0",
+    "concurrently": "^10.0.5",
+    "tsdown": "^0.23.0",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@enonic-types/core": "*"
+  },
+  "bugs": {
+    "url": "https://github.com/ItemConsulting/lib-xp-wsutil/issues"
+  },
+  "homepage": "https://github.com/ItemConsulting/lib-xp-wsutil#readme",
+  "private": false,
+  "scripts": {
+    "build": "tsdown",
+    "check": "concurrently -c auto -g --timings npm:check:types npm:lint",
+    "check:types": "concurrently --kill-others-on-fail -g -r --timings npm:check:types:*",
+    "check:types:client": "tsc --noEmit -p src/main/resources/assets/tsconfig.json",
+    "lint": "biome ci",
+    "lint:fix": "biome check --write",
+    "release": "changeset publish",
+    "versioning": "changeset version && npm i --package-lock-only && NEW_VERSION=$(node -p \"require('./package.json').version\") && sed -i -E \"s/^version *=.*/version = ${NEW_VERSION}/\" gradle.properties",
+    "prepublishOnly": "tsc --project src/main/resources/tsconfig.json --declarationDir dist --emitDeclarationOnly true --declaration true && tsc --project src/main/resources/assets/tsconfig.json --declarationDir dist --emitDeclarationOnly true --declaration true",
+    "postpublish": "rm -r ./dist",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./src/test/register.mjs --test src/test/*.test.mts",
+    "cov": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./src/test/register.mjs --test --experimental-test-coverage src/test/*.test.mts",
+    "check:types:server": "tsc --noEmit -p src/main/resources/tsconfig.json",
+    "check:types:tests": "tsc --noEmit -p src/test/tsconfig.json"
+  }
+}
