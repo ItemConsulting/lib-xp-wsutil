@@ -1,19 +1,17 @@
-import type { SocketEvent, WebSocketEventType, WebSocketServiceOptions } from "/lib/wsUtil";
+import type { SocketEvent, WebSocketEventType, WebSocketServiceOptions } from "/lib/wsutil";
 
 let loads = 0;
 
 /**
- * Loads a fresh /lib/wsUtil and fresh stubs of the Enonic XP libraries, so the calls recorded by the stubs
+ * Loads a fresh /lib/wsutil and fresh stubs of the Enonic XP libraries, so the calls recorded by the stubs
  * do not leak between tests. See loader.mjs for how the query does that.
  */
 export async function load() {
   const fresh = `?fresh=${++loads}`;
 
   return {
-    ws: (await import(`/lib/wsUtil${fresh}`)) as typeof import("/lib/wsUtil"),
+    ws: (await import(`/lib/wsutil${fresh}`)) as typeof import("/lib/wsutil"),
     websocket: (await import(`/lib/xp/websocket${fresh}`)) as typeof import("/lib/xp/websocket"),
-    io: (await import(`/lib/xp/io${fresh}`)) as typeof import("/lib/xp/io"),
-    portal: (await import(`/lib/xp/portal${fresh}`)) as typeof import("/lib/xp/portal"),
   };
 }
 

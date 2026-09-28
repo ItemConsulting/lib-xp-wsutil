@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
-import type { EmitterUser } from "/lib/wsUtil";
+import type { EmitterUser } from "/lib/wsutil";
 import { calls, loadService, socketEvent } from "./helpers.mts";
 
 /**
@@ -30,6 +30,15 @@ describe("SocketEmitter", () => {
     const { service } = await loadService();
 
     assert.equal(service.emitter(), service.emitter());
+  });
+
+  it("knows the users that connected before emitter() was first called", async () => {
+    const { service, websocket } = await loadService();
+    service.webSocketEvent(socketEvent("open", "s1"));
+
+    service.emitter().broadcast("news", 1);
+
+    assert.deepEqual(calls(websocket.send), [["s1", JSON.stringify({ event: "news", object: 1 })]]);
   });
 
   it("emits events to the user as JSON", async () => {
@@ -91,6 +100,18 @@ describe("SocketEmitter", () => {
     service.webSocketEvent(socketEvent("message", "s2", JSON.stringify({ event: "ping" })));
 
     assert.equal(firstPing.mock.callCount(), 0);
+  });
+
+  it("does not call the built-in properties of an object as handlers", async (t) => {
+    const { service } = await connect("s1");
+    const error = t.mock.method(console, "error", () => undefined);
+    const debug = t.mock.method(log, "debug", () => undefined);
+
+    service.webSocketEvent(socketEvent("message", "s1", JSON.stringify({ event: "hasOwnProperty" })));
+    service.webSocketEvent(socketEvent("message", "s1", JSON.stringify({ event: "constructor", object: 1 })));
+
+    assert.equal(error.mock.callCount(), 0);
+    assert.ok(calls(debug).some(([line]) => /Unhandled event: hasOwnProperty/.test(String(line))));
   });
 
   it("ignores messages that are not emitter messages", async () => {

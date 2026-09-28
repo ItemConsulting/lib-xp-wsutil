@@ -1,9 +1,9 @@
-// Module resolver for `node --test`. XP resolves absolute specifiers like "/lib/wsUtil" against the
+// Module resolver for `node --test`. XP resolves absolute specifiers like "/lib/wsutil" against the
 // app's own resources, and "/lib/xp/*" against its own libraries; the test runner needs the same
 // mapping. "/lib/xp/*" are Java-backed with no Node implementation, so they map to stubs.
 //
 // The library keeps state (handlers, groups, ...) at module level. To give each test a fresh copy,
-// a test imports "/lib/wsUtil?fresh=<n>": the query is kept on the resolved URL, which makes Node
+// a test imports "/lib/wsutil?fresh=<n>": the query is kept on the resolved URL, which makes Node
 // load a new instance, and it is passed on to everything the instance imports, so the whole module
 // graph (including the stubs) is fresh and consistent. Registered from register.mjs.
 import { resolve as resolvePath } from "node:path";
@@ -24,8 +24,8 @@ export function resolve(specifier, context, next) {
 }
 
 function map(specifier, parentURL) {
-  if (specifier === "/lib/wsUtil") {
-    return `${RESOURCES}lib/wsUtil/index.ts`;
+  if (specifier === "/lib/wsutil") {
+    return `${RESOURCES}lib/wsutil/index.ts`;
   }
   if (specifier.startsWith("/lib/xp/")) {
     return `${STUBS}lib-xp-${specifier.slice("/lib/xp/".length)}.mts`;

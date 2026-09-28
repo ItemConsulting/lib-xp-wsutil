@@ -1,7 +1,7 @@
 import { addToGroup, removeFromGroup } from "/lib/xp/websocket";
 import type { Events } from "./events";
+import { hasOwn } from "./shared";
 import type { WebSocketService } from "./types";
-import { hasOwn } from "./util";
 
 export type Groups = Pick<WebSocketService, "createGroup" | "addUserToGroup" | "removeUserFromGroup" | "getGroupUsers">;
 
@@ -12,10 +12,16 @@ export type Groups = Pick<WebSocketService, "createGroup" | "addUserToGroup" | "
 export function createGroups(events: Events): Groups {
   const groups: Record<string, { users: string[]; autoRemove: boolean }> = {};
 
+  // The autoRemove flag of every group created so far. A group is removed when its last user leaves, and when
+  // addUserToGroup() recreates it without a flag of its own, the flag it was created with is used again.
+  const autoRemoveFlags: Record<string, boolean> = {};
+
   const api: Groups = {
     createGroup(group, autoRemove) {
       if (!hasOwn(groups, group)) {
-        groups[group] = { users: [], autoRemove: !!autoRemove };
+        const flag = autoRemove ?? (hasOwn(autoRemoveFlags, group) ? autoRemoveFlags[group] : false);
+        autoRemoveFlags[group] = flag;
+        groups[group] = { users: [], autoRemove: flag };
       }
     },
 

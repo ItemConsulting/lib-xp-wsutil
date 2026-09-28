@@ -25,10 +25,12 @@ function entries(dir: string, exts: string, exclude: string[] = []): Record<stri
   );
 }
 
-// /lib/wsUtil is one module: only its index.ts is an entry, and the other files in the folder are bundled into
+// /lib/wsutil is one module: only its index.ts is an entry, and the other files in the folder are bundled into
 // it. As separate entries they would land in the jar as files of their own, and their shared state in _chunks/.
-const serverEntry = entries(SRC, "{ts,js}", ["**/*.d.ts", `${SRC_ASSETS}/**`, `${SRC}/lib/wsUtil/!(index).ts`]);
-const assetEntry = entries(SRC_ASSETS, "{tsx,ts,jsx,js}", ["**/*.d.ts"]);
+const serverEntry = entries(SRC, "{ts,js}", ["**/*.d.ts", `${SRC_ASSETS}/**`, `${SRC}/lib/wsutil/!(index).ts`]);
+// Likewise the client library is one file, assets/wsutil/xp-websocket.js, with client.ts and lib/wsutil/shared.ts
+// bundled into it
+const assetEntry = entries(SRC_ASSETS, "{tsx,ts,jsx,js}", ["**/*.d.ts", `${SRC_ASSETS}/wsutil/!(xp-websocket).ts`]);
 
 // XP resolves an absolute import at runtime against the app's own resources
 // first, then against the modules provided by the runtime: XP's own libraries
@@ -96,6 +98,9 @@ export default defineConfig([
           },
           outputOptions: {
             chunkFileNames: "_chunks/[name]-[hash].js", // avoid chunk-name collisions
+            // No `Object.defineProperty(exports, Symbol.toStringTag, ...)` preamble: it reads Symbol unguarded at
+            // load, which a Nashorn without Symbol cannot do
+            generatedCode: { symbols: false },
           },
         },
       ]
@@ -107,14 +112,11 @@ export default defineConfig([
           outDir: DST_ASSETS,
           format: "esm" as const,
           target: "es2023",
-          outExtensions: () => ({ js: ".js" }), // not .mjs: /lib/wsUtil reads assets/clientws.js
+          outExtensions: () => ({ js: ".js" }), // not .mjs: pages load assetUrl({ path: "wsutil/xp-websocket.js" })
           platform: "browser" as const,
           clean: false,
           dts: false,
-          // /lib/wsUtil serves assets/clientws.js after inlining the client expansions into it, as source code
-          // that uses the local variables and functions of the script. Minifying would rename those.
-          minify: false,
-          // The script is served from a service URL, where a source map next to it would not be found
+          minify: false, // kept readable, for debugging in the browser
           sourcemap: false,
           logLevel,
           tsconfig: `${SRC_ASSETS}/tsconfig.json`,

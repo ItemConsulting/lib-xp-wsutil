@@ -1,8 +1,8 @@
 import type { WebSocketEventType } from "@enonic-types/core";
+import { EVENT_TYPES } from "./shared";
 import type { EventHandlers, SocketEvent } from "./types";
-import { parseMessage } from "./util";
 
-const EVENT_TYPES: readonly WebSocketEventType[] = ["open", "close", "error", "message"];
+type PlainEventType = Exclude<WebSocketEventType, "message">;
 
 /**
  * The event handlers of one websocket service
@@ -13,13 +13,31 @@ export interface Events {
   addHandler<K extends WebSocketEventType>(event: K, handler: EventHandlers[K]): void;
 
   /**
-   * Calls the main handler of the event, and then the additional handlers
+   * Calls the main handler of an `open`, `close` or `error` event, and then the additional handlers
    */
-  handle(event: SocketEvent): void;
+  handleEvent(type: PlainEventType, event: SocketEvent): void;
+
+  /**
+   * Calls the main `message` handler, and then the additional ones, with the parsed message. The service parses
+   * the message itself, as it answers rpc calls before they get here.
+   */
+  handleMessage(message: unknown, event: SocketEvent): void;
 }
 
 function logEvent(event: SocketEvent): void {
   log.debug(JSON.stringify(event));
+}
+
+/**
+ * Calls a handler, and logs an error if it throws, so that the other handlers of the event still run: the
+ * library's own bookkeeping (the emitter's users, the groups) is done by additional handlers.
+ */
+function guarded(type: WebSocketEventType, event: SocketEvent, call: () => void): void {
+  try {
+    call();
+  } catch (e) {
+    log.error(`SOCKET-LIB: A handler of the "${type}" event failed for ${event.session.id}: ${e}`);
+  }
 }
 
 export function createEvents(): Events {
@@ -58,21 +76,19 @@ export function createEvents(): Events {
       additionalHandlers[event].push(handler);
     },
 
-    handle(event) {
-      if (event.type === "message") {
-        const message = parseMessage(event.message);
-        mainHandlers.message(message, event);
+    handleEvent(type, event) {
+      guarded(type, event, () => mainHandlers[type](event));
 
-        for (const handler of additionalHandlers.message) {
-          handler(message, event);
-        }
-      } else {
-        const type = event.type;
-        mainHandlers[type](event);
+      for (const handler of additionalHandlers[type]) {
+        guarded(type, event, () => handler(event));
+      }
+    },
 
-        for (const handler of additionalHandlers[type]) {
-          handler(event);
-        }
+    handleMessage(message, event) {
+      guarded("message", event, () => mainHandlers.message(message, event));
+
+      for (const handler of additionalHandlers.message) {
+        guarded("message", event, () => handler(message, event));
       }
     },
   };

@@ -32,7 +32,7 @@
 
     // Must be set explicitly (TS5011). "prepublishOnly" emits to dist/lib/, and
     // assets/tsconfig.json to dist/assets/, so dist/ mirrors this folder and
-    // the relative imports of lib/wsUtil/types.ts resolve there as well.
+    // the relative imports of lib/wsutil/types.ts resolve there as well.
     "rootDir": ".",
 
     // A series of entries which re-map imports to lookup locations relative

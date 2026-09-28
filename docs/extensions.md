@@ -1,7 +1,8 @@
 # Creating extensions
 
 Extensions package reusable WebSocket functionality: on the server as functions that work on a websocket service,
-and on the client with `expandClient()`. If you create something others could use, share it.
+and on the client as functions that work on the `<xp-websocket>` element. If you create something others could use,
+share it.
 
 ## Server extensions
 
@@ -9,7 +10,7 @@ A server extension is a function that takes the service and sets it up. Say we w
 `src/main/resources/lib/wsLogger.ts`:
 
 ```typescript
-import type { WebSocketService } from "/lib/wsUtil";
+import type { WebSocketService } from "/lib/wsutil";
 
 export function logConnections(socket: WebSocketService): void {
   socket.addHandler("open", (event) => log.info(`Connected: ${event.session.id}`));
@@ -21,7 +22,7 @@ Use it in the service controller:
 
 ```typescript
 import { logConnections } from "/lib/wsLogger";
-import { createWebSocketService } from "/lib/wsUtil";
+import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
 export const { get, webSocketEvent } = socket;
@@ -32,8 +33,8 @@ logConnections(socket);
 An extension can also create the service, to bundle its setup with options of its own:
 
 ```typescript
-import type { WebSocketService, WebSocketServiceOptions } from "/lib/wsUtil";
-import { createWebSocketService } from "/lib/wsUtil";
+import type { WebSocketService, WebSocketServiceOptions } from "/lib/wsutil";
+import { createWebSocketService } from "/lib/wsutil";
 
 export function createLoggedWebSocketService(options?: WebSocketServiceOptions): WebSocketService {
   const socket = createWebSocketService(options);
@@ -49,43 +50,74 @@ import { createLoggedWebSocketService } from "/lib/wsLogger";
 export const { get, webSocketEvent } = createLoggedWebSocketService({ service: "chat" });
 ```
 
-## Client expansions
+## Client extensions
 
-`expandClient()` adds methods to the [client](client.md) of every client served by the service. Call it on the
-service:
+A client extension is a function that takes the [`<xp-websocket>`](client.md) element, in a script of your app.
+Say we want to show the state of the connection in the page:
 
 ```typescript
-import { createWebSocketService } from "/lib/wsUtil";
+// src/main/resources/assets/connection-status.ts
+import type { XpWebSocketElement } from "@item-enonic-types/lib-wsutil/dist/assets/wsutil/xp-websocket";
+
+export function showConnectionStatus(socket: XpWebSocketElement, target: HTMLElement): void {
+  socket.addEventListener("ws:open", () => {
+    target.textContent = "Connected";
+  });
+  socket.addEventListener("ws:close", () => {
+    target.textContent = "Disconnected";
+  });
+}
+```
+
+```javascript
+import { showConnectionStatus } from "./connection-status.js";
+
+showConnectionStatus(document.querySelector("xp-websocket"), document.getElementById("status"));
+```
+
+## Extensions with both sides
+
+An extension that needs the server too pairs a server function with a client function, and uses
+[rpc](server.md#rpc) or the [emitter](server.md#socketemitter) between them. A user registry, for example:
+
+```typescript
+// src/main/resources/lib/wsUsers.ts
+import type { WebSocketService } from "/lib/wsutil";
+
+export function userRegistry(socket: WebSocketService) {
+  const users: Record<string, string> = {}; // Session ids by username
+
+  return socket.rpc({
+    register(name: string) {
+      if (users[name]) throw new Error(`"${name}" is taken`);
+      users[name] = this.session.id;
+    },
+    listUsers() {
+      return Object.keys(users);
+    },
+  });
+}
+```
+
+```typescript
+// src/main/resources/services/websocket/websocket.ts
+import { createWebSocketService } from "/lib/wsutil";
+import { userRegistry } from "/lib/wsUsers";
 
 const socket = createWebSocketService();
 export const { get, webSocketEvent } = socket;
-
-socket.expandClient("hello", function () {
-  this.send("Hello"); // `this` is the client, typed as WebSocketClientApi
-});
-
-// Or several at once
-socket.expandClient({
-  hello() {
-    this.send("Hello");
-  },
-  greeting: "Hi there",
-});
+export const users = userRegistry(socket);
 ```
 
-Use them on the client:
+The client side of the extension calls the methods through the element, typed by the export of the service:
 
-```javascript
-const cws = new WebSocketClient();
-cws.connect();
-cws.hello();
-console.log(cws.greeting);
+```typescript
+import type { users } from "../../services/websocket/websocket";
+import type { XpWebSocketElement } from "@item-enonic-types/lib-wsutil/dist/assets/wsutil/xp-websocket";
+
+export async function register(socket: XpWebSocketElement, name: string): Promise<string[]> {
+  const rpc = socket.rpc<typeof users>();
+  await rpc.register(name);
+  return rpc.listUsers();
+}
 ```
-
-The functions are sent to the browser as **source code**, so they run there and not on the server:
-
-- They can only use `this` (the client), their arguments and browser globals. Variables and imports from the code
-  around them do not exist in the browser.
-- Use a `function` expression or a method, not an arrow function: an arrow function has no `this` of its own, so
-  `expandClient()` rejects it with a `TypeError`.
-- Values that are not functions are sent as JSON.

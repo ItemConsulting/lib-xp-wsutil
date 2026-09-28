@@ -5,7 +5,7 @@
 [![](https://repo.itemtest.no/api/badge/latest/releases/no/item/lib-xp-wsutil)](https://repo.itemtest.no/#/releases/no/item/lib-xp-wsutil)
 [![](https://img.shields.io/npm/types/%40item-enonic-types%2Flib-wsutil)](https://www.npmjs.com/package/@item-enonic-types/lib-wsutil)
 
-<img src="https://github.com/ItemConsulting/lib-xp-wsutil/raw/main/docs/images/kicon.svg?sanitize=true" width="150">
+<img src="https://github.com/ItemConsulting/lib-xp-wsutil/raw/main/docs/images/icon.svg?sanitize=true" width="150">
 
 > [!NOTE]
 > See also the [Turbo Streams integration with XP](https://github.com/ItemConsulting/lib-xp-turbo), which lets
@@ -39,29 +39,29 @@ Install the type definitions:
 npm i -D @item-enonic-types/lib-wsutil
 ```
 
-npm package names are lowercase, so map `/lib/wsUtil` to the package explicitly in your *tsconfig.json*:
+And map `/lib/*` to the `@item-enonic-types` packages in your *tsconfig.json*, if it isn't already:
 
 ```diff
 {
   "compilerOptions": {
     "paths": {
       "/lib/xp/*": ["./node_modules/@enonic-types/lib-*"],
-+     "/lib/wsUtil": ["./node_modules/@item-enonic-types/lib-wsutil"],
++     "/lib/*": ["./node_modules/@item-enonic-types/lib-*", "./src/main/resources/lib/*"],
       "/*": ["./src/main/resources/*"]
     }
   }
 }
 ```
 
-The client side library is a JavaScript module served from your websocket service, at a URL TypeScript can't
-resolve. Import its types from the package instead:
+The client side library is typed too. Add its global declarations to the *tsconfig.json* of your client code, and
+`document.querySelector("xp-websocket")` is an `XpWebSocketElement`, and the `ws:` events are typed:
 
-```typescript
-import type * as ClientWs from "@item-enonic-types/lib-wsutil/dist/assets/clientws";
-
-// The URL of your websocket service, e.g. rendered into the page by a controller using serviceUrl()
-const { WebSocketClient }: typeof ClientWs = await import(websocketServiceUrl);
-const clientWs = new WebSocketClient();
+```diff
+{
+  "compilerOptions": {
++   "types": ["@item-enonic-types/lib-wsutil/global"]
+  }
+}
 ```
 
 ## Hello sockets ##
@@ -71,24 +71,50 @@ Here is the shortest example for opening websocket communication in your project
 
 ```typescript
 // src/main/resources/services/websocket/websocket.ts
-import { createWebSocketService } from "/lib/wsUtil";
+import { createWebSocketService } from "/lib/wsutil";
 
 export const { get, webSocketEvent } = createWebSocketService();
 ```
 
-The service serves the client side library as a JavaScript module. Import it from the URL of the service, as
-returned by `serviceUrl({ service: "websocket" })` in your page or part controller:
+The client side library is an asset of your app, served with
+[lib-asset](https://developer.enonic.com/docs/lib-asset/stable), and the connection is an element. Your page or part
+controller gives the view the two URLs. Here with [lib-xp-freemarker](https://github.com/ItemConsulting/lib-xp-freemarker):
 
-```html
-<script type="module">
-  import { WebSocketClient } from "/mysite/_/service/com.my.app/websocket";
+```typescript
+import { render } from "/lib/freemarker";
+import { assetUrl } from "/lib/enonic/asset";
+import { serviceUrl } from "/lib/xp/portal";
 
-  const clientWs = new WebSocketClient();
-  clientWs.connect();
-</script>
+const view = resolve("hello.ftlh");
+
+export function get(): Response {
+  const model = {
+    clientUrl: assetUrl({
+      path: "wsutil/xp-websocket.js"
+    }),
+    socketUrl: serviceUrl({
+      service: "websocket",
+      type: "websocket"
+    }),
+  };
+
+  return {
+    body: render(view, model),
+  };
+}
 ```
 
-Check the console/server logs to see that your connection is alive
+And the view loads the library, and adds the element:
+
+```ftlh
+[#-- @ftlvariable name="clientUrl" type="String" --]
+[#-- @ftlvariable name="socketUrl" type="String" --]
+<script type="module" src="${clientUrl}"></script>
+<xp-websocket src="${socketUrl}"></xp-websocket>
+```
+
+The element connects when the page loads. Check the server log to see that your connection is alive: the `open`
+event is logged at debug level.
 
 ## Documentation ##
 
@@ -99,10 +125,6 @@ Check the console/server logs to see that your connection is alive
 - [Tutorial: a chat application](docs/tutorial.md)
 - [Migrating from 2.x to 3.0](docs/migrating-to-3.md)
 
-## License ##
+## Author ##
 
-This project is under the Apache 2.0 license. For more information please read [LICENSE.txt](LICENSE)
-
-## Original author ##
-
-**Per Arne Drevland**
+This library was created by **Per Arne Drevland**.

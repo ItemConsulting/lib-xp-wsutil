@@ -1,7 +1,7 @@
 import { send } from "/lib/xp/websocket";
 import type { Events } from "./events";
+import { hasOwn } from "./shared";
 import type { ConnectionCallback, EmitterMessage, EmitterUser, SocketEmitter } from "./types";
-import { hasOwn } from "./util";
 
 function isEmitterMessage(message: unknown): message is EmitterMessage {
   return typeof message === "object" && message !== null && typeof (message as EmitterMessage).event === "string";
@@ -75,16 +75,16 @@ export function createSocketEmitter(events: Events): SocketEmitter {
     delete disconnectHandlers[id];
   });
 
-  // When a message arrives, call the user's handler for the event. A message that is not an
-  // emitter message was not sent by the client library's Io(), and is logged.
+  // When a message arrives, call the user's handler for the event. A message that is not an emitter message
+  // was not sent by the client library's Io(), and is none of the emitter's business.
   events.addHandler("message", (message, event) => {
     if (!isEmitterMessage(message)) {
-      log.debug("SOCKET-LIB: Wrong JSON format for client emit object");
-      log.debug(JSON.stringify(event));
       return;
     }
 
-    const handler = handlers[event.session.id]?.[message.event];
+    // Only the user's own handlers: an event named like a property of Object.prototype is not one
+    const userHandlers = handlers[event.session.id];
+    const handler = userHandlers && hasOwn(userHandlers, message.event) ? userHandlers[message.event] : undefined;
 
     if (handler) {
       try {

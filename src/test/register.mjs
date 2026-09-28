@@ -1,5 +1,5 @@
 // Loaded via `node --import` before any test. Registers the module resolver and installs the globals
-// Enonic XP provides to every module: `app`, `log` and `resolve`.
+// Enonic XP provides to every module: `app` and `log`.
 // `log` delegates to console lazily, so a test that mocks console.error intercepts log.error.
 import { register } from "node:module";
 
@@ -19,6 +19,3 @@ globalThis.log = {
   error: (...args) => console.error(...args),
   warning: (...args) => console.warn(...args),
 };
-
-// The library only passes the resolved key on to the (stubbed) /lib/xp/io, so the path itself will do
-globalThis.resolve = (path) => path;

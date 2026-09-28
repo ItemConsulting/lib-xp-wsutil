@@ -7,31 +7,33 @@ Support Enonic XP 8, and drop support for XP 7. See
 every change that affects an app built on 2.x.
 
 The library is now written in TypeScript, and its type definitions are published to npm as
-`@item-enonic-types/lib-wsutil`. The jar is published to https://repo.itemtest.no instead of JitPack, and brings the
-XP libraries it uses along, so apps no longer include `lib-io`, `lib-portal` and `lib-websocket` themselves.
+`@item-enonic-types/lib-wsutil`. The jar is published to https://repo.itemtest.no instead of JitPack, and brings
+`lib-websocket` along, so apps no longer include it themselves.
 
 The library is now a service you create: `createWebSocketService()` returns the `get` and `webSocketEvent` handlers
 to export from the service controller, and everything else as methods. Every service has its own handlers, groups,
-emitter (`socket.emitter()`) and client expansions, so an app can run several independent websocket services:
+emitter (`socket.emitter()`) and rpc methods, so an app can run several independent websocket services:
 
 ```typescript
-import { createWebSocketService } from "/lib/wsUtil";
+import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
 export const { get, webSocketEvent } = socket;
 ```
 
-The client side library is now a JavaScript module exporting the class `WebSocketClient` (also as `ExpWS`), and no
-longer sets the global `window.ExpWS`. Load it with `<script type="module">` and import it from the URL of your
-websocket service:
+The client side library is now an asset of the app, `assets/wsutil/xp-websocket.js`, instead of being served by the
+websocket service, and the connection is the custom element `<xp-websocket>`, which connects to the URL in its `src`
+when it is added to the page and dispatches the WebSocket events as DOM events (`ws:open`, `ws:message`, `ws:close`,
+`ws:error`):
 
 ```html
-<script type="module">
-  import { WebSocketClient } from "/mysite/_/service/com.my.app/websocket";
-
-  const clientWs = new WebSocketClient();
-</script>
+<script type="module" src="${assetUrl({ path: 'wsutil/xp-websocket.js' })}"></script>
+<xp-websocket src="${serviceUrl({ service: 'websocket', type: 'websocket' })}"></xp-websocket>
 ```
+
+Client expansions are replaced by **rpc**: `socket.rpc({ greet(name) { ... } })` registers methods on the server,
+and `socket.rpc().greet("Tom")` on the element calls them as async functions, typed from the server code with
+`rpc<typeof api>()`.
 
 Other changes:
 
@@ -46,14 +48,14 @@ Other changes:
   replaces `client.sendTo()`, `broadcast()` takes `{ except }` to leave out a client, and `on<T>()` types the
   payload of an event. A handler that throws is logged as an error.
 - `extend()` has been removed. An extension is a function that takes the service.
-- Client expansions become methods of the client, and use `this` instead of the client's inner variables. Arrow
-  functions and classes are rejected, as they would not get the client as `this`, and methods are serialized
-  correctly.
-- The client requires `new`, uses `wss://` on https pages, closes an open connection when `connect()` is called
-  again, throws on `send()` before `connect()`, throws `TypeError`s instead of strings, returns the same `Io()`
+- `expandClient()` has been removed, see rpc above. `ExpWS` is gone; the class behind the element is exported from
+  the asset as `WebSocketClient`, and takes the url of the service.
+- The `WebSocketClient` class requires `new`, closes an open connection when `connect()` is called again, has
+  `close()`, throws on `send()` before `connect()`, throws `TypeError`s instead of strings, returns the same `Io()`
   every time, and logs at debug level by default (errors with `console.error`). `isConnected` now reflects the
   state of the connection, and `setDefaultHandler()` now applies to every event without a handler of its own.
+  `setHost()` is renamed `setUrl()`.
 - The library logs at debug level, so the `no.item.wsUtil.printLog` setting is gone.
 - The default websocket response is `{}` instead of `{ data: { user: "test" }, subProtocols: ["text"] }`. Pass the
   `webSocketResponse` option to set one.
-- `lib/clientws.js`, an unused copy of `assets/clientws.js`, has been removed.
+- `lib/clientws.js`, an unused copy of the client library, has been removed.

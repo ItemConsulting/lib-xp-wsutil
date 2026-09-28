@@ -8,12 +8,14 @@ We use a page, a service and a few lines of client side JavaScript:
 ```mermaid
 treeView-beta
     src/main/resources/
+        assets/
+            chat.js ## the client side code
         cms/
             pages/
                 chat/
                     chat.yaml ## the page descriptor
                     chat.ts ## the page controller
-                    chat.html ## the page, with the client side code
+                    chat.ftlh ## the page, a FreeMarker template with HTML auto-escaping
         services/
             websocket/
                 websocket.ts ## the server side code
@@ -28,18 +30,20 @@ steps:
 ```groovy
 dependencies {
   include "no.item:lib-xp-wsutil:3.0.0"
+  include "no.item:lib-xp-freemarker:4.0.0"
 }
 ```
 
-The library brings `lib-io`, `lib-portal` and `lib-websocket` along, which the page below uses too.
+The page below renders its view with [lib-xp-freemarker](https://github.com/ItemConsulting/lib-xp-freemarker), and
+links its assets with [lib-asset](https://developer.enonic.com/docs/lib-asset/stable), which the starter includes.
 
 ### The service
 
-The service handles the WebSocket connections, and serves the client side library:
+The service handles the WebSocket connections:
 
 ```typescript
 // services/websocket/websocket.ts
-import { createWebSocketService } from "/lib/wsUtil";
+import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
 export const { get, webSocketEvent } = socket;
@@ -56,62 +60,69 @@ title: "Chat"
 form: []
 ```
 
-The page controller serves `chat.html`, with the URL of the service filled in:
+The page controller renders `chat.ftlh`, with three URLs in the model: the client side library, which is an asset of
+the app, the WebSocket URL of the service, and our own client side code, `assets/chat.js`, which is empty for now:
 
 ```typescript
 // cms/pages/chat/chat.ts
 import type { Response } from "@enonic-types/core";
-import { getResource, readText } from "/lib/xp/io";
+import { render } from "/lib/freemarker";
+import { assetUrl } from "/lib/enonic/asset";
 import { serviceUrl } from "/lib/xp/portal";
 
-const view = readText(getResource(resolve("chat.html")).getStream());
+const view = resolve("chat.ftlh");
 
 export function get(): Response {
+  const model = {
+    clientUrl: assetUrl({ path: "wsutil/xp-websocket.js" }),
+    socketUrl: serviceUrl({ service: "websocket", type: "websocket" }),
+    chatUrl: assetUrl({ path: "chat.js" }),
+  };
+
   return {
-    body: view.replace("%WEBSOCKET_URL%", serviceUrl({ service: "websocket" })),
+    body: render(view, model),
   };
 }
 ```
 
-The page imports the client side library from the service, and connects:
+The page loads the library and our script, and adds an `<xp-websocket>` element, which connects to the service:
 
-```html
-<!-- cms/pages/chat/chat.html -->
+```ftlh
+[#-- cms/pages/chat/chat.ftlh --]
+[#-- @ftlvariable name="clientUrl" type="String" --]
+[#-- @ftlvariable name="socketUrl" type="String" --]
+[#-- @ftlvariable name="chatUrl" type="String" --]
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Hello Sockets</title>
+  <script type="module" src="${clientUrl}"></script>
+  <script type="module" src="${chatUrl}"></script>
 </head>
 <body>
-  <script type="module">
-    import { WebSocketClient } from "%WEBSOCKET_URL%";
-
-    const cws = new WebSocketClient();
-    cws.connect();
-  </script>
+  <xp-websocket src="${socketUrl}"></xp-websocket>
 </body>
 </html>
 ```
 
+Module scripts run after the page is parsed, in order, so `chat.js` finds the element in the page, already defined
+by the library.
+
 Deploy the app, add it to a site in Content Studio, and select the *Chat* page for the site. Open the page, and the
-browser console shows the `open` event of the connection, when its *verbose* level is enabled:
-
-![The open event in the browser console](images/hello-socket01.png)
-
-The events are logged by the default handlers on both sides, at debug level: in the browser console, and in the
-server log. The URL in the event depends on where the page runs.
+server log shows the `open` event of the connection, when debug logging is enabled for the app. In the browser,
+`document.querySelector("xp-websocket").connected` is `true`.
 
 Both sides are now ready to talk to each other.
 
 ## Registering a username
 
-We use the [`SocketEmitter`](server.md#socketemitter) of the service on the server and [`Io()`](client.md#io) on the client, which send
+We use the [`SocketEmitter`](server.md#socketemitter) of the service on the server and [`io`](client.md#io) on the client, which send
 *named events* back and forth.
 
 The page gets a registration form, and two containers that stay hidden until the user has registered:
 
-```html
+```ftlh
 <div id="register">
   <input type="text" id="username" placeholder="Username">
   <button id="register-button">Register</button>
@@ -129,13 +140,12 @@ The page gets a registration form, and two containers that stay hidden until the
 ```
 
 On the client, the *Register* button emits a `username-registration` event, and the server answers with a
-`username-response` event. `Io()` opens the connection, so `connect()` is no longer needed:
+`username-response` event. The client code, in `assets/chat.js`, gets `io` from the element:
 
 ```javascript
-import { WebSocketClient } from "%WEBSOCKET_URL%";
-
-const cws = new WebSocketClient();
-const io = cws.Io(); // Opens the connection
+// assets/chat.js
+const socket = document.querySelector("xp-websocket");
+const io = socket.io;
 
 const $ = (id) => document.getElementById(id);
 
@@ -168,7 +178,7 @@ client:
 
 ```typescript
 // services/websocket/websocket.ts
-import { createWebSocketService } from "/lib/wsUtil";
+import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
 export const { get, webSocketEvent } = socket;
@@ -394,7 +404,7 @@ Now it is your turn: add chat rooms. [Groups](server.md#groups) are a good place
 
 ```typescript
 // services/websocket/websocket.ts
-import { createWebSocketService } from "/lib/wsUtil";
+import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
 export const { get, webSocketEvent } = socket;
@@ -456,27 +466,41 @@ form: []
 ```typescript
 // cms/pages/chat/chat.ts
 import type { Response } from "@enonic-types/core";
-import { getResource, readText } from "/lib/xp/io";
+import { render } from "/lib/freemarker";
+import { assetUrl } from "/lib/enonic/asset";
 import { serviceUrl } from "/lib/xp/portal";
 
-const view = readText(getResource(resolve("chat.html")).getStream());
+const view = resolve("chat.ftlh");
 
 export function get(): Response {
+  const model = {
+    clientUrl: assetUrl({ path: "wsutil/xp-websocket.js" }),
+    socketUrl: serviceUrl({ service: "websocket", type: "websocket" }),
+    chatUrl: assetUrl({ path: "chat.js" }),
+  };
+
   return {
-    body: view.replace("%WEBSOCKET_URL%", serviceUrl({ service: "websocket" })),
+    body: render(view, model),
   };
 }
 ```
 
-```html
-<!-- cms/pages/chat/chat.html -->
+```ftlh
+[#-- cms/pages/chat/chat.ftlh --]
+[#-- @ftlvariable name="clientUrl" type="String" --]
+[#-- @ftlvariable name="socketUrl" type="String" --]
+[#-- @ftlvariable name="chatUrl" type="String" --]
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Hello Sockets</title>
+  <script type="module" src="${clientUrl}"></script>
+  <script type="module" src="${chatUrl}"></script>
 </head>
 <body>
+  <xp-websocket src="${socketUrl}"></xp-websocket>
+
   <div id="register">
     <input type="text" id="username" placeholder="Username">
     <button id="register-button">Register</button>
@@ -492,125 +516,125 @@ export function get(): Response {
     <input type="text" id="private-input" placeholder="Message privately">
   </div>
 
-  <script type="module">
-    import { WebSocketClient } from "%WEBSOCKET_URL%";
-
-    const cws = new WebSocketClient();
-    const io = cws.Io(); // Opens the connection
-
-    const $ = (id) => document.getElementById(id);
-
-    let username = ""; // Our username, once registered
-    let pendingUsername = "";
-
-    const privateLogs = new Map(); // The private chat logs, by username
-    let contextUser; // The user we are talking to at the moment
-
-    function addLine(textarea, line) {
-      textarea.value += `${line}\n`;
-      textarea.scrollTop = textarea.scrollHeight;
-    }
-
-    function addUser(user) {
-      const option = document.createElement("option");
-      option.value = user;
-      option.textContent = user;
-      option.addEventListener("dblclick", () => {
-        openPrivateChat(user);
-        showPrivateChat(user);
-      });
-      $("users").append(option);
-    }
-
-    function openPrivateChat(user) {
-      $("private").hidden = false;
-
-      if (!privateLogs.has(user)) {
-        privateLogs.set(user, `Chatting with ${user}\n`);
-
-        const option = document.createElement("option");
-        option.value = user;
-        option.textContent = user;
-        option.addEventListener("click", () => showPrivateChat(user));
-        $("private-users").append(option);
-      }
-
-      if (!contextUser) showPrivateChat(user);
-    }
-
-    function showPrivateChat(user) {
-      contextUser = user;
-      $("private-chat").value = privateLogs.get(user);
-      $("private-chat").scrollTop = $("private-chat").scrollHeight;
-    }
-
-    function addPrivateLine(user, line) {
-      privateLogs.set(user, `${privateLogs.get(user)}${line}\n`);
-      if (contextUser === user) showPrivateChat(user);
-    }
-
-    $("register-button").addEventListener("click", () => {
-      pendingUsername = $("username").value.trim();
-
-      if (pendingUsername) {
-        io.emit("username-registration", pendingUsername);
-      } else {
-        alert("Please enter a valid username");
-      }
-    });
-
-    $("chat-input").addEventListener("keydown", (event) => {
-      const input = event.target;
-
-      if (event.key === "Enter" && input.value) {
-        io.emit("public-message", input.value);
-        input.value = "";
-      }
-    });
-
-    $("private-input").addEventListener("keydown", (event) => {
-      const input = event.target;
-
-      if (event.key === "Enter" && input.value && contextUser) {
-        io.emit("private-message", { to: contextUser, content: input.value });
-        addPrivateLine(contextUser, `${username}: ${input.value}`);
-        input.value = "";
-      }
-    });
-
-    io.on("username-response", (response) => {
-      if (response === "ok") {
-        username = pendingUsername;
-        $("register").hidden = true;
-        $("global").hidden = false;
-      } else {
-        alert(`Username is ${response}`);
-      }
-    });
-
-    io.on("motd", ({ motd, users }) => {
-      $("chat").value = `${motd}\n`;
-      $("users").replaceChildren(); // Forget the users seen before registering
-      users.forEach(addUser);
-    });
-
-    io.on("user-enter", (user) => {
-      addLine($("chat"), `Server: ${user} has joined the chat`);
-      addUser(user);
-    });
-
-    io.on("user-leave", (user) => {
-      addLine($("chat"), `Server: ${user} has left the chat`);
-      [...$("users").options].find((option) => option.value === user)?.remove();
-    });
-
-    io.on("public-message", (message) => addLine($("chat"), `${message.username}: ${message.content}`));
-
-    io.on("private-message", (message) => {
-      openPrivateChat(message.username);
-      addPrivateLine(message.username, `${message.username}: ${message.content}`);
-    });
-  </script>
 </body>
 </html>
+```
+
+```javascript
+// assets/chat.js
+const socket = document.querySelector("xp-websocket");
+const io = socket.io;
+
+const $ = (id) => document.getElementById(id);
+
+let username = ""; // Our username, once registered
+let pendingUsername = "";
+
+const privateLogs = new Map(); // The private chat logs, by username
+let contextUser; // The user we are talking to at the moment
+
+function addLine(textarea, line) {
+  textarea.value += `${line}\n`;
+  textarea.scrollTop = textarea.scrollHeight;
+}
+
+function addUser(user) {
+  const option = document.createElement("option");
+  option.value = user;
+  option.textContent = user;
+  option.addEventListener("dblclick", () => {
+    openPrivateChat(user);
+    showPrivateChat(user);
+  });
+  $("users").append(option);
+}
+
+function openPrivateChat(user) {
+  $("private").hidden = false;
+
+  if (!privateLogs.has(user)) {
+    privateLogs.set(user, `Chatting with ${user}\n`);
+
+    const option = document.createElement("option");
+    option.value = user;
+    option.textContent = user;
+    option.addEventListener("click", () => showPrivateChat(user));
+    $("private-users").append(option);
+  }
+
+  if (!contextUser) showPrivateChat(user);
+}
+
+function showPrivateChat(user) {
+  contextUser = user;
+  $("private-chat").value = privateLogs.get(user);
+  $("private-chat").scrollTop = $("private-chat").scrollHeight;
+}
+
+function addPrivateLine(user, line) {
+  privateLogs.set(user, `${privateLogs.get(user)}${line}\n`);
+  if (contextUser === user) showPrivateChat(user);
+}
+
+$("register-button").addEventListener("click", () => {
+  pendingUsername = $("username").value.trim();
+
+  if (pendingUsername) {
+    io.emit("username-registration", pendingUsername);
+  } else {
+    alert("Please enter a valid username");
+  }
+});
+
+$("chat-input").addEventListener("keydown", (event) => {
+  const input = event.target;
+
+  if (event.key === "Enter" && input.value) {
+    io.emit("public-message", input.value);
+    input.value = "";
+  }
+});
+
+$("private-input").addEventListener("keydown", (event) => {
+  const input = event.target;
+
+  if (event.key === "Enter" && input.value && contextUser) {
+    io.emit("private-message", { to: contextUser, content: input.value });
+    addPrivateLine(contextUser, `${username}: ${input.value}`);
+    input.value = "";
+  }
+});
+
+io.on("username-response", (response) => {
+  if (response === "ok") {
+    username = pendingUsername;
+    $("register").hidden = true;
+    $("global").hidden = false;
+  } else {
+    alert(`Username is ${response}`);
+  }
+});
+
+io.on("motd", ({ motd, users }) => {
+  $("chat").value = `${motd}\n`;
+  $("users").replaceChildren(); // Forget the users seen before registering
+  users.forEach(addUser);
+});
+
+io.on("user-enter", (user) => {
+  addLine($("chat"), `Server: ${user} has joined the chat`);
+  addUser(user);
+});
+
+io.on("user-leave", (user) => {
+  addLine($("chat"), `Server: ${user} has left the chat`);
+  [...$("users").options].find((option) => option.value === user)?.remove();
+});
+
+io.on("public-message", (message) => addLine($("chat"), `${message.username}: ${message.content}`));
+
+io.on("private-message", (message) => {
+  openPrivateChat(message.username);
+  addPrivateLine(message.username, `${message.username}: ${message.content}`);
+});
 ```

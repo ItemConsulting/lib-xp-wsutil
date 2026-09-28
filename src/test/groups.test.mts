@@ -67,6 +67,24 @@ describe("groups", () => {
     assert.deepEqual(calls(websocket.removeFromGroup), [["auto", "s1"]]);
   });
 
+  it("keeps autoRemove for a group that is recreated after its last user left", async () => {
+    const { service, websocket } = await loadService();
+    service.createGroup("auto", true);
+    service.addUserToGroup("auto", "s1");
+
+    service.webSocketEvent(socketEvent("close", "s1"));
+    assert.equal(service.getGroupUsers("auto"), undefined); // Removed with its last user
+
+    service.addUserToGroup("auto", "s2"); // Recreates the group, without a flag of its own
+    service.webSocketEvent(socketEvent("close", "s2"));
+
+    assert.equal(service.getGroupUsers("auto"), undefined);
+    assert.deepEqual(calls(websocket.removeFromGroup), [
+      ["auto", "s1"],
+      ["auto", "s2"],
+    ]);
+  });
+
   it("only uses autoRemove when addUserToGroup creates the group", async () => {
     const { service } = await loadService();
 
@@ -81,8 +99,8 @@ describe("groups", () => {
 
   it("keeps the groups of two services apart", async () => {
     const { ws } = await loadService();
-    const chat = ws.createWebSocketService({ service: "chat" });
-    const news = ws.createWebSocketService({ service: "news" });
+    const chat = ws.createWebSocketService();
+    const news = ws.createWebSocketService();
 
     chat.addUserToGroup("global", "s1");
 

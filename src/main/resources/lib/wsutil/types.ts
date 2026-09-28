@@ -1,4 +1,4 @@
-// The types of /lib/wsUtil. The first ones are shared with the client side library (assets/clientws.ts).
+// The types of /lib/wsutil. The first ones are shared with the client side library (assets/wsutil/).
 // Type-only: this file is not built into the jar (see tsdown.config.mts), so it must not contain runtime code.
 
 import type { Request, Response, WebSocketEvent, WebSocketEventType, WebSocketResponse } from "@enonic-types/core";
@@ -31,9 +31,6 @@ export type EmitInterface = (event: string, message?: unknown) => void;
  */
 export type OnInterface = <T = unknown>(event: string, handler: (message: T) => void) => void;
 
-// biome-ignore lint/suspicious/noExplicitAny: the argument depends on the event, see WebSocketClientApi.setEventHandler
-export type ClientEventHandler = (event: any) => void;
-
 /**
  * The interface for the emitted events communications, on the client
  */
@@ -51,21 +48,53 @@ export interface IoInterface {
   emit: EmitInterface;
 }
 
+// ─── Rpc: methods on the server that the client calls ───────────────────────────────────────────
+
 /**
- * The client side library, as a client expansion sees it in `this`. See `WebSocketClient` in assets/clientws.ts
- * for the documentation of each member.
+ * The message the client sends to call an rpc method
  */
-export interface WebSocketClientApi {
-  readonly isConnected: boolean;
-  setHost(host: string, autoConnect?: boolean): void;
-  connect(): void;
-  send(message: unknown): void;
-  setEventHandler(event: WebSocketEventType, handler: ClientEventHandler): void;
-  setEventHandlers(handlers: Partial<Record<WebSocketEventType, ClientEventHandler>>): void;
-  setDefaultHandler(handler: ClientEventHandler): void;
-  addHandler(event: WebSocketEventType, handler: ClientEventHandler): void;
-  Io(): IoInterface;
+export interface RpcCall {
+  rpc: {
+    /**
+     * Identifies the call, so the response can be matched to it
+     */
+    id: number;
+    method: string;
+    args: unknown[];
+  };
 }
+
+/**
+ * The message the server answers an rpc call with: the return value of the method, or the error it threw
+ */
+export interface RpcResponse {
+  rpc: { id: number; result?: unknown; error?: string };
+}
+
+/**
+ * What an rpc method sees as `this`: the websocket event of the call, and its session
+ */
+export interface RpcContext {
+  /**
+   * The session of the calling client. `session.id` works with `send()`, the group functions and `emitTo()`
+   */
+  session: SocketEvent["session"];
+  event: SocketEvent;
+}
+
+/**
+ * The methods `socket.rpc()` takes. They run on the server, with the context of the call as `this`.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: the arguments are whatever the method declares
+export type RpcMethods = Record<string, (this: RpcContext, ...args: any[]) => unknown>;
+
+/**
+ * The client side proxy of the rpc methods of a service: every method returns a promise of what the method
+ * returns on the server
+ */
+export type RpcClient<Api extends RpcMethods> = {
+  [K in keyof Api]: (...args: Parameters<Api[K]>) => Promise<Awaited<ReturnType<Api[K]>>>;
+};
 
 // ─── Server side only ───────────────────────────────────────────────────────────────────────────
 
@@ -91,31 +120,9 @@ export interface WebSocketExports {
 }
 
 /**
- * A function added to the client side library with `expandClient()`. It is sent to the browser as source code,
- * and runs there with the client as `this`. It must be a `function` expression or a method: an arrow function
- * has no `this` of its own, and is rejected.
- */
-export type ClientExpansionFunction = (this: WebSocketClientApi, ...args: never[]) => unknown;
-
-/**
- * What `expandClient()` accepts: a function, or a value that is sent to the browser as JSON
- */
-export type ClientExpansion = ClientExpansionFunction | string | number | boolean | null | object;
-
-/**
  * The options of `createWebSocketService()`
  */
 export interface WebSocketServiceOptions {
-  /**
-   * The name of the service the client connects to, as in `serviceUrl({ service })`. Defaults to `"websocket"`.
-   */
-  service?: string;
-
-  /**
-   * The url the client connects to. Overrides `service`.
-   */
-  host?: string;
-
   /**
    * The response a websocket request is answered with. Defaults to `{}`.
    */
@@ -128,14 +135,14 @@ export interface WebSocketServiceOptions {
  */
 export interface WebSocketService {
   /**
-   * The `get` handler of the service controller: accepts a websocket connection, or serves the client side
-   * library to a plain request
+   * The `get` handler of the service controller: accepts a websocket connection. A request that is not a
+   * websocket request is answered with status 400.
    */
   get(req: Request): Response;
 
   /**
-   * The `webSocketEvent` handler of the service controller: calls the main handler of the event, and then the
-   * additional handlers
+   * The `webSocketEvent` handler of the service controller: answers rpc calls, and passes every other event to
+   * the main handler of the event, and then the additional handlers
    */
   webSocketEvent(event: SocketEvent): void;
 
@@ -200,16 +207,17 @@ export interface WebSocketService {
   getGroupUsers(group: string): string[] | undefined;
 
   /**
-   * Adds a function, or several, to the client side library served by this service. The functions are sent to
-   * the browser as source code, and get the client as `this`.
+   * Registers methods the client calls with `rpc()`. They run on the server with the context of the call as
+   * `this`, and what they return (or throw) is sent back to the caller. Rpc calls are not passed to the `message`
+   * handlers.
    *
-   * @throws If a function is an arrow function or a class, which would not get the client as `this`
+   * Returns the methods as given, so their type can be exported for the client:
+   * `export const api = socket.rpc({ ... })` on the server, and `import type { api }` in the client code.
    */
-  expandClient(name: string, func: ClientExpansion): void;
-  expandClient(expansions: Record<string, ClientExpansion> & ThisType<WebSocketClientApi>): void;
+  rpc<Api extends RpcMethods>(methods: Api): Api;
 
   /**
-   * The `SocketEmitter` of this service, for named events to and from the clients. Created on first use.
+   * The `SocketEmitter` of this service, for named events to and from the clients
    */
   emitter(): SocketEmitter;
 }

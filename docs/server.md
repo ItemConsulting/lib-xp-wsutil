@@ -1,6 +1,6 @@
 # Server API
 
-The server side library is imported from `/lib/wsUtil`. It has one function, `createWebSocketService()`, which
+The server side library is imported from `/lib/wsutil`. It has one function, `createWebSocketService()`, which
 creates a *websocket service*: the two handlers to export from the service controller that serves the web sockets,
 and the functions to work with the connections of that service.
 
@@ -8,7 +8,7 @@ and the functions to work with the connections of that service.
 
 ```typescript
 // src/main/resources/services/websocket/websocket.ts
-import { createWebSocketService } from "/lib/wsUtil";
+import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
 export const { get, webSocketEvent } = socket;
@@ -16,31 +16,27 @@ export const { get, webSocketEvent } = socket;
 // Your server websocket logic goes here, using `socket`
 ```
 
-`get` serves the [client library](client.md) to plain requests, and accepts WebSocket connections. `webSocketEvent`
-passes the WebSocket events on to your handlers.
+`get` accepts WebSocket connections. `webSocketEvent` passes the WebSocket events on to your handlers, and answers
+[rpc](#rpc) calls. The [client library](client.md) is an asset of your app, not served by the service: a request to
+the service that is not a WebSocket request is answered with status 400.
 
 In JavaScript, `openWebsockets(exports)` sets both of them on the `exports` object of the service:
 
 ```javascript
-const { createWebSocketService } = require("/lib/wsUtil");
+const { createWebSocketService } = require("/lib/wsutil");
 
 const socket = createWebSocketService();
 socket.openWebsockets(exports);
 ```
 
-Every service created has its own handlers, groups, emitter and client expansions, so an app can run several
-independent websocket services, each from its own service controller.
+Every service created has its own handlers, groups, emitter and rpc methods, so an app can run several
+independent websocket services, each from its own service controller. The client connects to the one whose URL is
+in the `src` of its [`<xp-websocket>`](client.md) element.
 
 ### Options
 
 ```typescript
 const socket = createWebSocketService({
-  // The name of the service the client connects to, as in serviceUrl({ service }). Defaults to "websocket"
-  service: "chat",
-
-  // Or the full url the client connects to, which overrides `service`
-  host: "wss://example.com/socket",
-
   // The response a websocket request is answered with. Defaults to {}
   webSocketResponse: {
     subProtocols: ["text"],
@@ -49,9 +45,7 @@ const socket = createWebSocketService({
 });
 ```
 
-The client connects to the URL of the service it was served from, so when the service controller isn't named
-`websocket`, pass its name as `service`. `webSocketResponse` takes the options Enonic XP supports for a WebSocket
-response.
+`webSocketResponse` takes the options Enonic XP supports for a WebSocket response.
 
 ## Handling events
 
@@ -76,6 +70,7 @@ socket.addHandler("message", (message, event) => log.info(`${event.session.id} s
   passed on as a string.
 - The other handlers receive the **event**, with the sender in `event.session.id`.
 - Additional handlers are called after the main handler, with the same arguments.
+- A handler that throws is logged as an error, and the other handlers of the event still run.
 - The default main handlers log every event at debug level, so they show up when debug logging is enabled for
   your application in Enonic XP.
 
@@ -110,11 +105,46 @@ const users = socket.getGroupUsers("global") ?? [];
 socket.removeUserFromGroup("global", event.session.id);
 ```
 
+## Rpc
+
+`socket.rpc()` registers methods that the client calls as async functions, with [`rpc()`](client.md#rpc) on the
+element. The methods run on the server, and what they return, or throw, is sent back to the caller:
+
+```typescript
+// The session ids of the registered users, by name
+const users: Record<string, string> = {};
+
+export const api = socket.rpc({
+  greet(name: string) {
+    return `Hello ${name}`;
+  },
+
+  register(name: string) {
+    if (users[name]) {
+      throw new Error("That name is taken"); // Rejects the promise on the client
+    }
+    users[name] = this.session.id; // `this` is the context of the call
+  },
+});
+```
+
+- `this` is the context of the call: `this.session` is the session of the caller, with `this.session.id` for
+  `send()`, the group functions and `emitTo()`, and `this.event` is the WebSocket event.
+- The arguments and the return value travel as JSON, so they must be serializable. A result that cannot be
+  serialized rejects the call, like an error thrown by the method. A method that returns nothing resolves the promise
+  with `undefined`.
+- An error thrown by a method rejects the promise on the client with the message of the error, and is logged on
+  the server. A call of a method that isn't registered is rejected too.
+- Rpc calls are not passed to the `message` handlers.
+- `socket.rpc()` returns the methods as given, so `export const api = socket.rpc({ ... })` lets the client code
+  import their type: `import type { api } from "../../services/websocket/websocket"`. See [Rpc](client.md#rpc) in
+  the Client API.
+
 ## SocketEmitter
 
-The emitter of a service sends and receives *named events* with a payload, together with [`Io()`](client.md#io)
-on the client. It is inspired by [socket.io](https://socket.io/), and created on first use: `socket.emitter()`
-returns the same instance every time.
+The emitter of a service sends and receives *named events* with a payload, together with [`io`](client.md#io)
+on the client. It is inspired by [socket.io](https://socket.io/). `socket.emitter()` returns the same instance every
+time.
 
 ```typescript
 const emitter = socket.emitter();
@@ -145,8 +175,8 @@ emitter.connect((client) => {
 
 | Member                                   | Description                                                          |
 | ---------------------------------------- | -------------------------------------------------------------------- |
-| `get(req)`                               | The `get` handler: serves the client library or accepts a connection |
-| `webSocketEvent(event)`                  | The `webSocketEvent` handler: passes events on to your handlers      |
+| `get(req)`                               | The `get` handler: accepts a WebSocket connection                    |
+| `webSocketEvent(event)`                  | The `webSocketEvent` handler: your handlers, and rpc calls           |
 | `openWebsockets(exports)`                | Sets `get` and `webSocketEvent` on the `exports` object of a service |
 | `setEventHandler(event, handler)`        | Sets the main handler of an event                                    |
 | `setEventHandlers(handlers)`             | Sets the main handlers of several events                             |
@@ -157,7 +187,7 @@ emitter.connect((client) => {
 | `addUserToGroup(group, id, autoRemove?)` | Adds a client to a group, creating it if needed                      |
 | `removeUserFromGroup(group, id)`         | Removes a client from a group                                        |
 | `getGroupUsers(group)`                   | The session ids of the clients in a group                            |
+| `rpc(methods)`                           | Registers methods the client calls, see [Rpc](#rpc)                  |
 | `emitter()`                              | The `SocketEmitter` of the service                                   |
-| `expandClient(name, func)`               | See [Creating extensions](extensions.md)                             |
 
 See the type definitions for the details of each member.

@@ -20,7 +20,7 @@
   "exclude": ["./**/*.d.ts"],
 
   "compilerOptions": {
-    // Types shared with the server are imported from ../lib/wsUtil/types.ts. Must be set
+    // Types shared with the server are imported from ../lib/wsutil/types.ts. Must be set
     // explicitly (TS5011), and makes "prepublishOnly" emit to dist/assets/ and dist/lib/.
     "rootDir": "..",
 
