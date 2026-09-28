@@ -1,0 +1,30 @@
+{
+  // Type-checks the node:test suite. Runtime resolution of "/lib/*" and "/assets/*" is done by
+  // loader.mjs; here the same specifiers are mapped for the compiler. Paths are relative to this
+  // directory (src/test).
+  "include": ["*.test.mts", "helpers.mts", "stubs/*.mts", "../main/resources/assets/wsutil/global.ts"],
+
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2023",
+      "DOM" // The client side library (assets/wsutil/) is written against the browser globals
+    ],
+    "strict": true,
+
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+
+    "paths": {
+      "/lib/wsutil": ["../main/resources/lib/wsutil/index"],
+      "/lib/xp/websocket": ["./stubs/lib-xp-websocket.mts"],
+      "/assets/*": ["../main/resources/assets/*"],
+      "/*": ["../main/resources/*"]
+    },
+
+    "skipLibCheck": true,
+    "types": ["node", "@enonic-types/global"]
+  }
+}
