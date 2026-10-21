@@ -3,7 +3,7 @@
   "sideEffects": false,
   "description": "Type definitions for lib-wsutil",
   "author": "Tom Arild Jakobsen <tajakobsen@gmail.com>",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "license": "Apache-2.0",
   "types": "dist/lib/wsutil/index.d.ts",
   "files": [
