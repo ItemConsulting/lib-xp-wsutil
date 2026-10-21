@@ -21,9 +21,7 @@ dependencies {
   implementation xplibs.websocket
 }
 
-
 repositories {
-  mavenLocal()
   mavenCentral()
   xp.enonicRepo()
 }

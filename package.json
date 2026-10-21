@@ -19,15 +19,15 @@
     "url": "git+https://github.com/ItemConsulting/lib-xp-wsutil.git"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.14",
+    "@biomejs/biome": "^2.6.2",
     "@changesets/cli": "^3.0.3",
-    "@enonic-types/global": "^8.0.4",
-    "@enonic-types/lib-websocket": "^8.0.4",
+    "@enonic-types/global": "^8.1.1",
+    "@enonic-types/lib-websocket": "^8.1.1",
     "@item-enonic-types/global": "^8.0.0",
-    "@swc/core": "^1.16.2",
+    "@swc/core": "^1.16.18",
     "@types/node": "^26.0.0",
-    "concurrently": "^10.0.5",
-    "tsdown": "^0.23.0",
+    "concurrently": "^10.0.6",
+    "tsdown": "^0.23.1",
     "typescript": "^7.0.2"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-# Enonic XP Web Socket Utility Library #
+# Enonic XP Web Socket Utility Library
 
 ![Build badge](https://github.com/ItemConsulting/lib-xp-wsutil/actions/workflows/main.yml/badge.svg)
 ![Enonic XP8 badge](https://market.enonic.com/badges/xp8.svg)
