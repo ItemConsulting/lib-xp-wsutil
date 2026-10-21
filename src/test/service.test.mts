@@ -30,14 +30,29 @@ describe("service", () => {
     assert.match(String(response.body), /wsutil\/xp-websocket\.js/);
   });
 
-  it("sets get and webSocketEvent with openWebsockets", async () => {
+  it("has the handler as GET as well as get, so the controller can export either", async () => {
+    const { service } = await loadService();
+
+    assert.equal(service.GET, service.get);
+    assert.ok(service.GET(webSocketRequest).webSocket);
+  });
+
+  it("sets GET, get and webSocketEvent with openWebsockets", async () => {
     const { service } = await loadService();
     const exp: WebSocketExports = {};
 
     service.openWebsockets(exp);
 
     assert.equal(exp.webSocketEvent, service.webSocketEvent);
-    assert.ok(exp.get?.(webSocketRequest).webSocket);
+    assert.equal(exp.GET, service.get);
+    assert.equal(exp.get, service.get);
+  });
+
+  it("names the path of the client asset", async () => {
+    const { ws, service } = await loadService();
+
+    assert.equal(ws.CLIENT_ASSET_PATH, "wsutil/xp-websocket.js");
+    assert.match(String(service.get(plainRequest).body), /wsutil\/xp-websocket\.js/);
   });
 
   it("works when its handlers are destructured", async () => {

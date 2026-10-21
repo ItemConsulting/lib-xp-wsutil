@@ -25,7 +25,7 @@ import { logConnections } from "/lib/wsLogger";
 import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
-export const { get, webSocketEvent } = socket;
+export const { GET, webSocketEvent } = socket;
 
 logConnections(socket);
 ```
@@ -47,7 +47,7 @@ export function createLoggedWebSocketService(options?: WebSocketServiceOptions):
 ```typescript
 import { createLoggedWebSocketService } from "/lib/wsLogger";
 
-export const { get, webSocketEvent } = createLoggedWebSocketService({ service: "chat" });
+export const { GET, webSocketEvent } = createLoggedWebSocketService({ service: "chat" });
 ```
 
 ## Client extensions
@@ -105,7 +105,7 @@ import { createWebSocketService } from "/lib/wsutil";
 import { userRegistry } from "/lib/wsUsers";
 
 const socket = createWebSocketService();
-export const { get, webSocketEvent } = socket;
+export const { GET, webSocketEvent } = socket;
 export const users = userRegistry(socket);
 ```
 

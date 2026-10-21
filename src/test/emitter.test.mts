@@ -82,7 +82,8 @@ describe("SocketEmitter", () => {
   it("calls the handler of an event emitted by the user, with its payload", async () => {
     const { service, socket } = await connect("s1");
     const seen: number[] = [];
-    socket.on<{ n: number }>("ping", (message) => {
+    // Without event maps the payload is any, so the handler can declare its type
+    socket.on("ping", (message: { n: number }) => {
       seen.push(message.n);
     });
 

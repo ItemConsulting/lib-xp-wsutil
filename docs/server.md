@@ -11,16 +11,19 @@ and the functions to work with the connections of that service.
 import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
-export const { get, webSocketEvent } = socket;
+export const { GET, webSocketEvent } = socket;
 
 // Your server websocket logic goes here, using `socket`
 ```
 
-`get` accepts WebSocket connections. `webSocketEvent` passes the WebSocket events on to your handlers, and answers
+`GET` accepts WebSocket connections. `webSocketEvent` passes the WebSocket events on to your handlers, and answers
 [rpc](#rpc) calls. The [client library](client.md) is an asset of your app, not served by the service: a request to
 the service that is not a WebSocket request is answered with status 400.
 
-In JavaScript, `openWebsockets(exports)` sets both of them on the `exports` object of the service:
+The same handler is on the service as `get` too, the lowercase name XP also accepts, for a controller that keeps
+the lowercase convention: `export const { get, webSocketEvent } = socket`.
+
+In JavaScript, `openWebsockets(exports)` sets the handlers on the `exports` object of the service:
 
 ```javascript
 const { createWebSocketService } = require("/lib/wsutil");
@@ -156,8 +159,8 @@ emitter.connect((client) => {
   // Emit an event to this client
   client.emit("hi", { msg: "hello from server" });
 
-  // Handle an event emitted by this client. The type parameter is the type of the payload
-  client.on<{ recipient: string; content: string }>("ping", (message) => {
+  // Handle an event emitted by this client. The handler receives the payload
+  client.on("ping", (message: { recipient: string; content: string }) => {
     client.emit("pong", message); // Send it back to the client
     emitter.emitTo(message.recipient, "private", message.content); // Or on to another client
   });
@@ -169,15 +172,57 @@ emitter.connect((client) => {
 
 `client.id` is the session id of the client, so it works with `socket.send()` and the group functions too.
 
+The service module is loaded once, so state kept in it, like a list of users, is shared by every connection. A
+client that [reconnects](client.md#reconnecting) gets a new session: the connect callback is called again, and
+`onDisconnect()` of the old session was called when it dropped.
+
+### Typed events
+
+The events of both directions are typed by two *event maps*: the name of each event, and the type of its payload.
+Declare the events the clients emit and the events the server emits, and give them to `createWebSocketService()`
+in that order. `client.on()` then only accepts the events the clients emit, `client.emit()`, `broadcast()` and
+`emitTo()` only the events the server emits, and the payloads are typed on both ends:
+
+```typescript
+// The events the clients emit, and the events the server emits
+export type ClientEvents = {
+  ping: { recipient: string; content: string };
+};
+export type ServerEvents = {
+  pong: { recipient: string; content: string };
+  private: string;
+};
+
+const socket = createWebSocketService<ClientEvents, ServerEvents>();
+export const { GET, webSocketEvent } = socket;
+
+socket.emitter().connect((client) => {
+  client.on("ping", (message) => {
+    // message is ClientEvents["ping"]
+    client.emit("pong", message);
+    emitter.emitTo(message.recipient, "private", message.content);
+    client.emit("private", 42); // Compile error: the payload of "private" is a string
+    client.on("pong", () => {}); // Compile error: "pong" is an event the server emits
+  });
+});
+```
+
+Export the maps from the service controller, and the client code imports them to type
+[`io`](client.md#typed-events) the same way. Both `type` aliases and `interface`s work as event maps. An event
+without a payload is declared as `undefined`: `{ ping: undefined }`.
+
+Without event maps, any event goes, and the payload is `any`, so a handler declares its type:
+`client.on("ping", (message: { content: string }) => …)`.
+
 ## Reference
 
 `createWebSocketService(options?)` returns a `WebSocketService` with these members:
 
 | Member                                   | Description                                                          |
 | ---------------------------------------- | -------------------------------------------------------------------- |
-| `get(req)`                               | The `get` handler: accepts a WebSocket connection                    |
+| `GET(req)`, `get(req)`                   | The `GET` handler: accepts a WebSocket connection                    |
 | `webSocketEvent(event)`                  | The `webSocketEvent` handler: your handlers, and rpc calls           |
-| `openWebsockets(exports)`                | Sets `get` and `webSocketEvent` on the `exports` object of a service |
+| `openWebsockets(exports)`                | Sets `GET`, `get` and `webSocketEvent` on the `exports` of a service |
 | `setEventHandler(event, handler)`        | Sets the main handler of an event                                    |
 | `setEventHandlers(handlers)`             | Sets the main handlers of several events                             |
 | `addHandler(event, handler)`             | Adds an additional handler to an event                               |
@@ -189,5 +234,8 @@ emitter.connect((client) => {
 | `getGroupUsers(group)`                   | The session ids of the clients in a group                            |
 | `rpc(methods)`                           | Registers methods the client calls, see [Rpc](#rpc)                  |
 | `emitter()`                              | The `SocketEmitter` of the service                                   |
+
+The module also exports `CLIENT_ASSET_PATH`, the path of the [client library](client.md#loading-the-library) inside
+the assets of your app.
 
 See the type definitions for the details of each member.

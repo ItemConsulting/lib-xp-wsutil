@@ -5,7 +5,8 @@
 // The library keeps state (handlers, groups, ...) at module level. To give each test a fresh copy,
 // a test imports "/lib/wsutil?fresh=<n>": the query is kept on the resolved URL, which makes Node
 // load a new instance, and it is passed on to everything the instance imports, so the whole module
-// graph (including the stubs) is fresh and consistent. Registered from register.mjs.
+// graph (including the stubs) is fresh and consistent. Registered with module.registerHooks() from
+// register.mjs, which runs the hook synchronously in the same thread, so it must not be async.
 import { resolve as resolvePath } from "node:path";
 import { pathToFileURL } from "node:url";
 

@@ -8,6 +8,7 @@
   "types": "dist/lib/wsutil/index.d.ts",
   "files": [
     "dist",
+    "client.d.ts",
     "global.d.ts",
     "README.md",
     "LICENSE",

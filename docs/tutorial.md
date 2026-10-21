@@ -46,7 +46,7 @@ The service handles the WebSocket connections:
 import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
-export const { get, webSocketEvent } = socket;
+export const { GET, webSocketEvent } = socket;
 ```
 
 ### The page
@@ -68,13 +68,14 @@ the app, the WebSocket URL of the service, and our own client side code, `assets
 import type { Response } from "@enonic-types/core";
 import { render } from "/lib/freemarker";
 import { assetUrl } from "/lib/enonic/asset";
+import { CLIENT_ASSET_PATH } from "/lib/wsutil";
 import { serviceUrl } from "/lib/xp/portal";
 
 const view = resolve("chat.ftlh");
 
-export function get(): Response {
+export function GET(): Response {
   const model = {
-    clientUrl: assetUrl({ path: "wsutil/xp-websocket.js" }),
+    clientUrl: assetUrl({ path: CLIENT_ASSET_PATH }),
     socketUrl: serviceUrl({ service: "websocket", type: "websocket" }),
     chatUrl: assetUrl({ path: "chat.js" }),
   };
@@ -107,7 +108,16 @@ The page loads the library and our script, and adds an `<xp-websocket>` element,
 ```
 
 Module scripts run after the page is parsed, in order, so `chat.js` finds the element in the page, already defined
-by the library.
+by the library. A script that can run before the library, for example one added by another part, waits for the
+element instead: `await customElements.whenDefined("xp-websocket")`. Our script starts that way too, so it works
+wherever it is loaded:
+
+```javascript
+// assets/chat.js
+await customElements.whenDefined("xp-websocket");
+
+const socket = document.querySelector("xp-websocket");
+```
 
 Deploy the app, add it to a site in Content Studio, and select the *Chat* page for the site. Open the page, and the
 server log shows the `open` event of the connection, when debug logging is enabled for the app. In the browser,
@@ -117,8 +127,8 @@ Both sides are now ready to talk to each other.
 
 ## Registering a username
 
-We use the [`SocketEmitter`](server.md#socketemitter) of the service on the server and [`io`](client.md#io) on the client, which send
-*named events* back and forth.
+We use the [`SocketEmitter`](server.md#socketemitter) of the service on the server and [`io`](client.md#io) on the
+client, which send *named events* back and forth.
 
 The page gets a registration form, and two containers that stay hidden until the user has registered:
 
@@ -144,6 +154,8 @@ On the client, the *Register* button emits a `username-registration` event, and 
 
 ```javascript
 // assets/chat.js
+await customElements.whenDefined("xp-websocket");
+
 const socket = document.querySelector("xp-websocket");
 const io = socket.io;
 
@@ -174,35 +186,36 @@ io.on("username-response", (response) => {
 ```
 
 On the server, the service keeps the registered users, and the connection callback remembers the username of each
-client:
+client. The callback is called with the client that connected, and `client.on()` handles the events that client
+emits:
 
 ```typescript
 // services/websocket/websocket.ts
 import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
-export const { get, webSocketEvent } = socket;
+export const { GET, webSocketEvent } = socket;
 
-const socketEmitter = socket.emitter();
+const emitter = socket.emitter();
 
 // The session ids of the registered users, by username
 const users: Record<string, string> = {};
 
-socketEmitter.connect((socket) => {
+emitter.connect((client) => {
   let username: string | undefined; // The username of this client, once registered
 
-  socket.on("username-registration", (name: string) => {
+  client.on("username-registration", (name: string) => {
     if (users[name]) {
-      socket.emit("username-response", "taken");
+      client.emit("username-response", "taken");
       return;
     }
 
     username = name;
-    users[username] = socket.id;
-    socket.emit("username-response", "ok");
+    users[username] = client.id;
+    client.emit("username-response", "ok");
 
     // Tell every client that a new user has joined
-    socketEmitter.broadcast("user-enter", username);
+    emitter.broadcast("user-enter", username);
   });
 });
 ```
@@ -235,19 +248,19 @@ The server broadcasts it to every client, together with the username of the send
 itself, so no one can send messages in someone else's name:
 
 ```typescript
-socketEmitter.connect((socket) => {
+emitter.connect((client) => {
   // ...
 
-  socket.on("public-message", (content: string) => {
+  client.on("public-message", (content: string) => {
     if (username) {
-      socketEmitter.broadcast("public-message", { username, content });
+      emitter.broadcast("public-message", { username, content });
     }
   });
 });
 ```
 
-Note that `broadcast()` is called on `socketEmitter`, to send to every client, and `emit()` on `socket`, to send to
-this client only.
+Note that `broadcast()` is called on `emitter`, to send to every client, and `emit()` on `client`, to send to this
+client only.
 
 Redeploy, open the page in a few browser tabs, and register a user in each. That's a chat.
 
@@ -273,13 +286,13 @@ But a new user doesn't know about the users who joined before them. So the serve
 with the users already in the chat, before telling everyone about the new user:
 
 ```typescript
-socket.on("username-registration", (name: string) => {
+client.on("username-registration", (name: string) => {
   if (users[name]) {
-    socket.emit("username-response", "taken");
+    client.emit("username-response", "taken");
     return;
   }
 
-  socket.emit("motd", { motd: "Welcome to our chat!", users: Object.keys(users) });
+  client.emit("motd", { motd: "Welcome to our chat!", users: Object.keys(users) });
 
   username = name;
   // ... as before
@@ -294,14 +307,14 @@ io.on("motd", ({ motd, users }) => {
 });
 ```
 
-When a user closes the page, the user stays in every list. the `SocketEmitter` calls the client's `onDisconnect()`
+When a user closes the page, the user stays in every list. The `SocketEmitter` calls the client's `onDisconnect()`
 callback when a client disconnects, so the server can tell the others:
 
 ```typescript
-socket.onDisconnect(() => {
+client.onDisconnect(() => {
   if (username) {
     delete users[username];
-    socketEmitter.broadcast("user-leave", username);
+    emitter.broadcast("user-leave", username);
   }
 });
 ```
@@ -387,14 +400,67 @@ io.on("private-message", (message) => {
 The server looks up the session id of the recipient, and sends the message on with `emitTo()`:
 
 ```typescript
-socket.on("private-message", (message: { to: string; content: string }) => {
+client.on("private-message", (message: { to: string; content: string }) => {
   const recipient = users[message.to];
 
   if (username && recipient) {
-    socketEmitter.emitTo(recipient, "private-message", { username, content: message.content });
+    emitter.emitTo(recipient, "private-message", { username, content: message.content });
   }
 });
 ```
+
+## Typing the events
+
+So far the handlers declare the type of their payload, one by one, and nothing checks that the two sides agree on
+the names of the events. Two [event maps](server.md#typed-events) fix that: the events the clients emit, and the
+events the server emits, each with the type of its payload. They are the type parameters of the service:
+
+```typescript
+// services/websocket/websocket.ts
+export type ClientEvents = {
+  "username-registration": string;
+  "public-message": string;
+  "private-message": { to: string; content: string };
+};
+
+export type ServerEvents = {
+  "username-response": "ok" | "taken";
+  motd: { motd: string; users: string[] };
+  "user-enter": string;
+  "user-leave": string;
+  "public-message": { username: string; content: string };
+  "private-message": { username: string; content: string };
+};
+
+const socket = createWebSocketService<ClientEvents, ServerEvents>();
+```
+
+Now `client.on("public-message", (content) => …)` knows that `content` is a string, and `client.emit`,
+`emitter.broadcast()` and `emitter.emitTo()` refuse an event the server does not emit, or the wrong payload. Client
+code written in TypeScript imports the maps, and [types the element](client.md#typed-events) with them, so `io` is
+checked the same way.
+
+## Reconnecting
+
+Redeploy the app while the chat is open, and the chat goes quiet: the service restarted, and the connection dropped
+with it. The `reconnect` attribute makes the element open a new connection, after a second, and with a growing delay
+if the server is still away:
+
+```ftlh
+<xp-websocket src="${socketUrl}" reconnect></xp-websocket>
+```
+
+The new connection is a new session to the server, which has forgotten our username, so we register again when the
+connection opens. The element dispatches `ws:open` for every connection it opens:
+
+```javascript
+socket.addEventListener("ws:open", () => {
+  if (username) io.emit("username-registration", username);
+});
+```
+
+The server answers with the message of the day, which resets the chat log and the user list, and tells the others
+that we are back.
 
 And that's it, the chat is finished!
 
@@ -406,51 +472,67 @@ Now it is your turn: add chat rooms. [Groups](server.md#groups) are a good place
 // services/websocket/websocket.ts
 import { createWebSocketService } from "/lib/wsutil";
 
-const socket = createWebSocketService();
-export const { get, webSocketEvent } = socket;
+// The events the clients emit, and the events the server emits
+export type ClientEvents = {
+  "username-registration": string;
+  "public-message": string;
+  "private-message": { to: string; content: string };
+};
 
-const socketEmitter = socket.emitter();
+export type ServerEvents = {
+  "username-response": "ok" | "taken";
+  motd: { motd: string; users: string[] };
+  "user-enter": string;
+  "user-leave": string;
+  "public-message": { username: string; content: string };
+  "private-message": { username: string; content: string };
+};
+
+const socket = createWebSocketService<ClientEvents, ServerEvents>();
+export const { GET, webSocketEvent } = socket;
+
+const emitter = socket.emitter();
 
 // The session ids of the registered users, by username
 const users: Record<string, string> = {};
 
-socketEmitter.connect((socket) => {
+emitter.connect((client) => {
   let username: string | undefined; // The username of this client, once registered
 
-  socket.on("username-registration", (name: string) => {
+  client.on("username-registration", (name) => {
     if (users[name]) {
-      socket.emit("username-response", "taken");
+      client.emit("username-response", "taken");
       return;
     }
 
-    socket.emit("motd", { motd: "Welcome to our chat!", users: Object.keys(users) });
+    client.emit("motd", { motd: "Welcome to our chat!", users: Object.keys(users) });
 
     username = name;
-    users[username] = socket.id;
-    socket.emit("username-response", "ok");
+    users[username] = client.id;
+    client.emit("username-response", "ok");
 
     // Tell every client that a new user has joined
-    socketEmitter.broadcast("user-enter", username);
+    emitter.broadcast("user-enter", username);
   });
 
-  socket.on("public-message", (content: string) => {
+  client.on("public-message", (content) => {
     if (username) {
-      socketEmitter.broadcast("public-message", { username, content });
+      emitter.broadcast("public-message", { username, content });
     }
   });
 
-  socket.on("private-message", (message: { to: string; content: string }) => {
+  client.on("private-message", (message) => {
     const recipient = users[message.to];
 
     if (username && recipient) {
-      socketEmitter.emitTo(recipient, "private-message", { username, content: message.content });
+      emitter.emitTo(recipient, "private-message", { username, content: message.content });
     }
   });
 
-  socket.onDisconnect(() => {
+  client.onDisconnect(() => {
     if (username) {
       delete users[username];
-      socketEmitter.broadcast("user-leave", username);
+      emitter.broadcast("user-leave", username);
     }
   });
 });
@@ -468,13 +550,14 @@ form: []
 import type { Response } from "@enonic-types/core";
 import { render } from "/lib/freemarker";
 import { assetUrl } from "/lib/enonic/asset";
+import { CLIENT_ASSET_PATH } from "/lib/wsutil";
 import { serviceUrl } from "/lib/xp/portal";
 
 const view = resolve("chat.ftlh");
 
-export function get(): Response {
+export function GET(): Response {
   const model = {
-    clientUrl: assetUrl({ path: "wsutil/xp-websocket.js" }),
+    clientUrl: assetUrl({ path: CLIENT_ASSET_PATH }),
     socketUrl: serviceUrl({ service: "websocket", type: "websocket" }),
     chatUrl: assetUrl({ path: "chat.js" }),
   };
@@ -499,7 +582,7 @@ export function get(): Response {
   <script type="module" src="${chatUrl}"></script>
 </head>
 <body>
-  <xp-websocket src="${socketUrl}"></xp-websocket>
+  <xp-websocket src="${socketUrl}" reconnect></xp-websocket>
 
   <div id="register">
     <input type="text" id="username" placeholder="Username">
@@ -522,6 +605,8 @@ export function get(): Response {
 
 ```javascript
 // assets/chat.js
+await customElements.whenDefined("xp-websocket");
+
 const socket = document.querySelector("xp-websocket");
 const io = socket.io;
 
@@ -605,9 +690,14 @@ $("private-input").addEventListener("keydown", (event) => {
   }
 });
 
+// Register again on a new connection, after the connection dropped and the element reconnected
+socket.addEventListener("ws:open", () => {
+  if (username) io.emit("username-registration", username);
+});
+
 io.on("username-response", (response) => {
   if (response === "ok") {
-    username = pendingUsername;
+    username = pendingUsername || username;
     $("register").hidden = true;
     $("global").hidden = false;
   } else {

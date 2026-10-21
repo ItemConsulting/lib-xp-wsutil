@@ -3,7 +3,9 @@ import { beforeEach, describe, it, mock } from "node:test";
 import { FakeWebSocket } from "./stubs/dom.mts";
 
 // Imported after the DOM stubs are installed: the module extends HTMLElement and registers the element on load
-const { WebSocketClient, XpWebSocketElement } = await import("/assets/wsutil/xp-websocket");
+const { WebSocketClient, XpWebSocketElement, RECONNECT_DELAY, RECONNECT_MAX_DELAY } = await import(
+  "/assets/wsutil/xp-websocket"
+);
 type XpWebSocketElement = InstanceType<typeof XpWebSocketElement>;
 
 // The default handler of the client logs every event
@@ -320,9 +322,181 @@ describe("WebSocketClient", () => {
   });
 });
 
+describe("reconnecting", () => {
+  type Api = { greet(name: string): string };
+
+  beforeEach(() => {
+    FakeWebSocket.instances = [];
+  });
+
+  /**
+   * A client with reconnect on, whose connection has opened and then dropped
+   */
+  function dropped(t: { mock: { timers: { enable(options: { apis: "setTimeout"[] }): void } } }) {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const cws = new WebSocketClient(URL);
+    cws.reconnect = true;
+    lastSocket().open();
+    lastSocket().close();
+    return cws;
+  }
+
+  it("is off by default: a dropped connection stays closed", (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const cws = new WebSocketClient(URL);
+    lastSocket().open();
+
+    lastSocket().close();
+    t.mock.timers.tick(RECONNECT_MAX_DELAY);
+
+    assert.equal(cws.reconnect, false);
+    assert.equal(FakeWebSocket.instances.length, 1);
+    assert.throws(() => cws.send("hello"), /connect\(\)/);
+  });
+
+  it("reconnects a dropped connection after the delay, and dispatches open again", (t) => {
+    const cws = dropped(t);
+    const open = mock.fn();
+    cws.setEventHandler("open", open);
+
+    t.mock.timers.tick(RECONNECT_DELAY - 1);
+    assert.equal(FakeWebSocket.instances.length, 1);
+    t.mock.timers.tick(1);
+    assert.equal(FakeWebSocket.instances.length, 2);
+    assert.equal(lastSocket().url, URL);
+
+    lastSocket().open();
+    assert.equal(cws.isConnected, true);
+    assert.equal(open.mock.callCount(), 1);
+  });
+
+  it("doubles the delay for every failed attempt, up to the maximum, and starts over once connected", (t) => {
+    dropped(t);
+    let delay = RECONNECT_DELAY;
+
+    // 1s, 2s, 4s, 8s, 16s, 30s, 30s
+    for (let attempt = 2; attempt <= 8; attempt++) {
+      t.mock.timers.tick(delay - 1);
+      assert.equal(FakeWebSocket.instances.length, attempt - 1, `attempt ${attempt} came before ${delay} ms`);
+      t.mock.timers.tick(1);
+      assert.equal(FakeWebSocket.instances.length, attempt, `attempt ${attempt} did not come after ${delay} ms`);
+      lastSocket().close(); // The server is still down
+      delay = Math.min(delay * 2, RECONNECT_MAX_DELAY);
+    }
+
+    t.mock.timers.tick(RECONNECT_MAX_DELAY);
+    lastSocket().open(); // The server is back
+    lastSocket().close(); // And gone again: the delay starts over
+    t.mock.timers.tick(RECONNECT_DELAY);
+    assert.equal(FakeWebSocket.instances.length, 10);
+  });
+
+  it("does not reconnect a connection closed with close(), and cancels a pending reconnect", (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const cws = new WebSocketClient(URL);
+    cws.reconnect = true;
+    lastSocket().open();
+
+    cws.close();
+    t.mock.timers.tick(RECONNECT_MAX_DELAY);
+    assert.equal(FakeWebSocket.instances.length, 1);
+
+    cws.connect();
+    lastSocket().open();
+    lastSocket().close();
+    cws.close(); // While waiting to reconnect
+    t.mock.timers.tick(RECONNECT_MAX_DELAY);
+    assert.equal(FakeWebSocket.instances.length, 2);
+  });
+
+  it("stops when reconnect is turned off while waiting", (t) => {
+    const cws = dropped(t);
+
+    cws.reconnect = false;
+    t.mock.timers.tick(RECONNECT_MAX_DELAY);
+
+    assert.equal(FakeWebSocket.instances.length, 1);
+  });
+
+  it("queues what is sent while waiting to reconnect, across failed attempts, and sends it once connected", (t) => {
+    const cws = dropped(t);
+
+    cws.send({ while: "down" });
+    cws.Io().emit("ping", 1);
+    t.mock.timers.tick(RECONNECT_DELAY);
+    lastSocket().close(); // The first attempt fails
+    t.mock.timers.tick(RECONNECT_DELAY * 2);
+    lastSocket().open();
+
+    assert.deepEqual(lastSocket().sent, ['{"while":"down"}', JSON.stringify({ event: "ping", object: 1 })]);
+  });
+
+  it("drops the queue when the connection is closed for good", (t) => {
+    const cws = dropped(t);
+    cws.send({ while: "down" });
+
+    cws.close();
+    cws.connect();
+    lastSocket().open();
+
+    assert.deepEqual(lastSocket().sent, []);
+  });
+
+  it("rejects the pending rpc calls when the connection drops, and connects right away for a new call", async (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const cws = new WebSocketClient(URL);
+    cws.reconnect = true;
+    lastSocket().open();
+    const greeting = cws.rpc<Api>().greet("Tom");
+
+    lastSocket().close();
+    await assert.rejects(greeting, /closed/);
+
+    const again = cws.rpc<Api>().greet("Tom");
+    assert.equal(FakeWebSocket.instances.length, 2); // Without waiting for the timer
+    lastSocket().open();
+    lastSocket().receive(JSON.stringify({ rpc: { id: 2, result: "Hello Tom" } }));
+    assert.equal(await again, "Hello Tom");
+    t.mock.timers.tick(RECONNECT_MAX_DELAY);
+    assert.equal(FakeWebSocket.instances.length, 2); // The timer was cancelled
+  });
+});
+
 describe("<xp-websocket>", () => {
   beforeEach(() => {
     FakeWebSocket.instances = [];
+  });
+
+  it("turns reconnecting on with the reconnect attribute, and off when it is removed", () => {
+    const element = new XpWebSocketElement();
+    element.setAttribute("src", URL);
+    element.setAttribute("reconnect", "");
+    addToPage(element);
+
+    assert.equal(element.reconnect, true);
+    assert.equal(element.client.reconnect, true);
+
+    element.reconnect = false;
+    assert.equal(element.hasAttribute("reconnect"), false);
+    assert.equal(element.client.reconnect, false);
+  });
+
+  it("reconnects a dropped connection while in the page, and not after it is removed", (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const element = new XpWebSocketElement();
+    element.setAttribute("src", URL);
+    element.setAttribute("reconnect", "");
+    addToPage(element);
+    lastSocket().open();
+
+    lastSocket().close();
+    t.mock.timers.tick(RECONNECT_DELAY);
+    assert.equal(FakeWebSocket.instances.length, 2);
+    lastSocket().open();
+
+    removeFromPage(element);
+    t.mock.timers.tick(RECONNECT_MAX_DELAY);
+    assert.equal(FakeWebSocket.instances.length, 2);
   });
 
   it("is registered as a custom element", () => {
@@ -456,5 +630,44 @@ describe("<xp-websocket>", () => {
     assert.equal(await greeting, "Hello Tom");
     assert.equal(element.io, element.io);
     await tick();
+  });
+});
+
+describe("typed events", () => {
+  // The event maps, as the service controller would declare them
+  type ClientEvents = { join: string; ping: undefined };
+  type ServerEvents = { joined: { users: string[] } };
+
+  beforeEach(() => {
+    FakeWebSocket.instances = [];
+  });
+
+  it("types io by the event maps of the client", () => {
+    const cws = new WebSocketClient<ClientEvents, ServerEvents>(URL);
+    const io = cws.Io();
+    lastSocket().open();
+    const seen: string[][] = [];
+    io.on("joined", (message) => seen.push(message.users));
+
+    io.emit("join", "Tom");
+    io.emit("ping");
+    lastSocket().receive(JSON.stringify({ event: "joined", object: { users: ["Tom"] } }));
+
+    assert.deepEqual(lastSocket().sent, [
+      JSON.stringify({ event: "join", object: "Tom" }),
+      JSON.stringify({ event: "ping" }),
+    ]);
+    assert.deepEqual(seen, [["Tom"]]);
+  });
+
+  it("types io of the element by its type parameters", () => {
+    const element = new XpWebSocketElement<ClientEvents, ServerEvents>();
+    element.setAttribute("src", URL);
+    addToPage(element);
+    lastSocket().open();
+
+    element.io.emit("join", "Tom");
+
+    assert.deepEqual(lastSocket().sent, [JSON.stringify({ event: "join", object: "Tom" })]);
   });
 });

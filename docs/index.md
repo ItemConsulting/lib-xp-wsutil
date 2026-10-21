@@ -17,12 +17,13 @@ Some use-cases for WebSockets:
 ## Features
 
 - The connection is an element: `<xp-websocket src="...">` connects when it is added to the page, and dispatches the
-  WebSocket events as DOM events.
+  WebSocket events as DOM events. With `reconnect`, it [opens a dropped connection again](client.md#reconnecting).
 - Send objects, not only strings. They are serialized to JSON, and parsed on the other side.
 - [Rpc](server.md#rpc): methods you write on the server, called from the client as typed async functions.
 - A main handler and any number of additional handlers for each WebSocket event.
 - [`SocketEmitter`](server.md#socketemitter) and [`io`](client.md#io): named events between server and client,
-  inspired by [socket.io](https://socket.io/).
+  inspired by [socket.io](https://socket.io/), [typed on both sides](server.md#typed-events) by the event maps
+  the service declares.
 - Groups with automatic creation, a user list, and automatic removal when a user disconnects.
 - [Extensions](extensions.md) to reuse functionality on both the server and the client.
 - Several independent websocket services in one app, each with its own handlers, groups, emitter and rpc methods.
@@ -30,7 +31,7 @@ Some use-cases for WebSockets:
 ## How it works
 
 A WebSocket connection in Enonic XP is handled by a *service*. `createWebSocketService()` gives the service
-controller its two handlers: `get` accepts the connections, and `webSocketEvent` passes the WebSocket events
+controller its two handlers: `GET` accepts the connections, and `webSocketEvent` passes the WebSocket events
 (`open`, `message`, `close`, `error`) to the handlers you register, and answers rpc calls.
 
 The client side library is an asset of your app, `assets/wsutil/xp-websocket.js`, which the library brings along and
@@ -42,7 +43,7 @@ sequenceDiagram
     participant Browser
     participant XP as Enonic XP
 
-    Browser->>XP: GET assetUrl({ path: "wsutil/xp-websocket.js" })
+    Browser->>XP: GET assetUrl({ path: CLIENT_ASSET_PATH })
     XP-->>Browser: the client library: defines #lt;xp-websocket#gt;
 
     Browser->>XP: #lt;xp-websocket src="serviceUrl({ service, type: 'websocket' })"#gt; connects

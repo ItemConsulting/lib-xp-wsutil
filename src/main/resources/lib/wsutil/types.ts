@@ -20,32 +20,57 @@ export interface EmitterMessage {
   object?: unknown;
 }
 
-/**
- * Takes an event and a message object and sends it to the other side of the connection
- */
-export type EmitInterface = (event: string, message?: unknown) => void;
+// ─── Named events: SocketEmitter on the server, Io() on the client ─────────────────────────────
 
 /**
- * Binds a handler to an event emitted by the other side of the connection. The type parameter is the type of
- * the payload of the event, which the handler receives.
+ * An event map: the names of the events one side emits, and the type of the payload of each. Declare one for each
+ * direction in the service controller, and the events are typed on both sides:
+ *
+ * @example
+ * // services/chat/chat.ts
+ * export type ClientEvents = { join: string; message: string };
+ * export type ServerEvents = { joined: { users: string[] }; message: { from: string; text: string } };
+ *
+ * const socket = createWebSocketService<ClientEvents, ServerEvents>();
+ *
+ * The constraint is `object`, so both `type` aliases and `interface`s work. Without event maps, any event with
+ * any payload can be emitted and handled, see `AnyEvents`.
  */
-export type OnInterface = <T = unknown>(event: string, handler: (message: T) => void) => void;
+export type EventMap = object;
 
 /**
- * The interface for the emitted events communications, on the client
+ * The event map used when none is given: any event name, and the payload is `any`
  */
-export interface IoInterface {
+// biome-ignore lint/suspicious/noExplicitAny: without an event map, a payload is whatever the other side sent
+export type AnyEvents = Record<string, any>;
+
+/**
+ * The names of the events of an event map
+ */
+export type EventName<Events extends EventMap> = keyof Events & string;
+
+/**
+ * The payload of an event of an event map
+ */
+export type EventPayload<Events extends EventMap, K extends EventName<Events>> = Events[K];
+
+/**
+ * The interface for the emitted events communications, on the client. The type parameters are the event maps of
+ * the two directions, in the same order as on the server: the events the client emits, and the events the server
+ * emits.
+ */
+export interface IoInterface<ClientEvents extends EventMap = AnyEvents, ServerEvents extends EventMap = AnyEvents> {
   /**
-   * Listens for provided server side emitted events
+   * Binds a handler to an event emitted by the server. The handler receives the payload of the event.
    *
    * @throws If the handler is not a function
    */
-  on: OnInterface;
+  on<K extends EventName<ServerEvents>>(event: K, handler: (message: EventPayload<ServerEvents, K>) => void): void;
 
   /**
-   * Emits an event to the server with provided message
+   * Emits an event to the server, with a payload
    */
-  emit: EmitInterface;
+  emit<K extends EventName<ClientEvents>>(event: K, message?: EventPayload<ClientEvents, K>): void;
 }
 
 // ─── Rpc: methods on the server that the client calls ───────────────────────────────────────────
@@ -115,6 +140,7 @@ export interface EventHandlers {
  * The exports object of a service controller that is assigned to handle websocket events
  */
 export interface WebSocketExports {
+  GET?: (req: Request) => Response;
   get?: (req: Request) => Response;
   webSocketEvent?: (event: SocketEvent) => void;
 }
@@ -132,11 +158,22 @@ export interface WebSocketServiceOptions {
 /**
  * A websocket service: the handlers to export from the service controller, and the functions to work with
  * the connections of that service. Created by `createWebSocketService()`.
+ *
+ * The type parameters are the event maps of the `SocketEmitter`: the events the clients emit, and the events the
+ * server emits. See `EventMap`.
  */
-export interface WebSocketService {
+export interface WebSocketService<
+  ClientEvents extends EventMap = AnyEvents,
+  ServerEvents extends EventMap = AnyEvents,
+> {
   /**
-   * The `get` handler of the service controller: accepts a websocket connection. A request that is not a
+   * The `GET` handler of the service controller: accepts a websocket connection. A request that is not a
    * websocket request is answered with status 400.
+   */
+  GET(req: Request): Response;
+
+  /**
+   * The same handler as `GET`, under the lowercase name XP also accepts
    */
   get(req: Request): Response;
 
@@ -147,7 +184,7 @@ export interface WebSocketService {
   webSocketEvent(event: SocketEvent): void;
 
   /**
-   * Sets `get` and `webSocketEvent` on the exports object of the service controller
+   * Sets `GET`, `get` and `webSocketEvent` on the exports object of the service controller
    *
    * @param exp The `exports` object of the service controller
    */
@@ -219,51 +256,64 @@ export interface WebSocketService {
   /**
    * The `SocketEmitter` of this service, for named events to and from the clients
    */
-  emitter(): SocketEmitter;
+  emitter(): SocketEmitter<ClientEvents, ServerEvents>;
 }
 
 /**
- * Sends and receives named events with a payload, together with `Io()` on the client
+ * The options of `SocketEmitter.broadcast()`
  */
-export interface SocketEmitter {
+export interface BroadcastOptions {
   /**
-   * Sets the callback that is called with the socket of every client that connects
+   * The session id of a client to leave out, typically the sender
    */
-  connect(callback: ConnectionCallback): void;
+  except?: string;
+}
+
+/**
+ * Sends and receives named events with a payload, together with `Io()` on the client. The type parameters are
+ * the event maps of the two directions: the events the clients emit, and the events the server emits.
+ */
+export interface SocketEmitter<ClientEvents extends EventMap = AnyEvents, ServerEvents extends EventMap = AnyEvents> {
+  /**
+   * Sets the callback that is called with every client that connects
+   */
+  connect(callback: ConnectionCallback<ClientEvents, ServerEvents>): void;
 
   /**
    * Emits an event to every connected client
-   *
-   * @param options `except`: the session id of a client to leave out, typically the sender
    */
-  broadcast(event: string, object?: unknown, options?: { except?: string }): void;
+  broadcast<K extends EventName<ServerEvents>>(
+    event: K,
+    message?: EventPayload<ServerEvents, K>,
+    options?: BroadcastOptions,
+  ): void;
 
   /**
    * Emits an event to one client
    *
    * @param id The session id of the client
    */
-  emitTo(id: string, event: string, object?: unknown): void;
+  emitTo<K extends EventName<ServerEvents>>(id: string, event: K, message?: EventPayload<ServerEvents, K>): void;
 }
 
 /**
  * A connected client, as seen by the SocketEmitter
  */
-export interface EmitterUser {
+export interface EmitterUser<ClientEvents extends EventMap = AnyEvents, ServerEvents extends EventMap = AnyEvents> {
   /**
    * The session id of the client
    */
   id: string;
 
   /**
-   * Binds a handler to an event emitted by this client
+   * Binds a handler to an event emitted by this client. The handler receives the payload of the event.
    */
-  on: OnInterface;
+  on<K extends EventName<ClientEvents>>(event: K, handler: (message: EventPayload<ClientEvents, K>) => void): void;
 
   /**
    * Emits an event to this client
    */
-  emit: EmitInterface;
+  emit<K extends EventName<ServerEvents>>(event: K, message?: EventPayload<ServerEvents, K>): void;
 
   /**
    * Sets the callback that is called when this client closes the connection
@@ -272,6 +322,8 @@ export interface EmitterUser {
 }
 
 /**
- * Callback function for connected users, this is being called with the connected user interface
+ * The callback of `SocketEmitter.connect()`: called with every client that connects
  */
-export type ConnectionCallback = (socket: EmitterUser) => void;
+export type ConnectionCallback<ClientEvents extends EventMap = AnyEvents, ServerEvents extends EventMap = AnyEvents> = (
+  client: EmitterUser<ClientEvents, ServerEvents>,
+) => void;

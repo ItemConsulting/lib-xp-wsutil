@@ -61,9 +61,35 @@ export class FakeHTMLElement extends EventTarget {
   setAttribute(name: string, value: string): void {
     const oldValue = this.getAttribute(name);
     this.attributes.set(name, String(value));
+    this.attributeChanged(name, oldValue, String(value));
+  }
+
+  removeAttribute(name: string): void {
+    const oldValue = this.getAttribute(name);
+    if (oldValue === null) return;
+    this.attributes.delete(name);
+    this.attributeChanged(name, oldValue, null);
+  }
+
+  hasAttribute(name: string): boolean {
+    return this.attributes.has(name);
+  }
+
+  toggleAttribute(name: string, force?: boolean): boolean {
+    const add = force ?? !this.hasAttribute(name);
+    if (add) {
+      this.setAttribute(name, "");
+    } else {
+      this.removeAttribute(name);
+    }
+    return add;
+  }
+
+  // Like the browser, which calls the callback for every change of an observed attribute
+  private attributeChanged(name: string, oldValue: string | null, newValue: string | null): void {
     (
       this as { attributeChangedCallback?: (n: string, o: string | null, v: string | null) => void }
-    ).attributeChangedCallback?.(name, oldValue, String(value));
+    ).attributeChangedCallback?.(name, oldValue, newValue);
   }
 }
 

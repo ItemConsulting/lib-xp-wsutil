@@ -1,9 +1,10 @@
 // Loaded via `node --import` before any test. Registers the module resolver and installs the globals
 // Enonic XP provides to every module: `app` and `log`.
 // `log` delegates to console lazily, so a test that mocks console.error intercepts log.error.
-import { register } from "node:module";
+import { registerHooks } from "node:module";
+import { resolve } from "./loader.mjs";
 
-register("./loader.mjs", import.meta.url);
+registerHooks({ resolve });
 
 globalThis.app = {
   name: "com.example.app",

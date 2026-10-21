@@ -13,14 +13,15 @@ page or part controller, here rendering the view with
 ```typescript
 import { render } from "/lib/freemarker";
 import { assetUrl } from "/lib/enonic/asset";
+import { CLIENT_ASSET_PATH } from "/lib/wsutil";
 import { serviceUrl } from "/lib/xp/portal";
 
 const view = resolve("view.ftlh");
 
-export function get(): Response {
+export function GET(): Response {
   const model = {
     clientUrl: assetUrl({
-      path: "wsutil/xp-websocket.js"
+      path: CLIENT_ASSET_PATH
     }),
     socketUrl: serviceUrl({
       service: "websocket",
@@ -38,15 +39,30 @@ export function get(): Response {
 [#-- @ftlvariable name="clientUrl" type="String" --]
 [#-- @ftlvariable name="socketUrl" type="String" --]
 <script type="module" src="${clientUrl}"></script>
-<xp-websocket src="${socketUrl}"></xp-websocket>
+<xp-websocket src="${socketUrl}" reconnect></xp-websocket>
 ```
 
-Your own client code goes in a script of the app, loaded the same way. FreeMarker reads `${...}` inside `<script>`
-tags as interpolations too, so keep JavaScript with template literals out of the template, or wrap it in
-`[#noparse]`.
-
+`CLIENT_ASSET_PATH` is `"wsutil/xp-websocket.js"`, the path of the library inside the assets of your app.
 `serviceUrl()` with `type: "websocket"` returns a `ws://` or `wss://` URL, matching the protocol the page was served
 over.
+
+### Your own client code
+
+Your own client code goes in a script of the app, loaded the same way. The library defines the element when its
+script runs, so a script that uses the element must run after it. Module scripts run in document order, so a script
+tag after the library's is enough; a script that can come first, for example one contributed by another part with
+`pageContributions`, waits for the element to be defined instead:
+
+```javascript
+await customElements.whenDefined("xp-websocket");
+
+const socket = document.querySelector("xp-websocket");
+```
+
+Before the element is defined, it is a plain `HTMLElement`, and `socket.io` is `undefined`.
+
+FreeMarker reads `${...}` inside `<script>` tags as interpolations too, so keep JavaScript with template literals
+out of the template, or wrap it in `[#noparse]`.
 
 ## The element
 
@@ -72,22 +88,44 @@ The events of the connection are dispatched on the element, and bubble, so they 
 | `ws:close`   | The `CloseEvent` of the WebSocket                                                |
 | `ws:error`   | The `Event` of the WebSocket                                                     |
 
+### Reconnecting
+
+With the `reconnect` attribute, a connection that drops is opened again: after a second, and with the delay doubling
+for every attempt that fails, up to 30 seconds. The server restarting the service, which `enonic dev` does on every
+redeploy, is the common case.
+
+```html
+<xp-websocket src="${socketUrl}" reconnect></xp-websocket>
+```
+
+- Every connection dispatches its own `ws:open`, and the server sees a new session, so what the page set up over
+  the old connection, such as a registration or a [group](server.md#groups), is set up again in a handler of
+  `ws:open`.
+- `ws:close` is dispatched when the connection drops, before reconnecting starts. `connected` is `false` until the
+  next `ws:open`.
+- A message sent while waiting to reconnect is sent once the connection is open again. Pending [rpc](#rpc) calls are
+  rejected, as the response could not arrive.
+- A connection closed by `close()`, or by removing the element from the page, is not reconnected.
+
+Without the attribute, a dropped connection stays closed, and `send()` throws.
+
 ### Properties and methods
 
 | Member          | Description                                                                    |
 | --------------- | ------------------------------------------------------------------------------ |
 | `src`           | The URL of the service. Setting it reconnects                                  |
+| `reconnect`     | The `reconnect` attribute: open a dropped connection again, see [above](#reconnecting) |
 | `connected`     | `true` while the connection is open. (`isConnected` is the DOM's: in the page) |
 | `send(message)` | Sends a message to the server. Objects are serialized to JSON                  |
 | `io`            | Named events with [`SocketEmitter`](server.md#socketemitter), see [io](#io)    |
 | `rpc()`         | The methods registered with `socket.rpc()` on the server, see [Rpc](#rpc)      |
 | `connect()`     | Reconnects to `src`, closing an open connection first                          |
-| `close()`       | Closes the connection                                                          |
+| `close()`       | Closes the connection, and does not reconnect                                  |
 | `client`        | The `WebSocketClient` behind the element, see [below](#websocketclient)        |
 
 A message sent while the connection is being opened is sent once it is open, so a script can `send()` right after
-the element is added to the page. `send()` throws only when there is no connection: after it has closed, or on a
-`WebSocketClient` before `connect()`.
+the element is added to the page. `send()` throws only when there is no connection: after it has closed and is not
+reconnected, or on a `WebSocketClient` before `connect()`.
 
 ## io
 
@@ -104,7 +142,26 @@ io.emit("ping", { recipient: "some-session-id", content: "Hello" });
 io.on("pong", (message) => console.log(message));
 ```
 
-In TypeScript, the type parameter of `on()` is the type of the payload: `io.on<{ text: string }>("pong", …)`.
+### Typed events
+
+In TypeScript, the events of both directions are typed by the *event maps* the service declares, see
+[Typed events](server.md#typed-events) in the Server API: the name of each event, and the type of its payload.
+Give them to the element, in the same order as on the server, and `io.on()` and `io.emit()` only accept the events
+of their direction, with the right payload:
+
+```typescript
+import type { XpWebSocketElement } from "@item-enonic-types/lib-wsutil/client";
+import type { ClientEvents, ServerEvents } from "../../services/websocket/websocket";
+
+const socket = document.querySelector<XpWebSocketElement<ClientEvents, ServerEvents>>("xp-websocket")!;
+const io = socket.io;
+
+io.emit("ping", { recipient: "some-session-id", content: "Hello" }); // Checked against ClientEvents["ping"]
+io.on("pong", (message) => console.log(message.text)); // message is ServerEvents["pong"]
+```
+
+Without event maps, any event goes, and the payload is `any`: `io.on("pong", (message: { text: string }) => …)`
+declares its type.
 
 ## Rpc
 
@@ -151,8 +208,11 @@ const cws = new WebSocketClient(socketUrl); // Connects right away
 - `new WebSocketClient(url)` connects to `url` right away. Without `url`, call `setUrl(url)` and `connect()`.
 - `setUrl(url, true)` changes the URL and reconnects. Without `true`, the new URL is used on the next `connect()`.
 - `connect()` on an open connection closes it and opens a new one. `close()` closes it.
+- `reconnect = true` opens a dropped connection again, like the [`reconnect` attribute](#reconnecting) of the
+  element. The delays are the exported constants `RECONNECT_DELAY` and `RECONNECT_MAX_DELAY`.
 - `isConnected` is `true` while the connection is open.
-- `send()`, `Io()` and `rpc()` work as on the element.
+- `send()`, `Io()` and `rpc()` work as on the element. The type parameters of the class are the
+  [event maps](#typed-events) of `Io()`: `new WebSocketClient<ClientEvents, ServerEvents>(url)`.
 
 ### Handling events
 
@@ -213,5 +273,7 @@ socket.addEventListener("ws:close", (event) => {
 });
 ```
 
-To name the types, import them from the package: `XpWebSocketElement`, `XpWebSocketEventMap`, `WebSocketClient`,
-`RpcClient` and `IoInterface` from `@item-enonic-types/lib-wsutil/dist/assets/wsutil/xp-websocket`.
+To name the types, import them from `@item-enonic-types/lib-wsutil/client`: `XpWebSocketElement`,
+`XpWebSocketEventMap`, `WebSocketClient`, `RpcClient`, `IoInterface`, `EventMap`, `EventName` and `EventPayload`.
+`XpWebSocketElement` and `WebSocketClient` take the event maps of the service as type parameters, see
+[Typed events](#typed-events).

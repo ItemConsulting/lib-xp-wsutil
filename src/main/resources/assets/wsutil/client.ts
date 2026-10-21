@@ -4,7 +4,9 @@
 
 import { EVENT_TYPES, parseMessage, stringify } from "../../lib/wsutil/shared";
 import type {
+  AnyEvents,
   EmitterMessage,
+  EventMap,
   IoInterface,
   RpcCall,
   RpcClient,
@@ -13,7 +15,24 @@ import type {
   WebSocketEventType,
 } from "../../lib/wsutil/types";
 
-export type { IoInterface, RpcClient, RpcContext, RpcMethods, WebSocketEventType } from "../../lib/wsutil/types";
+export type {
+  AnyEvents,
+  EventMap,
+  EventName,
+  EventPayload,
+  IoInterface,
+  RpcClient,
+  RpcContext,
+  RpcMethods,
+  WebSocketEventType,
+} from "../../lib/wsutil/types";
+
+/**
+ * The delay before the first attempt to reconnect, in milliseconds. It doubles for every failed attempt, up to
+ * `RECONNECT_MAX_DELAY`, and starts over once a connection opens.
+ */
+export const RECONNECT_DELAY = 1000;
+export const RECONNECT_MAX_DELAY = 30000;
 
 // biome-ignore lint/suspicious/noExplicitAny: the argument depends on the event, see WebSocketClient.setEventHandler
 export type ClientEventHandler = (event: any) => void;
@@ -56,9 +75,12 @@ interface PendingCall {
  * A connection to a websocket service created with /lib/wsutil. The `<xp-websocket>` element is built on it, and
  * is the usual way to use it in a page; the class is for scripts that want a connection without an element.
  *
+ * The type parameters are the event maps of `Io()`: the events the client emits, and the events the server
+ * emits, in the same order as on the server.
+ *
  * @see [Client API](https://github.com/ItemConsulting/lib-xp-wsutil/blob/main/docs/client.md)
  */
-export class WebSocketClient {
+export class WebSocketClient<ClientEvents extends EventMap = AnyEvents, ServerEvents extends EventMap = AnyEvents> {
   private url: string | undefined;
   private ws: WebSocket | undefined;
   private connected = false;
@@ -70,7 +92,14 @@ export class WebSocketClient {
     message: [],
     error: [],
   };
-  private io: IoInterface | undefined;
+  private io: IoInterface<ClientEvents, ServerEvents> | undefined;
+
+  // Reconnecting: whether it is on, the timer of the next attempt, its delay, and whether the connection was
+  // closed by close(), which is not reconnected
+  private reconnectEnabled = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+  private reconnectDelay = RECONNECT_DELAY;
+  private closing = false;
 
   // Io's handlers of the events emitted by the server, by event name. Set when Io() is first used.
   // biome-ignore lint/suspicious/noExplicitAny: the message is whatever the server emitted
@@ -100,6 +129,20 @@ export class WebSocketClient {
   }
 
   /**
+   * Whether a connection that drops is opened again: after `RECONNECT_DELAY`, doubling for every failed attempt
+   * up to `RECONNECT_MAX_DELAY`. Every connection dispatches its own `open` event, so a handler of `open` can
+   * set the connection up again. A connection closed with `close()` is not reconnected. Off by default.
+   */
+  get reconnect(): boolean {
+    return this.reconnectEnabled;
+  }
+
+  set reconnect(enabled: boolean) {
+    this.reconnectEnabled = enabled;
+    if (!enabled) this.cancelReconnect();
+  }
+
+  /**
    * Sets the url of the websocket service
    *
    * @param autoConnect Connect right away
@@ -110,15 +153,26 @@ export class WebSocketClient {
   }
 
   /**
-   * Opens the connection. An open connection is closed first, and its events are ignored.
+   * Opens the connection. An open connection is closed first, and its events are ignored. What was queued for
+   * the closed connection is dropped.
    *
    * @throws If no url has been given
    */
   connect(): void {
+    this.whenOpen = [];
+    this.open();
+  }
+
+  /**
+   * Opens the connection, keeping what is queued to send: a reconnect sends it once the connection is open again
+   */
+  private open(): void {
     if (!this.url) {
       throw new Error("No url to connect to: give it to the constructor or setUrl()");
     }
 
+    this.cancelReconnect();
+    this.closing = false;
     const replaced = this.ws;
     this.connected = false;
     this.rejectPendingCalls("The connection was replaced");
@@ -132,6 +186,7 @@ export class WebSocketClient {
     ws.onopen = (event) => {
       if (this.ws !== ws) return;
       this.connected = true;
+      this.reconnectDelay = RECONNECT_DELAY;
       this.dispatch("open", event, event);
 
       const waiting = this.whenOpen;
@@ -160,33 +215,43 @@ export class WebSocketClient {
       this.connected = false;
       this.rejectPendingCalls("The connection was closed");
       this.dispatch("close", event, event);
+
+      // Unless the close handler connected or closed for good. The queue is kept for the next connection.
+      if (this.ws) return;
+      if (this.reconnectEnabled && !this.closing) {
+        this.scheduleReconnect();
+      } else {
+        this.whenOpen = [];
+      }
     };
   }
 
   /**
-   * Closes the connection. The `close` event is dispatched when it has closed.
+   * Closes the connection, and does not reconnect. The `close` event is dispatched when it has closed.
    */
   close(): void {
+    this.closing = true;
+    this.cancelReconnect();
+    this.whenOpen = [];
     this.ws?.close();
   }
 
   /**
    * Sends a message to the server. Objects are serialized to JSON. A message sent while the connection is being
-   * opened is sent once it is open.
+   * opened, or while a dropped connection waits to be reconnected, is sent once the connection is open.
    *
-   * @throws If there is no connection: before `connect()`, or after the connection closed
+   * @throws If there is no connection: before `connect()`, or after the connection closed and is not reconnected
    */
   send(message: unknown): void {
-    if (!this.ws) {
-      throw new Error("Not connected: call connect() before send()");
-    }
     const data = stringify(message);
 
-    if (this.connected) {
+    if (this.ws && this.connected) {
       this.ws.send(data);
-    } else {
+    } else if (this.ws || this.reconnectTimer) {
       // A WebSocket that is still connecting throws on send()
       this.whenOpen.push(() => this.ws?.send(data));
+    } else {
+      throw new Error("Not connected: call connect() before send()");
     }
   }
 
@@ -245,7 +310,7 @@ export class WebSocketClient {
    * Named events to and from the server's `SocketEmitter`. Opens the connection if it isn't open. The same
    * instance is returned every time.
    */
-  Io(): IoInterface {
+  Io(): IoInterface<ClientEvents, ServerEvents> {
     const io = this.io ?? this.createIo();
     this.io = io;
     return io;
@@ -270,7 +335,7 @@ export class WebSocketClient {
       if (!this.url) {
         return Promise.reject(new Error("Not connected: give the client a url before calling rpc methods"));
       }
-      this.connect();
+      this.open();
     }
 
     return new Promise((resolve, reject) => {
@@ -296,8 +361,23 @@ export class WebSocketClient {
   private rejectPendingCalls(reason: string): void {
     const calls = Array.from(this.pendingCalls.values());
     this.pendingCalls.clear();
-    this.whenOpen = [];
     for (const call of calls) call.reject(new Error(reason));
+  }
+
+  private scheduleReconnect(): void {
+    const delay = this.reconnectDelay;
+    this.reconnectDelay = Math.min(delay * 2, RECONNECT_MAX_DELAY);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = undefined;
+      this.open();
+    }, delay);
+  }
+
+  private cancelReconnect(): void {
+    if (this.reconnectTimer !== undefined) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = undefined;
+    }
   }
 
   private dispatch(type: WebSocketEventType, handlerArg: unknown, event: Event): void {
@@ -319,11 +399,11 @@ export class WebSocketClient {
     }
   }
 
-  private createIo(): IoInterface {
+  private createIo(): IoInterface<ClientEvents, ServerEvents> {
     const ioHandlers: NonNullable<typeof this.ioHandlers> = {};
     this.ioHandlers = ioHandlers;
 
-    if (!this.ws && this.url) this.connect();
+    if (!this.ws && this.url) this.open();
 
     return {
       on: (event, handler) => {

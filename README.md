@@ -64,6 +64,10 @@ The client side library is typed too. Add its global declarations to the *tsconf
 }
 ```
 
+To name the types in client code, import them from `@item-enonic-types/lib-wsutil/client`. See
+[TypeScript](docs/client.md#typescript) in the Client API, and [typed events](docs/server.md#typed-events) for how
+the events the server and the client emit are typed on both sides.
+
 ## Hello sockets ##
 
 Here is the shortest example for opening websocket communication in your project. Create a service called
@@ -73,7 +77,7 @@ Here is the shortest example for opening websocket communication in your project
 // src/main/resources/services/websocket/websocket.ts
 import { createWebSocketService } from "/lib/wsutil";
 
-export const { get, webSocketEvent } = createWebSocketService();
+export const { GET, webSocketEvent } = createWebSocketService();
 ```
 
 The client side library is an asset of your app, served with
@@ -83,14 +87,15 @@ controller gives the view the two URLs. Here with [lib-xp-freemarker](https://gi
 ```typescript
 import { render } from "/lib/freemarker";
 import { assetUrl } from "/lib/enonic/asset";
+import { CLIENT_ASSET_PATH } from "/lib/wsutil";
 import { serviceUrl } from "/lib/xp/portal";
 
 const view = resolve("hello.ftlh");
 
-export function get(): Response {
+export function GET(): Response {
   const model = {
     clientUrl: assetUrl({
-      path: "wsutil/xp-websocket.js"
+      path: CLIENT_ASSET_PATH
     }),
     socketUrl: serviceUrl({
       service: "websocket",
@@ -110,11 +115,12 @@ And the view loads the library, and adds the element:
 [#-- @ftlvariable name="clientUrl" type="String" --]
 [#-- @ftlvariable name="socketUrl" type="String" --]
 <script type="module" src="${clientUrl}"></script>
-<xp-websocket src="${socketUrl}"></xp-websocket>
+<xp-websocket src="${socketUrl}" reconnect></xp-websocket>
 ```
 
-The element connects when the page loads. Check the server log to see that your connection is alive: the `open`
-event is logged at debug level.
+The element connects when the page loads, and with `reconnect`, connects again if the connection drops, for
+example when the app is redeployed. Check the server log to see that your connection is alive: the `open` event is
+logged at debug level.
 
 ## Documentation ##
 

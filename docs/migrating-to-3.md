@@ -93,7 +93,7 @@ Your page or part controller gives the view two URLs instead of one:
 ```diff
 -const model = { websocketUrl: serviceUrl({ service: "websocket" }) };
 +const model = {
-+  clientUrl: assetUrl({ path: "wsutil/xp-websocket.js" }),
++  clientUrl: assetUrl({ path: CLIENT_ASSET_PATH }), // from "/lib/wsutil"
 +  socketUrl: serviceUrl({ service: "websocket", type: "websocket" }),
 +};
 ```
@@ -154,18 +154,19 @@ path rule as other libraries. In TypeScript, export the two handlers from the se
 import { createWebSocketService } from "/lib/wsutil";
 
 const socket = createWebSocketService();
-export const { get, webSocketEvent } = socket;
+export const { GET, webSocketEvent } = socket;
 ```
 
-The functions of 2.x map to the service like this:
+`GET` is the handler name of XP 8; the service has the same handler as `get` too, for a controller that keeps the
+lowercase convention. The functions of 2.x map to the service like this:
 
 | 2.x                                            | 3.0                                                                 |
 | ---------------------------------------------- | ------------------------------------------------------------------- |
 | `openWebsockets(exports, host?)`               | `socket.openWebsockets(exports)`; the URL is the `src` of the element |
-| `sendSocketResponse(req, host?)`               | `socket.get(req)`                                                   |
+| `sendSocketResponse(req, host?)`               | `socket.GET(req)`                                                   |
 | `getWsEvents(event)`                           | `socket.webSocketEvent(event)`                                      |
 | `setSocketRequestResponse({ webSocket: r })`   | `createWebSocketService({ webSocketResponse: r })`                  |
-| `returnScript(host?)`                          | Removed: the client library is an asset, `assetUrl({ path: "wsutil/xp-websocket.js" })` |
+| `returnScript(host?)`                          | Removed: the client library is an asset, `assetUrl({ path: CLIENT_ASSET_PATH })` |
 | `setEventHandler`, `setEventHandlers`          | The same, as methods of `socket`                                    |
 | `addHandlers(event, handler)`                  | `socket.addHandler(event, handler)`                                 |
 | `send`, `sendToGroup`                          | The same, as methods of `socket`                                    |
@@ -325,14 +326,16 @@ instance every time. Its API changed in four places:
   is not about the client at hand, so it moved to the emitter.
 - **`emitter.broadcast(event, message, { except: id })`** leaves one client out, typically the sender. Without the
   option, `broadcast()` reaches every client including the sender, as in 2.x.
-- **`on()` is generic.** `client.on<{ to: string }>("private", (message) => …)` types the payload; without the
-  type parameter `message` is `unknown`, so narrow it before use.
+- **The events are typed by event maps.** `createWebSocketService<ClientEvents, ServerEvents>()` types the events
+  of both directions, and their payloads, on the server and the client, see
+  [Typed events](server.md#typed-events). Without event maps the payload is `any`, as in 2.x, and a handler can
+  declare its type: `client.on("private", (message: { to: string }) => …)`.
 
 ```diff
  emitter.connect((client) => {
 -  client.on("private-message", (message) => {
 -    client.sendTo(users[message.to], "private-message", message.content);
-+  client.on<{ to: string; content: string }>("private-message", (message) => {
++  client.on("private-message", (message: { to: string; content: string }) => {
 +    emitter.emitTo(users[message.to], "private-message", message.content);
    });
 -  client.on("disconnect", () => { ... });
@@ -410,7 +413,7 @@ For code that uses the `WebSocketClient` class behind the element:
    add `com.enonic.lib:lib-asset` if the app doesn't have it.
 2. Install `@item-enonic-types/lib-wsutil`, and add `"types": ["@item-enonic-types/lib-wsutil/global"]` to the
    `tsconfig.json` of the client code.
-3. In the pages that load the client library, load `assetUrl({ path: "wsutil/xp-websocket.js" })` from
+3. In the pages that load the client library, load `assetUrl({ path: CLIENT_ASSET_PATH })` from
    `/lib/enonic/asset` with `<script type="module" src>`, add `<xp-websocket src>` with
    `serviceUrl({ service, type: "websocket" })`, and replace `new ExpWS()` with
    `document.querySelector("xp-websocket")`. Change the client's handlers to `addEventListener("ws:...")`, see the
