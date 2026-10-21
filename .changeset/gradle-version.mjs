@@ -14,6 +14,11 @@ if (!release) {
 
 const jarVersion = prerelease ? `${release}-SNAPSHOT` : release;
 const gradleProperties = readFileSync("gradle.properties", "utf8");
+const versionLine = /^version *=.*$/m;
 
-writeFileSync("gradle.properties", gradleProperties.replace(/^version *=.*$/m, `version = ${jarVersion}`));
+if (!versionLine.test(gradleProperties)) {
+  throw new Error('No "version = ..." line found in gradle.properties');
+}
+
+writeFileSync("gradle.properties", gradleProperties.replace(versionLine, `version = ${jarVersion}`));
 console.log(`gradle.properties: version = ${jarVersion}`);

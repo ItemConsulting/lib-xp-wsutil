@@ -23,8 +23,9 @@ jobs:
     # from a fork's own `main` would pass it — and workflow_run always runs here, in this
     # repository, with the secrets. Requiring the CI run to have come from a push closes that,
     # since a fork cannot push to this repository.
+    # A manual run publishes whatever it has checked out, so it is only allowed from main.
     if: >-
-      ${{ github.event_name == 'workflow_dispatch' ||
+      ${{ (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       (github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.conclusion == 'success') }}
     runs-on: ubuntu-latest
@@ -71,6 +72,28 @@ jobs:
           version-script: npm run versioning
           publish-script: npm run release
           create-github-releases: true
+
+      # A manual run is a retry for a jar that never went out. If the version on main is already
+      # in the releases repository there is nothing to retry, and publishing would overwrite it.
+      - name: Check that the jar is not already published
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          name=$(sed -n 's/^projectName *= *//p' gradle.properties)
+          version=$(sed -n 's/^version *= *//p' gradle.properties)
+          if [ -z "$name" ] || [ -z "$version" ]; then
+            echo "::error::Could not read projectName and version from gradle.properties"
+            exit 1
+          fi
+          case "$version" in *-SNAPSHOT) exit 0 ;; esac
+          url="https://repo.itemtest.no/releases/no/item/$name/$version/$name-$version.pom"
+          status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+          if [ "$status" = "200" ]; then
+            echo "::error::$name $version is already published, refusing to overwrite it"
+            exit 1
+          elif [ "$status" != "404" ]; then
+            echo "::error::Unexpected HTTP $status from $url"
+            exit 1
+          fi
 
       # Reached when the step above actually published, i.e. a "Version Packages"
       # PR was merged, or when the workflow was started by hand to retry.

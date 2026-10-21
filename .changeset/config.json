@@ -1,17 +1,11 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
-  "baseBranch": "main",
-  "access": "public",
-  "format": "auto",
-  "changelog": [
-    "@changesets/changelog-github",
-    {
-      "repo": "ItemConsulting/lib-xp-wsutil"
-    }
-  ],
+  "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "ignore": [],
   "fixed": [],
   "linked": [],
-  "updateInternalDependencies": "patch"
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
 }
