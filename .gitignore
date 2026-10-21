@@ -1,3 +1,12 @@
+# I don't know where this comes from, maybe Visual Studio Code
+/bin/
+
+/coverage/
+/node_modules/
+
+### Enonic CLI ###
+.enonic
+
 ### OSX ###
 .DS_Store
 .AppleDouble
@@ -29,6 +38,7 @@ Temporary Items
 .gradle
 build/
 deploy/
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
@@ -87,5 +97,9 @@ crashlytics-build.properties
 .sass-cache
 *.css.map
 
-## Enonic cli files
-.enonic
+.eslintcache
+
+*storybook.log
+.env
+src/main/resources/i18n/phrases.tmp.properties
+dist/

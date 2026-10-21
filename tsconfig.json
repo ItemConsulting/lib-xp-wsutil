@@ -1,0 +1,53 @@
+{
+  // This file should only include files that configures the build system.
+  // It should ignore all actual source files.
+
+  // Read more about tsconfig.json at:
+  // https://www.typescriptlang.org/tsconfig
+
+  // Specifies an array of filenames or patterns to include in the program.
+  // These filenames are resolved relative to the directory containing the
+  // tsconfig.json file.
+  "include": ["**/*.ts", "**/*.mts"],
+
+  // Specifies an array of filenames or patterns that should be skipped when
+  // resolving include.
+  // Important: exclude only changes which files are included as a result of
+  // the include setting. A file specified by exclude can still become part of
+  // your codebase due to an import statement in your code, a types inclusion,
+  // a /// <reference directive, or being specified in the files list.
+  // It is not a mechanism that prevents a file from being included in the
+  // codebase - it simply changes what the include setting finds.
+  "exclude": [
+    "**/*.d.ts",
+    "src/**/*.*" // Avoid Enonic XP source files
+  ],
+
+  "compilerOptions": {
+    // Enable all strict type-checking options.
+    "strict": true,
+
+    // Leave baseUrl unset: setting it would let bare module specifiers resolve
+    // against the project root instead of node_modules, which can shadow real
+    // packages with same-named local folders.
+    // "baseUrl": ".",
+
+    "lib": [
+      "es2023" // string.replaceAll
+    ],
+
+    // By default all visible ”@types” packages are included in your compilation.
+    // Packages in node_modules/@types of any enclosing folder are considered visible.
+    // For example, that means packages within ./node_modules/@types/,
+    // ../node_modules/@types/, ../../node_modules/@types/, and so on.
+    // If types is specified, only packages listed will be included in the global scope.
+    // This feature differs from typeRoots in that it is about specifying only the exact
+    // types you want included, whereas typeRoots supports saying you want particular folders.
+    "types": ["node"],
+    // tsdown's types reference `exports`-subpath imports and ship .d.ts using
+    // private (#) fields; these let the build config type-check cleanly.
+    "skipLibCheck": true,
+    "module": "preserve",
+    "moduleResolution": "bundler"
+  }
+}

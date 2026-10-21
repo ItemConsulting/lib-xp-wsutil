@@ -1,0 +1,44 @@
+name: CI
+on:
+  # Only main, because every other branch is covered by pull_request below. Keeping "**" here as
+  # well would run each pushed branch twice once it has a PR.
+  push:
+    branches:
+      - main
+
+  # A fork's commits live in the fork, so a push event never fires for them and a contributor's
+  # pull request would otherwise get no CI at all.
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Never cancel a run on main: Publish is triggered by its completion.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      # The com.enonic.xp.settings plugin needs a Gradle JVM of 21+, and XP 8 compiles against Java 25
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # Fails on a package-lock.json that has drifted from package.json, which
+      # the `npm install` Gradle runs through npmInstall would silently repair.
+      - run: npm ci
+
+      # Runs check (biome + tsc, via npmCheck), the node:test tests (via npmTest), tsdown (via npmBuild) and builds the jar.
+      - run: ./gradlew build

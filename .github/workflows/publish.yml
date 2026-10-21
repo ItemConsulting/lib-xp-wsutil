@@ -1,0 +1,84 @@
+name: Publish
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+
+  # Manual escape hatch: re-publish the jar for whatever version main is on,
+  # without going near npm. Use it when the Gradle step below failed after the
+  # npm release already went out, since a plain re-run finds nothing to publish.
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write # push the version bump commit and the v<version> tag, create the release
+  pull-requests: write # open and update the "Version Packages" PR
+  id-token: write # mint the OIDC token npm trusted publishing authenticates with
+
+jobs:
+  publish:
+    # The `branches` filter above matches the head branch of the CI run, so a pull request opened
+    # from a fork's own `main` would pass it — and workflow_run always runs here, in this
+    # repository, with the secrets. Requiring the CI run to have come from a push closes that,
+    # since a fork cannot push to this repository.
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # changeset publish tags the release, so the existing tags have to be there
+          fetch-depth: 0
+          # The action pushes the release commit and tags over the GitHub API, so
+          # the checkout does not need to leave a git credential behind.
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      # Publishing the jar means building it, so the publish job needs the same JDK as CI
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - run: npm ci
+
+      # On an ordinary push to main this opens or updates the "Version Packages" PR.
+      # Once that PR is merged package.json is already bumped and there are no
+      # changesets left, so this runs `npm run release` instead: publish the type
+      # definitions to npm, push the v<version> tag and create the GitHub release.
+      #
+      # npm auth comes from trusted publishing: the npm CLI trades the OIDC token
+      # granted by `id-token: write` for a short-lived one, so there is no
+      # NODE_AUTH_TOKEN and no .npmrc here. On that path npm attaches build
+      # provenance by itself, so NPM_CONFIG_PROVENANCE is not needed either.
+      # The trusted publisher on npmjs.com pins this workflow by filename, so
+      # renaming publish.yml stops publishing until that is updated to match.
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        if: github.event_name != 'workflow_dispatch'
+        uses: changesets/action@v2
+        with:
+          version-script: npm run versioning
+          publish-script: npm run release
+          create-github-releases: true
+
+      # Reached when the step above actually published, i.e. a "Version Packages"
+      # PR was merged, or when the workflow was started by hand to retry.
+      - name: Publish jar to repo.itemtest.no
+        if: github.event_name == 'workflow_dispatch' || steps.changesets.outputs.published == 'true'
+        run: ./gradlew publishAllPublicationsToItemtestRepositoryRepository
+        env:
+          # build.gradle declares the repository as `itemtestRepository` with
+          # credentials(PasswordCredentials), which reads these two properties.
+          ORG_GRADLE_PROJECT_itemtestRepositoryUsername: ${{ secrets.REPOSILITE_USERNAME }}
+          ORG_GRADLE_PROJECT_itemtestRepositoryPassword: ${{ secrets.REPOSILITE_PASSWORD }}
